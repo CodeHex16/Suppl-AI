@@ -10,7 +10,7 @@
 		placeholder="Scrivi un messaggio"
 		class="border-none border-transparent bg-transparent focus:border-transparent focus:ring-0"
 	/>
-	<div class="mr-1 grid h-10 w-10 justify-center rounded-full bg-gray-100">
+	<div class="mr-1 grid h-10 w-10 justify-center rounded-full hover:bg-gray-100">
 		<button type="submit"><SendHorizontal /></button>
 	</div>
 </div>

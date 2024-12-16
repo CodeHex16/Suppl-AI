@@ -6,7 +6,7 @@
 	let { data } = $props();
 </script>
 
-<div class="grid-chat mx-auto grid h-dvh max-w-xl">
+<div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">
 	<NavBar />
 	<Messages {data} />
 	<form method="POST" use:enhance>
