@@ -74,19 +74,25 @@
 	}
 }
 
+.grid-home {
+	grid-template-rows: 1fr auto auto;
+}
 .grid-chat-nav {
 	grid-template-columns: auto 1fr auto;
 }
 .grid-chat {
 	grid-template-rows: auto 1fr auto;
-	min-height: 100vh;
 }
 .grid-chat-bottom-bar {
 	grid-template-columns: 1fr auto;
 }
 
 .bg-dotted {
-	@apply absolute inset-0 h-full w-full bg-gray-100 bg-[radial-gradient(#cacaca_1px,transparent_1px)] [background-size:16px_16px];
+	@apply absolute inset-0 h-full w-full bg-stone-100 bg-[radial-gradient(#cacaca_1px,transparent_1px)] [background-size:16px_16px];
+}
+
+.glass {
+	@apply h-full rounded-t-3xl bg-white bg-opacity-80 bg-clip-padding p-4 backdrop-blur-3xl backdrop-filter;
 }
 
 @layer base {
@@ -97,4 +103,3 @@
 		border-color: var(--accent);
 	} */
 }
-
