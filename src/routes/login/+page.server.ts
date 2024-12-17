@@ -2,7 +2,7 @@ import type { Actions, ActionFailure } from '@sveltejs/kit';
 import { fail, redirect } from '@sveltejs/kit';
 
 export const load = async ({ cookies }) => {
-	if (cookies.get('session-test') === 'yes') {
+	if (cookies.get('session-test')) {
 		console.log('redirecting to /');
 		redirect(302, '/');
 	}
@@ -30,8 +30,8 @@ export const actions = {
 		}
 
 		try {
-			if (email === 'test@test.it' && password === 'test') {
-				cookies.set('session-test', 'yes', {
+			if (email && password) {
+				cookies.set('session-test', email + ';' + password, {
 					// Opzioni del cookie
 					path: '/'
 				});

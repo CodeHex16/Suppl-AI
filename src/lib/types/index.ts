@@ -3,3 +3,8 @@ export interface Message {
 	content: string;
 	authorId: string;
 }
+
+export interface UserCredentials {
+	email: string;
+	password: string;
+}
