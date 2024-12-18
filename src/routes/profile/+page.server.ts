@@ -1,6 +1,4 @@
-import type { Message, UserCredentials } from '$lib/types';
-import * as db from '$lib/database';
-import { redirect } from '@sveltejs/kit';
+import type {  UserCredentials } from '$lib/types';
 
 export const load = async (data) => {
 	const creds: UserCredentials = { email: '', password: '' };

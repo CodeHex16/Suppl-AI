@@ -12,10 +12,10 @@ export const actions = {
 	default: async (data) => {
 		const req = await data.request.formData();
 		if (!req.get('message')) return;
-		const content = req.get('message').toString();
+		const content = req.get('message')?.toString();
 		const message: Message = {
 			id: crypto.randomUUID(),
-			content: content,
+			content: content ?? '',
 			authorId: 'user'
 		};
 		db.addMessage(data.params.id ?? '', message);

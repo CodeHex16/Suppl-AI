@@ -3,8 +3,7 @@ import { fail, redirect } from '@sveltejs/kit';
 
 export const load = async ({ cookies }) => {
 	if (cookies.get('session-test')) {
-		console.log('redirecting to /');
-		redirect(302, '/');
+		redirect(303, '/');
 	}
 };
 
