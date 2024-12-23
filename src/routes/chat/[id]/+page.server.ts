@@ -1,6 +1,6 @@
 import type { Actions } from '@sveltejs/kit';
 import type { Message } from '$lib/types';
-import * as db from '$lib/database';
+import * as db from '$lib/database.svelte';
 
 export const load = async (data) => {
 	return {

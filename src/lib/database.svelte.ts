@@ -1,6 +1,6 @@
 import type { Message } from './types';
 
-const db = new Map();
+const db = $state(new Map());
 
 export function getMessages(chatId: string) {
 	if (!db.get(chatId)) {
