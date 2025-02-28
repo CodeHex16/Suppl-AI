@@ -1,5 +1,7 @@
 <script>
 	import { ArrowLeft, Ellipsis } from 'lucide-svelte';
+
+	let { data } = $props();
 </script>
 
 <nav class="grid-chat-nav m-4 grid">
@@ -11,7 +13,7 @@
 		</div>
 	</a>
 	<div class="h-12 w-fit justify-self-center rounded-full bg-gray-200 p-3 px-6">
-		<h1 class="">Chat name</h1>
+		<h1 class="">{data}</h1>
 	</div>
 	<button>
 		<div
