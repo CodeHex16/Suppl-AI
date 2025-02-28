@@ -4,13 +4,13 @@
 	let { data } = $props();
 </script>
 
-<main class="scroll-snap-y-container flex-1 overflow-y-auto p-4 prose">
+<main class="scroll-snap-y-container prose flex-1 overflow-y-auto p-4">
 	<div class="flex flex-col space-y-2">
-		{#each data.messages as message}
-			{#if message.authorId === 'user'}
-				<UserMessage content={message.content} />
-			{:else}
+		{#each data as message}
+			{#if message.sender === 'bot'}
 				<BotMessage content={message.content} />
+			{:else}
+				<UserMessage content={message.content} />
 			{/if}
 		{/each}
 	</div>

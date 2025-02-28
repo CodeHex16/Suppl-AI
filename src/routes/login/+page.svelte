@@ -1,17 +1,23 @@
-<script>
-	
+<script lang="ts">
+	import { enhance } from '$app/forms';
+	import { page } from '$app/stores';
 </script>
 
 <main>
 	<div class="mx-auto my-14 max-w-md rounded-xl bg-white p-4">
-		<h1 class="text-center text-2xl font-bold">Login</h1>
-		<form method="POST">
+		<h1 class="py-4 text-center text-2xl font-extrabold">Login</h1>
+
+		{#if $page.form?.error}
+			<p class="text-center text-red-500">{$page.form.error}</p>
+		{/if}
+
+		<form method="POST" use:enhance>
 			<div class="flex flex-col space-y-4 p-4">
 				<label for="email">Email</label>
 				<input
 					type="email"
 					id="email"
-					name="email"
+					name="username"
 					placeholder="Email"
 					value="test@test.it"
 					required
