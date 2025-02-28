@@ -1,6 +1,5 @@
 import type { Actions } from '@sveltejs/kit';
 import type { Message } from '$lib/types';
-import * as db from '$lib/database.svelte';
 import { redirect } from '@sveltejs/kit';
 
 const API_URL = 'http://localhost:8000';
