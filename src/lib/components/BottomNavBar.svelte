@@ -6,9 +6,17 @@
 	import { page } from '$app/stores';
 
 	async function newChat() {
-		const newId = data.chatIds.length + 1;
+		const chat_id = await fetch('http://localhost:8000/chats/new_chat', {
+			method: 'GET',
+			headers: {
+				Authorization: 'Bearer ' + data.props.token
+			}
+		}).then((res) => res.json());
+
+		console.log(chat_id.chat_id);
+
 		await invalidate('app:chat'); // per rimuovere la cache, altrimenti la lista di chat non si aggiorna
-		await goto(`/chat/${newId}`);
+		await goto(`/chat/${chat_id.chat_id}`);
 	}
 
 	let isHome = $page.url.pathname === '/';

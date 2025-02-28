@@ -13,11 +13,16 @@ export const actions = {
 		const req = await data.request.formData();
 		if (!req.get('message')) return;
 		const content = req.get('message')?.toString();
-		const message: Message = {
-			id: crypto.randomUUID(),
-			content: content ?? '',
-			authorId: 'user'
-		};
-		db.addMessage(data.params.id ?? '', message);
+		const token = data.cookies.get('token');
+		const chat = await fetch(`${API_URL}/chats/${data.params.id}/messages`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			},
+			body: JSON.stringify({
+				content: content
+			})
+		}).then((response) => response.json());
 	}
 } satisfies Actions;
