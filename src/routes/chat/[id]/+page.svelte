@@ -7,8 +7,8 @@
 </script>
 
 <div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">
-	<ChatNavBar />
-	<Messages {data} />
+	<ChatNavBar data={data.chat.name} />
+	<Messages data={data.chat.messages} />
 	<form method="POST" use:enhance>
 		<SendMessage />
 	</form>

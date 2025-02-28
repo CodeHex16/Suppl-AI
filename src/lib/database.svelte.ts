@@ -5,10 +5,12 @@ const db = $state(new Map());
 export function getMessages(chatId: string) {
 	if (!db.get(chatId)) {
 		db.set(chatId, [
+			
 			{
 				id: crypto.randomUUID(),
 				content: 'Ciao, sono SupplAI! Come posso aiutarti?',
-				authorId: 'bot'
+				authorId: 'bot',
+				timestamp: Date.now()
 			}
 		]);
 	}
