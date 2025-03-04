@@ -4,6 +4,11 @@
 	import Messages from '$lib/components/Messages.svelte';
 	import { enhance } from '$app/forms';
 	let { data } = $props();
+
+	$effect(() => {
+		window.scrollTo(0, document.body.scrollHeight);
+		// location.reload();
+	});
 </script>
 
 <div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">

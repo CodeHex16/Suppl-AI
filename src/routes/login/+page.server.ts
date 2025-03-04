@@ -50,6 +50,7 @@ export const actions: Actions = {
 			cookies.set('token', access_token, {
 				path: '/',
 				httpOnly: true,
+				secure: false,
 				//secure: process.env.NODE_ENV === 'production',
 				maxAge: 60 * 60 * 24 * 7, // 1 settimana
 				sameSite: 'strict'
