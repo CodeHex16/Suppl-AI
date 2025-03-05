@@ -1,6 +1,6 @@
 import type { Actions } from '@sveltejs/kit';
 import type { Message } from '$lib/types';
-import { redirect } from '@sveltejs/kit';
+import { redirect, fail } from '@sveltejs/kit';
 
 const API_URL = 'http://localhost:8000';
 
@@ -18,7 +18,6 @@ export const load = async (data) => {
 		}
 	}).then((response) => response.json());
 
-
 	if (chat.detail == 'Token is invalid or expired') {
 		data.cookies.delete('token', { path: '/' });
 	}
@@ -29,22 +28,36 @@ export const load = async (data) => {
 };
 
 export const actions = {
-	default: async (data) => {
-		const req = await data.request.formData();
+	default: async (event) => {
+		const req = await event.request.formData();
 		if (!req.get('message')) return;
 
 		const content = req.get('message')?.toString();
-		const token = data.cookies.get('token');
+		const token = event.cookies.get('token');
 
-		const chat = await fetch(`${API_URL}/chats/${data.params.id}/messages`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
-			},
-			body: JSON.stringify({
-				content: content
-			})
-		})
+		try {
+			const response = await fetch(`${API_URL}/chats/${event.params.id}/messages`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`
+				},
+				body: JSON.stringify({
+					content: content
+				})
+			});
+
+			if (!response.ok) {
+				return fail(response.status, { error: 'Failed to send message' });
+			}
+
+			// Return success response with message to reload
+			return { 
+				success: true,
+				invalidateMessages: true 
+			};
+		} catch (error) {
+			return fail(500, { error: 'Failed to send message' });
+		}
 	}
 } satisfies Actions;
