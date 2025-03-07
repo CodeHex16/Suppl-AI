@@ -5,7 +5,7 @@
 	console.log(data);
 </script>
 
-<main class="scroll-snap-y-container prose flex-1 overflow-y-auto p-4">
+<main class="scroll-snap-y-container prose flex-1 overflow-y-auto px-4">
 	<div class="flex flex-col space-y-2">
 		{#each data as message}
 			{#if message.sender === 'bot'}
