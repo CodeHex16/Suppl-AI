@@ -14,7 +14,6 @@
 			}
 		}).then((res) => res.json());
 
-		console.log(chat_id.chat_id);
 
 		await invalidate('app:chat'); // per rimuovere la cache, altrimenti la lista di chat non si aggiorna
 		await goto(`/chat/${chat_id.chat_id}`);

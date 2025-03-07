@@ -8,8 +8,6 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		throw new Error('No request data');
 	}
 
-	console.log('request data: ' + requestData['messages']);
-
 	const chatResponse = await fetch('http://llm-api:8001', {
 		headers: {
 			Authorization: `Bearer ${cookies.get('token')}`,

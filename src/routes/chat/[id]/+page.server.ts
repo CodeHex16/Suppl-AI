@@ -1,6 +1,7 @@
 import type { Actions } from '@sveltejs/kit';
 import type { Message } from '$lib/types';
 import { redirect, fail } from '@sveltejs/kit';
+import type { isFileServingAllowed } from 'vite';
 
 const API_URL = 'http://database-api:8000';
 const LLM_URL = 'http://llm-api:8001';
@@ -21,6 +22,35 @@ export const load = async (data) => {
 	if (chat.detail == 'Token is invalid or expired') {
 		data.cookies.delete('token', { path: '/' });
 		redirect(303, '/login');
+	}
+
+	if(chat.messages.length > 2 && chat.name == 'Chat senza nome') {
+
+		let chat_context = chat.messages.map((message: Message) => message.content).join(' ');
+
+		const response = await fetch(`${LLM_URL}/chat_name`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${data.cookies.get('token')}`
+			},
+			body: JSON.stringify({
+				context: chat_context
+			})
+		});
+
+		if (!response.ok) return fail(response.status, { error: 'Failed to send message' });
+
+		const title = await response.json();
+		
+		//save to db
+		await fetch(`${API_URL}/chats/${data.params.id}/name?new_name=${title}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${data.cookies.get('token')}`
+			}
+		});
 	}
 
 	return {
@@ -51,10 +81,11 @@ export const actions = {
 			if (!response.ok) return fail(response.status, { error: 'Failed to send message' });
 
 			return {
-				success: true,
+				success: true
 			};
 		} catch (error) {
 			return fail(500, { error: 'Failed to send message' });
 		}
 	}
 } satisfies Actions;
+

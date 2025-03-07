@@ -2,7 +2,6 @@
 	import UserMessage from './UserMessage.svelte';
 	import BotMessage from './BotMessage.svelte';
 	let { data } = $props();
-	console.log(data);
 </script>
 
 <main class="scroll-snap-y-container prose flex-1 overflow-y-auto px-4">
