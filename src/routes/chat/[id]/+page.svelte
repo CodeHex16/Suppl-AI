@@ -70,8 +70,9 @@
 			}
 
 			// Quando lo streaming è completo
+			messages = [...messages, { sender: 'bot', content: answer }];
+			
 			waitingForResponse = false;
-
 			console.log("Sto salvando la risposta con chat_id:", chat_id, $page.params.id); 
 			// Salva il messaggio del bot nel database
 			await fetch(`/api/save_bot_message`, {
@@ -84,9 +85,8 @@
 					chat_id: $page.params.id
 				})
 			});
-
-			messages = [...messages, { sender: 'bot', content: answer }];
 			answer = '';
+
 		} catch (err: unknown) {
 			if (err instanceof Error && err.name !== 'AbortError') {
 				console.error('Errore stream:', err);

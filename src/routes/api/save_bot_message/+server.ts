@@ -12,8 +12,6 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			return json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
-		console.error('RICHIESTAAA ', req);
-
 		// Salva il messaggio del bot nel database
 		const response = await fetch(`${API_URL}/chats/${req.chat_id}/messages`, {
 			method: 'POST',
