@@ -9,7 +9,11 @@
 	<div class="flex flex-col space-y-2">
 		{#each data as message}
 			{#if message.sender === 'bot'}
-				<BotMessage content={message.content} />
+				{#if message.isLoading}
+					<BotMessage content={message.content} />
+				{:else}
+					<BotMessage content={message.content} />
+				{/if}
 			{:else}
 				<UserMessage content={message.content} />
 			{/if}

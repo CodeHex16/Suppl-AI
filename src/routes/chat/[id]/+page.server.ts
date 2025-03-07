@@ -2,7 +2,8 @@ import type { Actions } from '@sveltejs/kit';
 import type { Message } from '$lib/types';
 import { redirect, fail } from '@sveltejs/kit';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'http://database-api:8000';
+const LLM_URL = 'http://llm-api:8001';
 
 export const load = async (data) => {
 	if (!data.cookies.get('token')) {
@@ -23,7 +24,8 @@ export const load = async (data) => {
 	}
 
 	return {
-		chat: chat
+		chat: chat,
+		chat_id: data.params.id
 	};
 };
 
@@ -46,15 +48,17 @@ export const actions = {
 					content: content
 				})
 			});
+			
 
 			if (!response.ok) {
 				return fail(response.status, { error: 'Failed to send message' });
 			}
 
-			// Return success response with message to reload
-			return { 
+			
+
+			return {
 				success: true,
-				invalidateMessages: true 
+				invalidateMessages: true
 			};
 		} catch (error) {
 			return fail(500, { error: 'Failed to send message' });

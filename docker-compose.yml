@@ -1,11 +1,11 @@
 services:
-  suppl-ai-svelte:
+  suppl-ai:
     image: node:18-alpine
     working_dir: /app
     volumes:
       - ./:/app
     ports:
-      - "3000:3000"  
-    command: npm run dev -- # da cambiare in produzione
+      - '3000:3000'
+    command: bash -c "npm install && npm run dev --" # da cambiare in produzione
     environment:
       - NODE_ENV=development

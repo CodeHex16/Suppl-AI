@@ -3,15 +3,9 @@
 	import ChatHistory from '$lib/components/ChatHistory.svelte';
 	import BottomNavBar from '$lib/components/BottomNavBar.svelte';
 
-	const API_URL = 'http://localhost:8000';
+	const API_URL = 'http://database-api:8000';
 
 	let { data } = $props();
-
-	const chats = fetch(API_URL + '/chats', {
-		headers: {
-			Authorization: 'Bearer ' + data.props.token
-		}
-	}).then((response) => response.json());
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
@@ -25,7 +19,7 @@
 			<div
 				class="scroll-snap-y-container flex max-h-80 min-h-40 flex-col space-y-4 overflow-y-auto"
 			>
-				{#await chats}
+				{#await data.chats}
 					<div role="status" class="m-auto">
 						<svg
 							aria-hidden="true"

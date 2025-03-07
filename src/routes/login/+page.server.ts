@@ -1,7 +1,8 @@
 import type { Actions, ActionFailure } from '@sveltejs/kit';
 import { fail, redirect } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private'
 
-const API_URL = 'http://localhost:8000';
+const API_URL = env.DATABASE_API_URL;
 
 export const load = async ({ cookies }) => {
 	const token = cookies.get('token');

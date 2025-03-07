@@ -5,6 +5,7 @@
 	let { data } = $props();
 	import { page } from '$app/stores';
 
+
 	async function newChat() {
 		const chat_id = await fetch('http://localhost:8000/chats/new_chat', {
 			method: 'GET',

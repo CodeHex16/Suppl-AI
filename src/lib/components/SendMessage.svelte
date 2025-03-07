@@ -8,6 +8,7 @@
 		type="text"
 		name="message"
 		autofocus={true}
+		autocomplete="off"
 		tabindex={0}
 		placeholder="Scrivi un messaggio"
 		class="border-none border-transparent bg-transparent focus:border-transparent focus:ring-0"

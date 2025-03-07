@@ -29,7 +29,7 @@
 					id="password"
 					name="password"
 					placeholder="Password"
-					value="test"
+					value="testtest"
 					required
 					class="rounded-full border-none bg-gray-100 px-4 py-2"
 				/>
