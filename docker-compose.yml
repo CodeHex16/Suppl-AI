@@ -6,6 +6,6 @@ services:
       - ./:/app
     ports:
       - '3000:3000'
-    command: bash -c "npm install && npm run dev --" # da cambiare in produzione
+    command: sh -c "npm install && npm run dev --"
     environment:
       - NODE_ENV=development
