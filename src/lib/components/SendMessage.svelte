@@ -1,6 +1,7 @@
 <script>
 	import { SendHorizontal } from 'lucide-svelte';
 	import { page } from '$app/stores';
+	let { sending } = $props();
 </script>
 
 <div class="grid-chat-bottom-bar m-4 grid gap-2 rounded-full bg-white p-2">
@@ -16,6 +17,8 @@
 	<div
 		class="mr-1 grid h-10 w-10 justify-center rounded-full transition duration-150 ease-in hover:bg-gray-100"
 	>
-		<button type="submit"><SendHorizontal /></button>
+		<button type="submit" disabled={sending} class={sending ? 'opacity-30' : 'opacity-100'}
+			><SendHorizontal /></button
+		>
 	</div>
 </div>

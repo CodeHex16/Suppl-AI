@@ -9,18 +9,18 @@ export const load = async (data) => {
 	if (!data.cookies.get('token')) {
 		redirect(303, '/login');
 	}
-	const token = data.cookies.get('token');
 
 	const chat = await fetch(`${API_URL}/chats/${data.params.id}/messages`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${data.cookies.get('token')}`
 		}
 	}).then((response) => response.json());
 
 	if (chat.detail == 'Token is invalid or expired') {
 		data.cookies.delete('token', { path: '/' });
+		redirect(303, '/login');
 	}
 
 	return {
@@ -35,30 +35,23 @@ export const actions = {
 		if (!req.get('message')) return;
 
 		const content = req.get('message')?.toString();
-		const token = event.cookies.get('token');
 
 		try {
 			const response = await fetch(`${API_URL}/chats/${event.params.id}/messages`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: `Bearer ${token}`
+					Authorization: `Bearer ${event.cookies.get('token')}`
 				},
 				body: JSON.stringify({
 					content: content
 				})
 			});
-			
 
-			if (!response.ok) {
-				return fail(response.status, { error: 'Failed to send message' });
-			}
-
-			
+			if (!response.ok) return fail(response.status, { error: 'Failed to send message' });
 
 			return {
 				success: true,
-				invalidateMessages: true
 			};
 		} catch (error) {
 			return fail(500, { error: 'Failed to send message' });

@@ -1,9 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import ChatHistory from '$lib/components/ChatHistory.svelte';
 	import BottomNavBar from '$lib/components/BottomNavBar.svelte';
-
-	const API_URL = 'http://database-api:8000';
 
 	let { data } = $props();
 </script>

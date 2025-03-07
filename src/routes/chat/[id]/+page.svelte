@@ -5,17 +5,15 @@
 	import { enhance } from '$app/forms';
 	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 
 	let { data } = $props();
-	let sending = $state(false);
-	let messageInput = '';
 	let waitingForResponse = $state(false);
 	let scrollToDiv: HTMLDivElement;
 	let answer = $state('');
 	let abortController: AbortController | null = null;
 
 	let messages = $state(data.chat.messages);
-	let chat_id = data.chat.chat_id;
 
 	function scrollToBottom() {
 		setTimeout(function () {
@@ -69,12 +67,10 @@
 				}
 			}
 
-			// Quando lo streaming è completo
+			// Quando la risposta è completa
 			messages = [...messages, { sender: 'bot', content: answer }];
-			
+
 			waitingForResponse = false;
-			console.log("Sto salvando la risposta con chat_id:", chat_id, $page.params.id); 
-			// Salva il messaggio del bot nel database
 			await fetch(`/api/save_bot_message`, {
 				method: 'POST',
 				headers: {
@@ -86,14 +82,17 @@
 				})
 			});
 			answer = '';
-
-		} catch (err: unknown) {
+		} catch (err: any) {
 			if (err instanceof Error && err.name !== 'AbortError') {
 				console.error('Errore stream:', err);
 				waitingForResponse = false;
 			}
 		}
 	}
+
+	onMount(() => {
+		scrollToBottom();
+	});
 </script>
 
 <div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">
@@ -109,11 +108,9 @@
 	<form
 		method="POST"
 		use:enhance={({ formData, formElement }) => {
-			sending = true;
 			waitingForResponse = true;
-			messageInput = formData.get('message')?.toString() || '';
+			let messageInput = formData.get('message')?.toString() || '';
 
-			// Add the message to the UI immediately for better UX
 			if (messageInput) {
 				messages = [
 					...messages,
@@ -127,14 +124,12 @@
 
 			streamResponse(messageInput);
 
-			return async ({ result }) => {
+			return async () => {
 				formElement.reset();
-				sending = false;
-
 				await invalidate('app:messages');
 			};
 		}}
 	>
-		<SendMessage />
+		<SendMessage sending={waitingForResponse} />
 	</form>
 </div>
