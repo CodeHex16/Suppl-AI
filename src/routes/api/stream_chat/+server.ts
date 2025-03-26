@@ -8,6 +8,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		throw new Error('No request data');
 	}
 
+	console.log(requestData['messages']);
 	const chatResponse = await fetch('http://llm-api:8001', {
 		headers: {
 			Authorization: `Bearer ${cookies.get('token')}`,
@@ -15,13 +16,14 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		},
 		method: 'POST',
 		body: JSON.stringify({
-			question: requestData['messages']
+			question: requestData['message'],
+			messages: requestData['messages']
 		})
 	});
 
 	if (!chatResponse.ok) {
 		const err = await chatResponse.json();
-		throw new Error(err.error.message);
+		throw new Error(err);
 	}
 
 	return chatResponse;

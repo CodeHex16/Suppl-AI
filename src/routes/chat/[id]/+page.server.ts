@@ -63,7 +63,6 @@ export const load = async (data) => {
 	const result = await updateChatNameIfNeeded(chat, data.cookies.get('token') ?? '', data.params.id);
     if (result.error) return fail(result.error, { error: 'Failed to generate chat name' });
 
-
 	return {
 		chat: chat,
 		chat_id: data.params.id

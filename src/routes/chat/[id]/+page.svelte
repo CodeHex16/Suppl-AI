@@ -6,6 +6,7 @@
 	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
+	import { type Writable, writable, derived } from 'svelte/store';
 
 	let { data } = $props();
 	let waitingForResponse = $state(false);
@@ -14,6 +15,8 @@
 	let abortController: AbortController | null = null;
 
 	let messages = $state(data.chat.messages);
+	// Store per il nome della chat, per renderizzare la UI in modo reattivo
+	let chatName = writable(data.chat.name);
 
 	function scrollToBottom() {
 		setTimeout(function () {
@@ -22,7 +25,6 @@
 	}
 
 	async function streamResponse(messageData: string) {
-		//TODO: send more than one message
 		if (abortController) {
 			abortController.abort();
 		}
@@ -34,7 +36,10 @@
 			const response = await fetch('/api/stream_chat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ messages: messageData }),
+				body: JSON.stringify({ 
+					message: messageData, 
+					messages: messages
+				}),
 				signal: abortController.signal
 			});
 
@@ -81,6 +86,11 @@
 					chat_id: $page.params.id
 				})
 			});
+
+        	if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
+        	    await updateChatName();
+        	}
+
 			answer = '';
 		} catch (err: any) {
 			if (err instanceof Error && err.name !== 'AbortError') {
@@ -90,13 +100,33 @@
 		}
 	}
 
+	async function updateChatName() {
+		const res = await fetch('/api/update_chat_name', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ 
+				messages: messages,
+				chat_id: $page.params.id 
+			})
+		});
+
+		const data = await res.json();
+		if (!data.error) {
+			// Aggiorna il nome della chat nel store reattivo
+			chatName.set(data.title);  // Aggiorna il nome della chat nel store
+		} else {
+			console.error('Errore aggiornamento nome chat:', data.error);
+		}
+	}
+
 	onMount(() => {
 		scrollToBottom();
 	});
 </script>
 
 <div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">
-	<ChatNavBar data={data.chat.name} />
+	<!-- Usa il valore reattivo del nome della chat -->
+	<ChatNavBar data={$chatName} />
 	<div class="flex-grow overflow-y-auto">
 		<Messages
 			data={waitingForResponse
