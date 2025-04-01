@@ -1,11 +1,25 @@
 services:
   suppl-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: node:18-alpine
     working_dir: /app
+
     volumes:
       - ./:/app
+      - node_modules:/app/node_modules  # 让 node_modules 存储在 Docker volume，不被宿主机影响
     ports:
       - '3000:3000'
     command: sh -c "npm install && npm run dev --"
     environment:
       - NODE_ENV=development
+      - DATABASE_API_URL=http://database-api:8000
+    networks:
+      - suppl-ai-shared-network
+volumes:
+  node_modules:
+
+networks:
+    suppl-ai-shared-network:
+        external: true
