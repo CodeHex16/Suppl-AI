@@ -1,8 +1,15 @@
 <script lang="ts">
 	import ChatHistory from '$lib/components/ChatHistory.svelte';
 	import BottomNavBar from '$lib/components/BottomNavBar.svelte';
+	import HomeAdmin from '$lib/components/HomeAdmin.svelte';
 
-	let { data } = $props();
+	export let data: {
+		token: string;
+		chats: Promise<any>;
+		userScopes: string[];
+	};
+
+	$: isAdmin = data.userScopes.includes('admin');
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
@@ -11,11 +18,13 @@
 	</header>
 
 	<main class="">
-		<div class="h-full rounded-t-3xl bg-white p-4 shadow-md">
+		{#if isAdmin}
+			<HomeAdmin/>
+		{/if}
+
+		<div class="rounded-t-3xl bg-white p-4 shadow-md">
 			<h2 class="mb-6 ml-2 mt-2 text-xl font-semibold">Cronologia Chat</h2>
-			<div
-				class="scroll-snap-y-container flex max-h-80 min-h-40 flex-col space-y-4 overflow-y-auto"
-			>
+			<div class="scroll-snap-y-container flex max-h-80 min-h-40 flex-col space-y-4 overflow-y-auto">
 				{#await data.chats}
 					<div role="status" class="m-auto">
 						<svg
