@@ -3,10 +3,21 @@ services:
     container_name: suppl-ai
     image: node:20
     working_dir: /app
+
     volumes:
       - ./:/app
+      - node_modules:/app/node_modules
     ports:
       - 3000:3000
     command: sh -c "npm install && npm run dev --"
     environment:
       - NODE_ENV=development
+      - DATABASE_API_URL=http://database-api:8000
+    networks:
+      - suppl-ai-shared-network
+volumes:
+  node_modules:
+
+networks:
+    suppl-ai-shared-network:
+        external: true
