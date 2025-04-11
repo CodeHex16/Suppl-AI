@@ -1,15 +1,26 @@
+// +page.ts
 import { redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
 const API_URL = env.DATABASE_API_URL;
 
-export const load = async (data) => {
-	if (!data.cookies.get('token')) {
-		redirect(303, '/login');
+function decodeJwt(token: string): any {
+	try {
+		const base64Payload = token.split('.')[1];
+		const payload = atob(base64Payload);
+		return JSON.parse(payload);
+	} catch {
+		return null;
 	}
+}
 
+export const load = async (data) => {
 	const token = data.cookies.get('token');
+	if (!token) redirect(303, '/login');
+
 	let chats = null;
+	let userScopes: string[] = [];
+
 	try {
 		const verify_token = await fetch(`${API_URL}/auth/verify?token=${token}`, {
 			method: 'GET',
@@ -25,6 +36,10 @@ export const load = async (data) => {
 			redirect(303, '/login');
 		}
 
+		// Decode token to extract scopes
+		const decoded = decodeJwt(token);
+		userScopes = decoded?.scopes || [];
+
 		chats = fetch(API_URL + '/chats', {
 			method: 'GET',
 			headers: {
@@ -37,10 +52,8 @@ export const load = async (data) => {
 	}
 
 	return {
-		props: {
-			token: token
-		},
-		chats: chats
+		token,
+		chats,
+		userScopes
 	};
 };
-
