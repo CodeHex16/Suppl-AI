@@ -6,7 +6,7 @@ services:
 
     volumes:
       - ./:/app
-      - node_modules:/app/node_modules  # 让 node_modules 存储在 Docker volume，不被宿主机影响
+      - node_modules:/app/node_modules
     ports:
       - 3000:3000
     command: sh -c "npm install && npm run dev --"
