@@ -48,7 +48,6 @@
 		document.documentElement.style.setProperty('--color-primary-hover', hoverColor);
 	}
 
-
 	async function uploadFile(file: File, name: string) {
 		const formData = new FormData();
 		formData.append('file', file);
@@ -65,7 +64,6 @@
 			console.log(`File salvato come "${name}"`);
 		}
 	}
-
 
 	async function handleSubmit() {
 		console.log('Colore primario:', $primaryColor);
@@ -122,7 +120,6 @@
 		return luminance > 0.5 ? 'black' : 'white';
 	}
 </script>
-
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
 	<header class="mt-4">
