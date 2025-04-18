@@ -2,11 +2,13 @@
 	import { ArrowLeft, Search, Ellipsis, Plus } from 'lucide-svelte';
 	import BottomNavBar from '$lib/components/BottomNavBar.svelte';
 	import DocumentItem from '$lib/components/Document.svelte';
+	import Doc from '$lib/components/NewDocumentModal.svelte';
 	import { writable, derived } from 'svelte/store';
 
 	let { data } = $props();
 
-	const showModal = writable(false);
+	const documents = writable(data.documents ?? []);
+	const showNewDocument = writable(false);
 
 	const query = writable('');
 	const selectedDocument = writable<number | null>(null);
@@ -24,9 +26,10 @@
 		);
 	});
 
-	function newDocument() {
-		// Logica per aprire un form o fare qualcosa per aggiungere un nuovo documento
-		console.log('Nuovo documento');
+	function newDocument(doc : any) {
+		console.log('Nuova FAQ aggiunta:', documents); // 👈 Log del nuovo documento
+		documents.update(prev => [...prev, {id: Date.now(), ...doc}]);
+		showNewDocument.set(false);
 	}
 </script>
 
@@ -45,6 +48,13 @@
 		</nav>
 	</header>
 
+	{#if $showNewDocument}
+	<Doc
+		on:submitDocument={(e) => newDocument(e.detail)}
+		on:cancel={() => showNewDocument.set(false)}
+	/>
+   {/if}
+   
 	<main class="flex flex-col pt-2 flex-grow overflow-y-auto">		
 
 		<!-- Lista documenti -->
@@ -72,9 +82,9 @@
                     <Search class="absolute left-3 top-2.5 w-5 h-5 text-gray-500" />
                 </div>
                 <button
-                    on:click={newDocument}
+                    on:click={() => showNewDocument.set(true)}
                     class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-500 text-white transition duration-150 ease-in hover:bg-blue-600"
-                >
+				>
                     <Plus />
                 </button>
             </div>

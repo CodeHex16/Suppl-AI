@@ -2,11 +2,16 @@
 	import { ArrowLeft, Search, Ellipsis, Plus } from 'lucide-svelte';
 	import BottomNavBar from '$lib/components/BottomNavBar.svelte';
 	import FaqItem from '$lib/components/FaqItem.svelte';
+	import Faq from '$lib/components/NewFAQModal.svelte';
+	import UpdateFaq from'$lib/components/UpdateFAQModal.svelte';
 	import { writable, derived } from 'svelte/store';
 
 	let { data } = $props();
+    const faqs = writable(data.faqs ?? []);
+	const showNewFAQ = writable(false);
 
-	const showModal = writable(false);
+	const showUpdateFAQ = writable(false);
+	const editingFAQ = writable<any>(null);
 
 	const query = writable('');
 	const selectedFaq = writable<number | null>(null);
@@ -15,8 +20,6 @@
 		selectedFaq.update((current) => (current === id ? null : id));
 		console.log(selectedFaq)
 	}
-
-
 
 	const filteredFaq = derived([query], ([$query]) => {
 		if (!data?.faqs) return [];
@@ -27,9 +30,30 @@
 		);
 	});
 
-	function newFaq() {
-		console.log('Nuova FAQ');
+	function newFAQ(faq: any) {
+		console.log('Nuova FAQ aggiunta:', faqs); // 👈 Log della nuova FAQ
+		faqs.update(prev => [...prev, {id: Date.now(), ...faq}]);
+		showNewFAQ.set(false);
 	}
+
+	function updateFAQ(faq: any) {
+		console.log('Faq aggiornata (input):', faqs); // 👈 Log prima dell'update
+
+		faqs.update((list) => {
+			const updatedList = list.map((u) => (u.id === faq.id ? { ...u, ...faqs } : u));
+			console.log('Lista faq aggiornata:', updatedList); // 👈 Log della lista aggiornata
+			return updatedList;
+		});
+
+		// Log finale dello store faqs (assicurati che venga aggiornato)
+		faqs.subscribe((val) => {
+			console.log('Valore attuale dello store `faq`:', val);
+		})();
+
+		showUpdateFAQ.set(false);
+		editingFAQ.set(null);
+	}
+
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
@@ -47,6 +71,22 @@
 		</nav>
 	</header>
 
+	{#if $showNewFAQ}
+		<Faq
+			on:submitUser={(e) => newFAQ(e.detail)}
+			on:cancel={() => showNewFAQ.set(false)}
+		/>
+	{/if}
+	{#if $showUpdateFAQ}
+	    <UpdateFaq
+		    faq={$editingFAQ}
+		    on:submitFaq={(e) => updateFAQ(e.detail)}
+		    on:cancel={() => {
+			    showUpdateFAQ.set(false);
+			    editingFAQ.set(null);
+		    }}
+	    />
+    {/if}
 	<main class="flex flex-col pt-2 flex-grow overflow-y-auto">
 		<!-- Lista FAQ -->
 		{#if $filteredFaq.length > 0}
@@ -55,6 +95,10 @@
 					{faq}
 					open={$selectedFaq === faq.id}
 					on:toggle={() => toggleFaq(faq.id)}
+					on:edit={(e) => {
+						editingFAQ.set(e.detail);
+						showUpdateFAQ.set(true);
+					}}
 				/>
 			{/each}
 		{:else}
@@ -74,7 +118,7 @@
 					<Search class="absolute left-3 top-2.5 w-5 h-5 text-gray-500" />
 				</div>
 				<button
-					on:click={newFaq}
+					on:click={() => showNewFAQ.set(true)}
 					class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-500 text-white transition duration-150 ease-in hover:bg-blue-600"
 				>
 					<Plus />

@@ -16,7 +16,7 @@
 		<div>
 			<h3 class="text-lg font-semibold">{open ? faq.abbr : abbrQuestion}</h3>
 			<div class="flex space-x-4">
-				<button class="flex items-center text-orange-600 hover:text-orange-700 transition">
+				<button class="flex items-center text-orange-600 hover:text-orange-700 transition" on:click={() => dispatch('edit', faq)}>
 					<PenIcon class="mr-1 h-4 w-4" />
 					<span>Modifica</span>
 				</button>
