@@ -9,7 +9,7 @@
 	<header class="my-auto">
 		<div class="mx-auto mt-10 w-fit rounded-full bg-white p-4 shadow-md">
 			<User class="h-40 w-40 stroke-gray-300 stroke-1" />
-		</div>
+		</div>	
 	</header>
 	<main>
 		<ProfileSettings {data} />
