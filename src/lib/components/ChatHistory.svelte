@@ -13,7 +13,7 @@
 {#each data as chat}
 	<a
 		href="/chat/{chat.id}"
-		class="flex gap-3 rounded-xl bg-gray-100 p-4 transition duration-150 ease-in hover:bg-gray-200"
+		class="flex gap-3 rounded-xl bg-gray p-4 transition duration-150 ease-in"
 	>
 		<MessageCircle />
 		{chat.name}

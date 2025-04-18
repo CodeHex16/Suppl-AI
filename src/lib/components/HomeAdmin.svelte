@@ -21,7 +21,7 @@
 	</a>
 </div>
 <div class="px-4 mt-4 mb-6">
-	<a href="/admin/faq" class="admin-btn">
+	<a href="/admin/gestione_piattaforma" class="admin-btn">
 		<Settings class="h-6 w-6 mr-2" />
 		Gestione Piattaforma
 	</a>
@@ -29,6 +29,6 @@
 
 <style>
 	.admin-btn {
-		@apply flex items-center justify-start gap-2 rounded-xl bg-blue-500 p-6 text-white text-base font-semibold transition duration-150 ease-in hover:bg-blue-600;
+		@apply flex items-center justify-start gap-2 rounded-xl item-primary p-6 text-base font-semibold transition duration-150 ease-in;
 	}
 </style>

@@ -9,7 +9,7 @@
 
 <div class="flex justify-start">
 	<div class="max-w-sm rounded-t-3xl rounded-br-3xl bg-white p-4 text-black">
-		<div class="font-bold text-blue-500">Supply</div>
+		<div class="font-bold text-primary">Supply</div>
 		{#if content == ''}
 			<div class="mt-4 animate-pulse">
 				<div class="mb-2 h-2 w-40 rounded bg-slate-200"></div>

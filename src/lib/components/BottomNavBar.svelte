@@ -10,7 +10,7 @@
 		const chat_id = await fetch('http://localhost:8000/chats/new_chat', {
 			method: 'GET',
 			headers: {
-				Authorization: 'Bearer ' + data.props.token
+				Authorization: 'Bearer ' + data.token
 			}
 		}).then((res) => res.json());
 
@@ -22,7 +22,7 @@
 	let isHome = $page.url.pathname === '/';
 </script>
 
-<footer class="flex justify-around bg-white pb-6 pt-2 shadow-md">
+<footer class="flex justify-around bg-white shadow-md pb-6 pt-2">
 	<a href="/" class="">
 		<div
 			class="flex flex-col items-center gap-1 rounded-full p-2 px-4 text-sm {!isHome &&
@@ -36,7 +36,7 @@
 		<button onclick={newChat} class="flex flex-col items-center gap-1">
 			<div class="absolute bottom-5 flex flex-col items-center justify-center text-center text-sm">
 				<div
-					class="rounded-full bg-blue-500 p-5 text-white transition duration-150 ease-in hover:bg-blue-600"
+					class="rounded-full item-primary p-5 transition duration-150 ease-in"
 				>
 					<MessageCirclePlus />
 				</div>
