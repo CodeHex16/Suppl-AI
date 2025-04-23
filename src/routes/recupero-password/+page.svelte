@@ -6,7 +6,9 @@
 <main>
 	<div class="mx-auto my-14 max-w-md rounded-xl bg-white p-4">
 		<h1 class="py-4 text-center text-2xl font-extrabold">Recupero password</h1>
-
+		{#if $page.form?.error}
+			<p class="text-red-500">{$page.form.error}</p>
+		{/if}
 		<form method="POST" use:enhance>
 			<div class="flex flex-col space-y-4 p-4">
 				<label for="email">Email per il recupero password</label>
@@ -24,16 +26,17 @@
 					class="rounded-full border-none bg-blue-500 p-3 text-center font-bold text-white hover:bg-blue-600"
 					>Richiedi nuova password</button
 				>
-				{#if $page.form?.error}
-					<p class="text-red-500">{$page.form.error}</p>
-				{:else if $page.form?.success}
+
+				{#if $page.form?.success}
 					<p style=" text-align: justify; text-justify: inter-word;">
-						Controlla l'email e segui le istruzioni per il reset della password.
+						Controlla l'email e segui le istruzioni per il reset della password. Se il messaggio non
+						è presente nella casella di posta:
 					</p>
-					<p style=" text-align: justify; text-justify: inter-word;">
-						Se il messaggio non è presente nella casella di posta, aspetta qualche minuto o
-						ricontrolla se l'email inserita è corretta.
-					</p>
+					<ul class="list-disc pl-4">
+						<li>aspetta qualche minuto;</li>
+						<li>controlla la cartella spam;</li>
+						<li>controlla se l'email inserita è corretta.</li>
+					</ul>
 				{/if}
 			</div>
 		</form>

@@ -13,8 +13,14 @@ export const actions: Actions = {
         if (!username || !username?.search("@")) {
             return fail(400, { error: "Inserisci un'email valida" });
         }
-        else {
-            return { success: true };
+
+        try {
+            //Invio email di recupero password
+        } catch (error) {
+            console.error("Errore: ", error);
+            return fail(500, { error: 'Errore di connessione al server' });
         }
+
+        return { success: true };
     }
 }
