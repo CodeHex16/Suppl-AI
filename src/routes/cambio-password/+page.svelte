@@ -29,22 +29,32 @@
 					<p class="text-center text-red-500">{$page.form.error}</p>
 				{/if}
 				<div class="flex flex-col space-y-4 p-4">
-					<label for="email">Nuova password</label>
+					<label for="currentPassword">Password attuale</label>
 					<input
 						type="password"
-						id="password"
-						name="password"
-						placeholder="Password"
+						id="currentPassword"
+						name="currentPassword"
+						placeholder="Password123!"
 						value=""
 						required
 						class="rounded-full border-none bg-gray-100 p-2 px-4"
 					/>
-					<label for="email">Conferma password</label>
+					<label for="password">Nuova password</label>
+					<input
+						type="password"
+						id="password"
+						name="password"
+						placeholder="pASSWORD321!"
+						value=""
+						required
+						class="rounded-full border-none bg-gray-100 p-2 px-4"
+					/>
+					<label for="passwordConfirm">Conferma password</label>
 					<input
 						type="password"
 						id="passwordConfirm"
 						name="passwordConfirm"
-						placeholder="Password"
+						placeholder="pASSWORD321!"
 						value=""
 						required
 						class="rounded-full border-none bg-gray-100 p-2 px-4"

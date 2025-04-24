@@ -1,18 +1,19 @@
 // +page.ts
 import { redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { jwtDecode } from 'jwt-decode'
 
 const API_URL = env.DATABASE_API_URL;
 
-function decodeJwt(token: string): any {
-	try {
-		const base64Payload = token.split('.')[1];
-		const payload = atob(base64Payload);
-		return JSON.parse(payload);
-	} catch {
-		return null;
-	}
-}
+// function decodeJwt(token: string): any {
+// 	try {
+// 		const base64Payload = token.split('.')[1];
+// 		const payload = atob(base64Payload);
+// 		return JSON.parse(payload);
+// 	} catch {
+// 		return null;
+// 	}
+// }
 
 export const load = async (data) => {
 	const token = data.cookies.get('token');
@@ -37,7 +38,7 @@ export const load = async (data) => {
 		}
 
 		// Decode token to extract scopes
-		const decoded = decodeJwt(token);
+		const decoded = jwtDecode(token);
 		userScopes = decoded?.scopes || [];
 
 		chats = fetch(API_URL + '/chats', {
