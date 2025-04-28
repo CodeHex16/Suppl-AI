@@ -4,7 +4,11 @@
 </script>
 
 <main>
-	<div class="mx-auto my-14 max-w-md rounded-xl bg-white p-4">
+	<div class="mx-auto my-14 max-w-md rounded-xl bg-white shadow-md p-4">
+		<div class="logo-wrapper flex items-center justify-center pt-2">
+			<img src="./img/logo_light.png?v={Date.now()}" class="logo light-mode" alt="Logo Light" />
+			<img src="./img/logo_dark.png?v={Date.now()}" class="logo dark-mode" alt="Logo Dark" />        
+		</div>
 		<h1 class="py-4 text-center text-2xl font-extrabold">Login</h1>
 
 		{#if $page.form?.error}
@@ -35,7 +39,7 @@
 				/>
 				<button
 					type="submit"
-					class="rounded-full border-none bg-blue-500 p-3 text-center font-bold text-white hover:bg-blue-600"
+					class="rounded-full border-none item-primary p-3 text-center font-bold"
 					>Accedi</button
 				>
 			</div>

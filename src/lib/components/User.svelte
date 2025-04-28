@@ -7,12 +7,12 @@
 	const dispatch = createEventDispatcher();
 </script>
 
-<div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">
+<div class="mb-4 rounded-xl bg-white shadow-md p-4 transition">
 	<div class="flex items-center justify-between">
 		<div>
 			<h3 class="text-lg font-semibold">{user.name}</h3>
 			<div class="flex space-x-4">
-				<button class="flex items-center text-orange-600 hover:text-orange-700 transition" on:click={() => dispatch('edit', user)}>
+				<button class="flex items-center text-yellow-500 hover:text-yellow-600 transition" on:click={() => dispatch('edit', user)}>
 					<PenIcon class="mr-1 h-4 w-4" />
 					<span>Modifica</span>
 				</button>
@@ -32,8 +32,8 @@
 
 	{#if open}
 		<div class="mt-4 border-t pt-4 text-sm text-gray-700">
-			<p class="mb-2">{user.email}</p>
-			<p class="text-sm text-gray-600">{user.role} • {user.creationDate}</p>
+			<p class="mb-2 text-gray">{user.email}</p>
+			<p class="text-sm text-gray-600 text-gray">{user.role} • {user.creationDate}</p>
             
 		</div>
 	{/if}

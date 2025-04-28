@@ -2,6 +2,7 @@
 	import { ArrowLeft, Search, Ellipsis, Plus } from 'lucide-svelte';
 	import BottomNavBar from '$lib/components/BottomNavBar.svelte';
 	import FaqItem from '$lib/components/FaqItem.svelte';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import Faq from '$lib/components/NewFAQModal.svelte';
 	import UpdateFaq from'$lib/components/UpdateFAQModal.svelte';
 	import { writable, derived } from 'svelte/store';
@@ -60,14 +61,12 @@
 	<header class="mt-4">
 		<nav class="grid grid-cols-3 items-center px-4">
 			<a href="/">
-				<div class="h-12 w-12 justify-self-start rounded-full bg-white p-3 hover:bg-gray-100 transition">
+				<div class="h-12 w-12 justify-self-start rounded-full bg-gray shadow-md p-3 transition">
 					<ArrowLeft />
 				</div>
 			</a>
 			<h1 class="text-center text-lg font-semibold">Gestione FAQ</h1>
-			<div class="h-12 w-12 justify-self-end rounded-full bg-white p-3 hover:bg-gray-100 transition">
-				<Ellipsis />
-			</div>
+			<ThemeToggle />
 		</nav>
 	</header>
 
@@ -113,13 +112,13 @@
 						type="text"
 						bind:value={$query}
 						placeholder="Cerca FAQ..."
-						class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white"
 					/>
 					<Search class="absolute left-3 top-2.5 w-5 h-5 text-gray-500" />
 				</div>
 				<button
 					on:click={() => showNewFAQ.set(true)}
-					class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-500 text-white transition duration-150 ease-in hover:bg-blue-600"
+                    class="flex items-center justify-center h-12 w-12 rounded-full item-primary transition duration-150 ease-in"
 				>
 					<Plus />
 				</button>

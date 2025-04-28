@@ -36,3 +36,13 @@ export interface UserCredentials {
 	email: string;
 	password: string;
 }
+
+export interface ImportMetaEnv {
+	readonly VITE_PRIMARY_COLOR: string;
+	readonly VITE_PRIMARY_HOVER_COLOR: string;
+	readonly VITE_PRIMARY_TEXT_COLOR: string;
+  }
+  
+export interface ImportMeta {
+	readonly env: ImportMetaEnv;
+  }

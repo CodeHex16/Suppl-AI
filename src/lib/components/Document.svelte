@@ -26,7 +26,7 @@
 
 	{#if open}
 		<div class="mt-4 border-t pt-4 text-sm text-gray-700">
-			<p class="text-sm text-gray-600">{document.author} • {document.creationDate}</p>
+			<p class="text-sm text-gray">{document.author} • {document.creationDate}</p>
 		</div>
 	{/if}
 </div>
