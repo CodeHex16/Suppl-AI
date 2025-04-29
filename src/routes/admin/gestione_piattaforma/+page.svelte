@@ -155,7 +155,7 @@
 						<span class="text-sm text-gray">{$primaryColor}</span>
 					</div>
 					<button
-						on:click={resetPrimaryColor}
+						onclick={resetPrimaryColor}
 						type="button"
 						class="rounded-lg py-2 px-4 item-primary"
 					>

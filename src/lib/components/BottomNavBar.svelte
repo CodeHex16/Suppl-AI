@@ -23,7 +23,7 @@
 	let isHome = $page.url.pathname === '/';
 </script>
 
-<footer class="flex justify-around bg-white pb-6 pt-2 shadow-md">
+<footer class="flex justify-around bg-white shadow-md pb-4 pt-2">
 	<a href="/" class="">
 		<div
 			class="flex flex-col items-center gap-1 rounded-full p-2 px-4 text-sm {!isHome &&
@@ -34,9 +34,11 @@
 		</div>
 	</a>
 	<div>
-		<button onclick={newChat} class="flex flex-col items-center gap-1">
-			<div class="absolute bottom-5 flex flex-col items-center justify-center text-center text-sm">
-				<div class="item-primary rounded-full p-5 transition duration-150 ease-in">
+		<button onclick={newChat} class="relative bottom-4 flex flex-col items-center gap-1">
+			<div class="flex flex-col items-center justify-center text-center text-sm">
+				<div
+					class="rounded-full item-primary p-5 transition duration-150 ease-in"
+				>
 					<MessageCirclePlus />
 				</div>
 				<p>Nuova chat</p>

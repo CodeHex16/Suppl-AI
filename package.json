@@ -12,7 +12,7 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
 		"test": "vitest --run",
-    "test:watch": "vitest --watch"
+		"test:watch": "vitest --watch"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.3",
@@ -38,9 +38,10 @@
 		"vite": "^6.0.0",
 		"vitest": "^3.1.1"
 	},
-		"dependencies": {
+	"dependencies": {
 		"@tailwindcss/forms": "^0.5.9",
 		"@tailwindcss/typography": "^0.5.15",
+		"jwt-decode": "^4.0.0",
 		"lucide-svelte": "^0.468.0",
 		"marked": "^15.0.7",
 		"mode-watcher": "^0.5.0"
