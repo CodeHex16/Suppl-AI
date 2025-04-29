@@ -78,7 +78,7 @@
 
 @layer components {
 	.item-primary {
-		@apply text-[var(--color-primary-text)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] transition;
+		@apply bg-[var(--color-primary)] text-[var(--color-primary-text)] transition hover:bg-[var(--color-primary-hover)];
 	}
 
 	.bg-primary {
@@ -146,8 +146,7 @@ html {
 	display: block;
 }
 
-
-.text-gray{
+.text-gray {
 	color: #333333;
 }
 
@@ -155,7 +154,7 @@ html {
 	color: white;
 }
 
-.dark input::placeholder{
+.dark input::placeholder {
 	color: white;
 }
 
@@ -169,16 +168,13 @@ html {
 	color: white;
 }
 
-.bg-gray{
+.bg-gray {
 	background-color: #eeeeee;
 	color: black;
 }
 
-a.bg-gray:hover{
-	background-color: #dadada;
-}
-
-button.bg-gray:hover{
+a.bg-gray:hover,
+button.bg-gray:hover {
 	background-color: #dadada;
 }
 
@@ -187,22 +183,16 @@ button.bg-gray:hover{
 	color: white;
 }
 
-.dark a.bg-gray:hover {
+.dark a.bg-gray:hover,
+.dark button.bg-gray:hover,
+.dark a:hover .bg-gray {
 	background-color: #5d5d5d;
 }
 
-.dark button.bg-gray:hover {
-	background-color: #5d5d5d;
-}
-
-a .bg-gray{
+a.bg-gray {
 	background-color: white;
 }
 
 a:hover .bg-gray {
 	background-color: #eeeeee;
-}
-
-.dark a:hover .bg-gray {
-	background-color: #5d5d5d;
 }

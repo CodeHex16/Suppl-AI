@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { MessageCircle } from 'lucide-svelte';
 	let { data } = $props();
-
-
 </script>
 
 {#if data.length === 0}

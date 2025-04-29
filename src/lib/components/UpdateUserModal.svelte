@@ -1,14 +1,13 @@
 <script lang="ts">
-    import { type Writable, writable, derived } from 'svelte/store';
 	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
 
     let { user } = $props();
 
 	let id = user.id;
-	let name = user.name;
-	let email = user.email;
-	let role = user.role;
+	let name = $state(user.name);
+	let email = $state(user.email);
+	let role = $state(user.role);
     let creationDate = user.creationDate;
 
 	function submitForm() {
@@ -41,8 +40,8 @@
 		</div>
 
 		<div class="flex justify-end space-x-2">
-			<button class="px-4 py-2 rounded-lg bg-gray transition duration-150 ease-in" on:click={() => dispatch('cancel')}>Annulla</button>
-			<button class="px-4 py-2 rounded-lg item-primary" on:click={submitForm}>Salva</button>
+			<button class="px-4 py-2 rounded-lg bg-gray transition duration-150 ease-in" onclick={() => dispatch('cancel')}>Annulla</button>
+			<button class="px-4 py-2 rounded-lg item-primary" onclick={submitForm}>Salva</button>
 		</div>
 	</div>
 </div>

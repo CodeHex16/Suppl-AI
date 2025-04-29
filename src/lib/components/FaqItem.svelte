@@ -16,7 +16,7 @@
 		<div>
 			<h3 class="text-lg font-semibold">{open ? faq.abbr : abbrQuestion}</h3>
 			<div class="flex space-x-4">
-				<button class="flex items-center text-yellow-500 hover:text-yellow-600 transition" on:click={() => dispatch('edit', faq)}>
+				<button class="flex items-center text-yellow-500 hover:text-yellow-600 transition" onclick={() => dispatch('edit', faq)}>
 					<PenIcon class="mr-1 h-4 w-4" />
 					<span>Modifica</span>
 				</button>
@@ -28,7 +28,7 @@
 		</div>
 		<button
 			class="text-gray-500 hover:text-gray-700 transition"
-			on:click={() => dispatch('toggle')}
+			onclick={() => dispatch('toggle')}
 		>
 			<ChevronDown class={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
 		</button>

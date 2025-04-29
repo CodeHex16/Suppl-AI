@@ -25,7 +25,7 @@
 					placeholder="Email"
 					value="test@test.it"
 					required
-					class="rounded-full border-none bg-gray-100 p-2 px-4"
+					class="rounded-full border-none bg-gray p-2 px-4"
 				/>
 				<label for="password">Password</label>
 				<input
@@ -35,13 +35,18 @@
 					placeholder="Password"
 					value="testtest"
 					required
-					class="rounded-full border-none bg-gray-100 px-4 py-2"
+					class="rounded-full border-none bg-gray px-4 py-2"
 				/>
 				<button
 					type="submit"
 					class="rounded-full border-none item-primary p-3 text-center font-bold"
 					>Accedi</button
 				>
+				<a href="/recupero-password" class="">
+					<div class="rounded-full border-none bg-gray p-3 px-4 text-center">
+						<p>Password dimenticata</p>
+					</div>
+				</a>
 			</div>
 		</form>
 	</div>

@@ -38,8 +38,8 @@
         </div>
 
 		<div class="flex justify-end space-x-2">
-			<button class="px-4 py-2 rounded-lg bg-gray transition duration-150 ease-in" on:click={() => dispatch('cancel')}>Annulla</button>
-			<button class="px-4 py-2 rounded-lg item-primary transition duration-150 ease-in" on:click={submitForm}>Salva</button>
+			<button class="px-4 py-2 rounded-lg bg-gray transition duration-150 ease-in" onclick={() => dispatch('cancel')}>Annulla</button>
+			<button class="px-4 py-2 rounded-lg item-primary transition duration-150 ease-in" onclick={submitForm}>Salva</button>
 		</div>
 	</div>
 </div>

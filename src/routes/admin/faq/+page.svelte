@@ -117,7 +117,7 @@
 					<Search class="absolute left-3 top-2.5 w-5 h-5 text-gray-500" />
 				</div>
 				<button
-					on:click={() => showNewFAQ.set(true)}
+					onclick={() => showNewFAQ.set(true)}
                     class="flex items-center justify-center h-12 w-12 rounded-full item-primary transition duration-150 ease-in"
 				>
 					<Plus />
