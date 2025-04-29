@@ -22,7 +22,7 @@
 	let isHome = $page.url.pathname === '/';
 </script>
 
-<footer class="flex justify-around bg-white shadow-md pb-6 pt-2">
+<footer class="flex justify-around bg-white shadow-md pb-4 pt-2">
 	<a href="/" class="">
 		<div
 			class="flex flex-col items-center gap-1 rounded-full p-2 px-4 text-sm {!isHome &&

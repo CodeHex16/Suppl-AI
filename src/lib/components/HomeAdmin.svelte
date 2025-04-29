@@ -17,7 +17,7 @@
 	</a>
 	<a href="/admin/faq" class="admin-btn">
 		<MessageCircleQuestion class="h-6 w-6" />
-		Gestione FAQ
+		FAQ
 	</a>
 </div>
 <div class="px-4 mt-4 mb-6">
