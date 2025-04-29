@@ -26,8 +26,8 @@
 	title="Cambia tema"
 >
 	{#if isDark}
-        <Moon class="text-blue-600" />
+        <Moon class="text-white" />
 	{:else}
-        <Sun class="text-yellow-500" />
+        <Sun class="text-black" />
 	{/if}
 </div>
