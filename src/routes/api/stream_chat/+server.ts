@@ -1,22 +1,25 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
+import { env } from '$env/dynamic/public';
+
+const LLM_URL = env.PUBLIC_LLM_URL;
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const requestData = await request.json();
+	console.log('Request data:', requestData);
 
 	if (!requestData) {
 		throw new Error('No request data');
 	}
 
-	console.log(requestData['messages']);
-	const chatResponse = await fetch('http://llm-api:8001', {
+	const chatResponse = await fetch(`http://${LLM_URL}/`, {
 		headers: {
 			Authorization: `Bearer ${cookies.get('token')}`,
 			'Content-Type': 'application/json'
 		},
 		method: 'POST',
 		body: JSON.stringify({
-			question: requestData['message'],
+			question: requestData['question'],
 			messages: requestData['messages']
 		})
 	});

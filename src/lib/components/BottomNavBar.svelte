@@ -4,20 +4,26 @@
 	import { goto } from '$app/navigation';
 	let { data } = $props();
 	import { page } from '$app/stores';
-		import { env } from '$env/dynamic/public';
+	import { env } from '$env/dynamic/public';
 
 	const DATABASE_URL = env.PUBLIC_DATABASE_URL;
 
-	async function newChat() {
-		const chat_id = await fetch('http://localhost:8000/chats', {
+	async function newChat(){
+		let ris = await fetch('/api/new_chat', {
 			method: 'POST',
 			headers: {
-				Authorization: 'Bearer ' + data.token
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({}),
+		})
+		if (ris.ok) {
+			let data = await ris.json();
+			if (data && data.chat_id) {
+				goto('/chat/' + data.chat_id);
 			}
-		}).then((res) => res.json());
-
-		await invalidate('app:chat'); // per rimuovere la cache, altrimenti la lista di chat non si aggiorna
-		await goto(`/chat/${chat_id.chat_id}`);
+		} else {
+			console.error('Error creating new chat:', ris.statusText);
+		}
 	}
 
 	let isHome = $page.url.pathname === '/';

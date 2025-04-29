@@ -26,9 +26,10 @@ async function updateChatNameIfNeeded(chat: any, token: string, chatId: string) 
 
         const title = await response.json();
         
+		console.log('Chat name:', title);
         // Salva nel database
         await fetch(`${API_URL}/chats/${chatId}/name?new_name=${title}`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`

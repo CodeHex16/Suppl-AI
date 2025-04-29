@@ -15,5 +15,5 @@
 		
 	</main>
 
-	<BottomNavBar />
+	<BottomNavBar {data}/>
 </div>

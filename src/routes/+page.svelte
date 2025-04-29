@@ -5,7 +5,6 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
 	let { data } = $props();
-
 	let isAdmin = $derived(data.userScopes.includes('admin') === true);
 </script>
 

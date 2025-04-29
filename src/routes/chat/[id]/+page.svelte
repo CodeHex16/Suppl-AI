@@ -7,15 +7,14 @@
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
-	$inspect(data);
-	
+
 	let waitingForResponse = $state(false);
 	let scrollToDiv: HTMLDivElement;
 	let answer = $state('');
+	$inspect(answer);
 	let abortController: AbortController | null = null;
 
 	let messages = $state(data.chat.messages);
-	// Store per il nome della chat, per renderizzare la UI in modo reattivo
 	let chatName = $state(data.chat.name);
 
 	function scrollToBottom() {
@@ -28,16 +27,17 @@
 		if (abortController) {
 			abortController.abort();
 		}
-
+		
 		abortController = new AbortController();
 		answer = '';
+		waitingForResponse = true;
 
 		try {
 			const response = await fetch('/api/stream_chat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ 
-					message: messageData, 
+				body: JSON.stringify({
+					question: messageData,
 					messages: messages
 				}),
 				signal: abortController.signal
@@ -59,12 +59,14 @@
 				for (const line of lines) {
 					if (line.startsWith('data: ')) {
 						try {
-							const data = JSON.parse(line.substring(6));
-
-							if (data.choices && data.choices[0].delta && data.choices[0].delta.content) {
-								answer += data.choices[0].delta.content;
-								scrollToBottom();
+							const data = line.substring(6);
+							console.log('data:', data);
+							if (data === '[DONE]') {
+								break;
 							}
+							answer += data;
+
+							//scrollToBottom();
 						} catch (err) {
 							console.error('Errore parsing SSE:', err);
 						}
@@ -83,13 +85,13 @@
 				},
 				body: JSON.stringify({
 					content: answer,
-					chat_id: data.chat_id,
+					chat_id: data.chat_id
 				})
 			});
 
-        	if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
-        	    await updateChatName();
-        	}
+			if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
+				await updateChatName();
+			}
 
 			answer = '';
 		} catch (err: any) {
@@ -104,7 +106,7 @@
 		const res = await fetch('/api/update_chat_name', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ 
+			body: JSON.stringify({
 				messages: messages,
 				chat_id: data.chat_id
 			})
@@ -112,7 +114,8 @@
 
 		const data_json = await res.json();
 		if (!data_json.error) {
-			chatName = data_json.title; 
+			chatName = data_json.title;
+			data.chat.name = data_json.title;
 		} else {
 			console.error('Errore aggiornamento nome chat:', data_json.error);
 		}
@@ -124,13 +127,13 @@
 </script>
 
 <div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">
-	<!-- Usa il valore reattivo del nome della chat -->
+	<p class="text-center text-2xl">{answer}</p>
 	<ChatNavBar {data} />
 	<div class="flex-grow overflow-y-auto">
 		<Messages
-			data={waitingForResponse
-				? [...messages, { sender: 'bot', content: answer, isLoading: true }]
-				: messages}
+			isStreaming={waitingForResponse}
+			streamingAnswer={waitingForResponse ? answer : ''}
+			messages={messages}
 		/>
 		<div bind:this={scrollToDiv}></div>
 	</div>
