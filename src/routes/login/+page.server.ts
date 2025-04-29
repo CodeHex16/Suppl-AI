@@ -1,8 +1,8 @@
 import type { Actions, ActionFailure } from '@sveltejs/kit';
 import { fail, redirect } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private'
+import { env } from '$env/dynamic/public'
 
-const API_URL = env.DATABASE_API_URL;
+const DATABASE_URL = env.PUBLIC_DATABASE_URL;
 
 export const load = async ({ cookies }) => {
 	const token = cookies.get('token');
@@ -25,7 +25,7 @@ export const actions: Actions = {
 
 		try {
 			// Chiamata API per autenticazione e ricezione JWT
-			const response = await fetch(`${API_URL}/auth/token`, {
+			const response = await fetch(`http://${DATABASE_URL}/auth/token`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded'

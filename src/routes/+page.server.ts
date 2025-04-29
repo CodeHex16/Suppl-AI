@@ -1,8 +1,8 @@
 // +page.ts
 import { redirect } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+import { env } from '$env/dynamic/public';
 
-const API_URL = env.DATABASE_API_URL;
+const DATABASE_URL = env.PUBLIC_DATABASE_URL;
 
 function decodeJwt(token: string): any {
 	try {
@@ -22,7 +22,7 @@ export const load = async (data) => {
 	let userScopes: string[] = [];
 
 	try {
-		const verify_token = await fetch(`${API_URL}/auth/verify?token=${token}`, {
+		const verify_token = await fetch(`http://${DATABASE_URL}/auth/verify?token=${token}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json'
@@ -40,7 +40,7 @@ export const load = async (data) => {
 		const decoded = decodeJwt(token);
 		userScopes = decoded?.scopes || [];
 
-		chats = fetch(API_URL + '/chats', {
+		chats = fetch(`http://${DATABASE_URL}/chats`, {
 			method: 'GET',
 			headers: {
 				Authorization: 'Bearer ' + token

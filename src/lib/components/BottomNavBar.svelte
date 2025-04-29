@@ -4,10 +4,12 @@
 	import { goto } from '$app/navigation';
 	let { data } = $props();
 	import { page } from '$app/stores';
-	import { PUBLIC_DATABASE_URL } from '$env/static/public';
+		import { env } from '$env/dynamic/public';
+
+	const DATABASE_URL = env.PUBLIC_DATABASE_URL;
 
 	async function newChat() {
-		const chat_id = await fetch('http://' + PUBLIC_DATABASE_URL + '/chats', {
+		const chat_id = await fetch('http://localhost:8000/chats', {
 			method: 'POST',
 			headers: {
 				Authorization: 'Bearer ' + data.token
