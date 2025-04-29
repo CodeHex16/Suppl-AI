@@ -1,5 +1,7 @@
 <script lang="ts">
 	let { content } = $props();
+	let time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+	let date = new Date().toLocaleDateString([], { year: 'numeric', month: '2-digit', day: '2-digit' });
 	import { marked } from 'marked';
 
 	function formatMessage(text: string) {
