@@ -33,8 +33,8 @@
 		</div>
 	</a>
 	<div>
-		<button onclick={newChat} class="flex flex-col items-center gap-1">
-			<div class="absolute bottom-5 flex flex-col items-center justify-center text-center text-sm">
+		<button onclick={newChat} class="relative bottom-4 flex flex-col items-center gap-1">
+			<div class="flex flex-col items-center justify-center text-center text-sm">
 				<div
 					class="rounded-full item-primary p-5 transition duration-150 ease-in"
 				>

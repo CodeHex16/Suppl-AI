@@ -9,7 +9,7 @@
 	let isAdmin = $derived(data.userScopes.includes('admin') === true);
 </script>
 
-<div class="grid-home mx-auto grid h-dvh max-w-xl">
+<div class="grid-home mx-auto grid h-lvh max-w-xl">
 	<header class="relative py-4">
 		<div class="absolute right-4 top-8">
 			<!-- Toggle in alto a destra -->
@@ -30,7 +30,7 @@
 		<div class="rounded-t-3xl bg-white shadow-md p-4">
 			<h2 class="mb-6 ml-2 mt-2 text-xl font-semibold">Cronologia Chat</h2>
 			<div
-				class="scroll-snap-y-container flex max-h-80 min-h-40 flex-col space-y-4 overflow-y-auto"
+				class="scroll-snap-y-container flex max-h-52 min-h-40 flex-col space-y-4 overflow-y-auto"
 			>
 				{#await data.chats}
 					<div role="status" class="m-auto">
