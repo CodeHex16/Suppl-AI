@@ -8,9 +8,9 @@ export const actions: Actions = {
     default: async ({ request }) => {
         const data = await request.formData();
 
-        const username = data.get('username')?.toString();
+        const email = data.get('email')?.toString();
 
-        if (!username || !username?.search("@")) {
+        if (!email || !email?.search("@")) {
             return fail(400, { error: "Inserisci un'email valida" });
         }
 

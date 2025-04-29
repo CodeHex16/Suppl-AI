@@ -4,11 +4,11 @@
 	import Messages from '$lib/components/Messages.svelte';
 	import { enhance } from '$app/forms';
 	import { invalidate } from '$app/navigation';
-	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { type Writable, writable, derived } from 'svelte/store';
 
 	let { data } = $props();
+	$inspect(data);
+	
 	let waitingForResponse = $state(false);
 	let scrollToDiv: HTMLDivElement;
 	let answer = $state('');
@@ -16,7 +16,7 @@
 
 	let messages = $state(data.chat.messages);
 	// Store per il nome della chat, per renderizzare la UI in modo reattivo
-	let chatName = writable(data.chat.name);
+	let chatName = $state(data.chat.name);
 
 	function scrollToBottom() {
 		setTimeout(function () {
@@ -83,7 +83,7 @@
 				},
 				body: JSON.stringify({
 					content: answer,
-					chat_id: $page.params.id
+					chat_id: data.chat_id,
 				})
 			});
 
@@ -106,16 +106,15 @@
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ 
 				messages: messages,
-				chat_id: $page.params.id 
+				chat_id: data.chat_id
 			})
 		});
 
-		const data = await res.json();
-		if (!data.error) {
-			// Aggiorna il nome della chat nel store reattivo
-			chatName.set(data.title);  // Aggiorna il nome della chat nel store
+		const data_json = await res.json();
+		if (!data_json.error) {
+			chatName = data_json.title; 
 		} else {
-			console.error('Errore aggiornamento nome chat:', data.error);
+			console.error('Errore aggiornamento nome chat:', data_json.error);
 		}
 	}
 
@@ -126,7 +125,7 @@
 
 <div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">
 	<!-- Usa il valore reattivo del nome della chat -->
-	<ChatNavBar data={$chatName} />
+	<ChatNavBar {data} />
 	<div class="flex-grow overflow-y-auto">
 		<Messages
 			data={waitingForResponse

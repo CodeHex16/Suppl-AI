@@ -11,8 +11,8 @@
 			<ArrowLeft />
 		</div>
 	</a>
-	<div class="h-12 w-fit justify-self-center rounded-full bg-gray p-3 px-6">
-		<h1 class="">{data}</h1>
+	<div class="h-12 w-fit justify-self-center rounded-full bg-gray p-3 px-6 transition">
+		<h1 class="">{data.chat.name}</h1>
 	</div>
-	<ThemeToggle />
+	<ThemeToggle {data} />
 </nav>

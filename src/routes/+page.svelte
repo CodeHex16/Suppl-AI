@@ -4,34 +4,34 @@
 	import HomeAdmin from '$lib/components/HomeAdmin.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
-	export let data: {
-		token: string;
-		chats: Promise<any>;
-		userScopes: string[];
-	};
+	let { data } = $props();
 
-	$: isAdmin = data.userScopes.includes('admin');
+	let isAdmin = $derived(data.userScopes.includes('admin') === true);
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
-	<header class="relative py-4"> <!-- Padding verticale invece di altezza fissa -->
-        <div class="absolute right-4 top-4"> <!-- Toggle in alto a destra -->
-            <ThemeToggle />
-        </div>
-        <div class="logo-wrapper flex h-full items-center justify-center pt-8"> <!-- Centratura con padding-top per compensare il toggle -->
-			<img src="./img/logo_light.png?v={Date.now()}" class="logo light-mode" alt="Logo Light" />
-			<img src="./img/logo_dark.png?v={Date.now()}" class="logo dark-mode" alt="Logo Dark" />        
+	<header class="relative py-4">
+		<div class="absolute right-4 top-8">
+			<!-- Toggle in alto a destra -->
+			<ThemeToggle {data} />
 		</div>
-    </header>
-	
+		<div class="logo-wrapper flex h-full items-center justify-center pt-8">
+			<!-- Centratura con padding-top per compensare il toggle -->
+			<img src="./img/logo_light.png?v={Date.now()}" class="logo light-mode" alt="Logo Light" />
+			<img src="./img/logo_dark.png?v={Date.now()}" class="logo dark-mode" alt="Logo Dark" />
+		</div>
+	</header>
+
 	<main class="">
 		{#if isAdmin}
-			<HomeAdmin/>
+			<HomeAdmin />
 		{/if}
 
 		<div class="rounded-t-3xl bg-white shadow-md p-4">
 			<h2 class="mb-6 ml-2 mt-2 text-xl font-semibold">Cronologia Chat</h2>
-			<div class="scroll-snap-y-container flex max-h-80 min-h-40 flex-col space-y-4 overflow-y-auto">
+			<div
+				class="scroll-snap-y-container flex max-h-80 min-h-40 flex-col space-y-4 overflow-y-auto"
+			>
 				{#await data.chats}
 					<div role="status" class="m-auto">
 						<svg
