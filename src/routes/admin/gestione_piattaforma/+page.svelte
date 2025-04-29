@@ -3,43 +3,46 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import BottomNavBar from '$lib/components/BottomNavBar.svelte';
 	import FileUpload from '$lib/components/FileUpload.svelte';
+	import HeaderPages from '$lib/components/HeaderPages.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { writable } from 'svelte/store';
 
 	let { data } = $props();
 
-	let cssColor = "#ffffff";
+	let cssColor = "#ffffff"; // Valore iniziale, verrà sovrascritto in onMount
 
-	const primaryColor = writable('#007BFF'); // default fallback
-	const chatRetention = writable('30');
-	const logoLightFile = writable<File | null>(null);
-	const logoLightName = writable('Nessun file selezionato');
-	const logoDarkFile = writable<File | null>(null);
-	const logoDarkName = writable('Nessun file selezionato');
-	const faviconFile = writable<File | null>(null);
-	const faviconName = writable('Nessun file selezionato');
+	let primaryColor = $state('#007BFF'); // default fallback
+	let chatRetention = $state('30');
+	let logoLightFile = $state<File | null>(null);
+	let logoLightName = $state('Nessun file selezionato');
+	let logoDarkFile = $state<File | null>(null);
+	let logoDarkName = $state('Nessun file selezionato');
+	let faviconFile = $state<File | null>(null);
+	let faviconName = $state('Nessun file selezionato');
 
 	onMount(() => {
-		cssColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
-		if (cssColor) {
-			primaryColor.set(cssColor);
+		const currentPrimary = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
+		if (currentPrimary) {
+			cssColor = currentPrimary; // Salva il colore CSS iniziale
+			primaryColor = currentPrimary; // Imposta lo stato iniziale
 		}
+		// Non chiamare setColors() qui, $effect lo farà automaticamente
 	});
 
 	function resetPrimaryColor() {
-		primaryColor.set(cssColor);
-		setColors();
+		primaryColor = cssColor; // Assegnazione diretta
+		// Non è necessario chiamare setColors() manualmente, $effect reagirà
 	}
 
 	$effect(() => {
+		// Questa funzione viene chiamata automaticamente quando primaryColor cambia
 		setColors();
 	});
 
 	function setColors(){
 		if (typeof document === 'undefined') return;
 
-		const color = $primaryColor;
+		const color = primaryColor; // Accesso diretto
 		const textColor = getContrastColor(color);
 		const hoverColor = darken(color, 10);
 
@@ -68,12 +71,12 @@
 
 
 	async function handleSubmit() {
-		console.log('Colore primario:', $primaryColor);
-		console.log('Durata chat:', $chatRetention);
+		console.log('Colore primario:', primaryColor); // Accesso diretto
+		console.log('Durata chat:', chatRetention); // Accesso diretto
 
-		if ($logoLightFile) await uploadFile($logoLightFile, 'logo_light.png');
-		if ($logoDarkFile) await uploadFile($logoDarkFile, 'logo_dark.png');
-		if ($faviconFile) await uploadFile($faviconFile, 'favicon.png');
+		if (logoLightFile) await uploadFile(logoLightFile, 'logo_light.png'); // Accesso diretto
+		if (logoDarkFile) await uploadFile(logoDarkFile, 'logo_dark.png'); // Accesso diretto
+		if (faviconFile) await uploadFile(faviconFile, 'favicon.png'); // Accesso diretto
 
 
 		const resColor = await fetch('/api/update_colors', {
@@ -82,9 +85,9 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				COLOR_PRIMARY: $primaryColor,
-				COLOR_PRIMARY_TEXT: getContrastColor($primaryColor),
-				COLOR_PRIMARY_HOVER: darken($primaryColor, 10)
+				COLOR_PRIMARY: primaryColor, // Accesso diretto
+				COLOR_PRIMARY_TEXT: getContrastColor(primaryColor), // Accesso diretto
+				COLOR_PRIMARY_HOVER: darken(primaryColor, 10) // Accesso diretto
 			})
 		});
 
@@ -125,20 +128,10 @@
 
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
-	<header class="mt-4">
-		<nav class="grid grid-cols-3 items-center px-4">
-			<a href="/">
-				<div class="h-12 w-12 justify-self-start rounded-full bg-gray shadow-md p-3 transition">
-					<ArrowLeft />
-				</div>
-			</a>
-			<h1 class="text-center text-lg font-semibold">Gestione piattaforma</h1>
-			<ThemeToggle />
-		</nav>
-	</header>
+	<HeaderPages {data} title="Gestione piattaforma" />
 
 	<main class="flex flex-col pt-2 flex-grow">
-		<form on:submit|preventDefault={handleSubmit}>
+		<form onsubmit={handleSubmit}>
 
 			<!-- Colore primario -->
 			<div class="mb-4 rounded-xl bg-white shadow-md p-4 transition">
@@ -149,10 +142,10 @@
 					<div class="flex items-center gap-4">
 						<input
 							type="color"
-							bind:value={$primaryColor}
+							bind:value={primaryColor} 
 							class="w-12 h-12 cursor-pointer"
 						/>
-						<span class="text-sm text-gray">{$primaryColor}</span>
+						<span class="text-sm text-gray">{primaryColor}</span>
 					</div>
 					<button
 						onclick={resetPrimaryColor}
@@ -164,25 +157,25 @@
 				</div>
 			</div>
 
-
+			<!-- Passa le variabili $state direttamente -->
 			<FileUpload
 				label="Logo della WebApp"
 				contextLabel="Light Mode"
-				fileStore={logoLightFile}
-				nameStore={logoLightName}
+				bind:file={logoLightFile}
+				bind:name={logoLightName}
 			/>
 
 			<FileUpload
 				label="Logo della WebApp"
 				contextLabel="Dark Mode"
-				fileStore={logoDarkFile}
-				nameStore={logoDarkName}
+				bind:file={logoDarkFile}
+				bind:name={logoDarkName}
 			/>
 
 			<FileUpload
 				label="Favicon della WebApp"
-				fileStore={faviconFile}
-				nameStore={faviconName}
+				bind:file={faviconFile}
+				bind:name={faviconName}
 			/>
 
 
@@ -190,7 +183,7 @@
 			<div class="mb-4 rounded-xl bg-white shadow-md p-4 transition">
 				<label class="block mb-2 font-medium text-sm">Durata salvataggio chat</label>
 				<select
-					bind:value={$chatRetention}
+					bind:value={chatRetention}
 					class="w-full rounded-lg border border-gray-300 bg-white p-2 focus:outline-none"
 				>
 					<option value="30">30 giorni</option>

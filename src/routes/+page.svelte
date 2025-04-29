@@ -15,8 +15,7 @@
 			<!-- Toggle in alto a destra -->
 			<ThemeToggle {data} />
 		</div>
-		<div class="logo-wrapper flex h-full items-center justify-center pt-8">
-			<!-- Centratura con padding-top per compensare il toggle -->
+		<div class="logo-wrapper flex h-full items-center justify-center pt-8 w-4/6 mx-auto">
 			<img src="./img/logo_light.png?v={Date.now()}" class="logo light-mode" alt="Logo Light" />
 			<img src="./img/logo_dark.png?v={Date.now()}" class="logo dark-mode" alt="Logo Dark" />
 		</div>
