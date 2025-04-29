@@ -8,38 +8,38 @@ const LLM_URL = 'http://llm-api:8001';
 
 
 async function updateChatNameIfNeeded(chat: any, token: string, chatId: string) {
-    if(chat.messages.length > 2 && chat.name == 'Chat senza nome') {
-        let chat_context = chat.messages.map((message: Message) => message.content).join(' ');
+	if (chat.messages.length > 2 && chat.name == 'Chat senza nome') {
+		let chat_context = chat.messages.map((message: Message) => message.content).join(' ');
 
-        const response = await fetch(`${LLM_URL}/chat_name`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                context: chat_context
-            })
-        });
+		const response = await fetch(`${LLM_URL}/chat_name`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			},
+			body: JSON.stringify({
+				context: chat_context
+			})
+		});
 
-        if (!response.ok) return { error: response.status };
+		if (!response.ok) return { error: response.status };
 
-        const title = await response.json();
-        
-        // Salva nel database
-        await fetch(`${API_URL}/chats/${chatId}/name?new_name=${title}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            }
-        });
+		const title = await response.json();
 
-        // Aggiorna l'oggetto chat locale
-        chat.name = title;
-    }
-    
-    return { chat };
+		// Salva nel database
+		await fetch(`${API_URL}/chats/${chatId}/name?new_name=${title}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			}
+		});
+
+		// Aggiorna l'oggetto chat locale
+		chat.name = title;
+	}
+
+	return { chat };
 }
 
 export const load = async (data) => {
@@ -61,7 +61,7 @@ export const load = async (data) => {
 	}
 
 	const result = await updateChatNameIfNeeded(chat, data.cookies.get('token') ?? '', data.params.id);
-    if (result.error) return fail(result.error, { error: 'Failed to generate chat name' });
+	if (result.error) return fail(result.error, { error: 'Failed to generate chat name' });
 
 	return {
 		chat: chat,
@@ -75,6 +75,8 @@ export const actions = {
 		if (!req.get('message')) return;
 
 		const content = req.get('message')?.toString();
+		//const date = new Date();
+		//console.log(date, date.toISOString());
 
 		try {
 			const response = await fetch(`${API_URL}/chats/${event.params.id}/messages`, {
@@ -84,7 +86,7 @@ export const actions = {
 					Authorization: `Bearer ${event.cookies.get('token')}`
 				},
 				body: JSON.stringify({
-					content: content
+					content: content,
 				})
 			});
 

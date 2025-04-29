@@ -1,11 +1,7 @@
 <script>
-	let { content } = $props();
-	let time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-	let date = new Date().toLocaleDateString([], {
-		year: 'numeric',
-		month: '2-digit',
-		day: '2-digit'
-	});
+	let { content, timestamp} = $props();
+	console.log('content: ', content);
+	console.log('date: ', timestamp);
 </script>
 
 <div class="items-stretch">
@@ -15,6 +11,10 @@
 		</div>
 	</div>
 	<div class="mr-1 flex items-stretch justify-end text-xs text-gray-500">
-		<p class="mt-1">{date} - {time}</p>
+		{#if !timestamp}
+		<p class="mt-1">Data non definita</p>
+		{:else}
+		<p class="mt-1">{timestamp}</p>
+		{/if}
 	</div>
 </div>
