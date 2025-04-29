@@ -42,6 +42,11 @@
 					class="rounded-full border-none item-primary p-3 text-center font-bold"
 					>Accedi</button
 				>
+				<a href="/recupero-password" class="">
+					<div class="rounded-full border-none bg-gray-100 p-3 px-4 text-center">
+						<p>Password dimenticata</p>
+					</div>
+				</a>
 			</div>
 		</form>
 	</div>
