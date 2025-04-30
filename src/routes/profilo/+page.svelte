@@ -8,7 +8,7 @@
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
 	<header class="relative py-4">
-		<div class="absolute right-4 top-8">
+		<div class="absolute right-0 top-8">
 			<!-- Toggle in alto a destra -->
 			<ThemeToggle {data} />
 		</div>
