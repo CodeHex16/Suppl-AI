@@ -68,5 +68,35 @@ export const actions: Actions = {
 			sameSite: 'lax'
 		});
 		return { success: true, theme: newTheme };
+	},
+
+	deleteChat: async (event) => {
+		const req = await event.request.formData();
+		console.log('deleteChat', req);
+		if(!req.get('chat_id')) {
+			console.error('chat_id non trovato');
+			return { success: false };
+		}
+		const chat_id = req.get('chat_id')?.toString();
+		const token = event.cookies.get('token');
+
+		const response = await fetch(`http://${DATABASE_URL}/chats/${chat_id}`, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: 'Bearer ' + token
+			},
+		});
+
+
+		if (!response.ok) {
+			console.error('Errore durante la cancellazione della chat:', response.statusText);
+			return { success: false };
+		}
+		return {
+			success: true,
+			message: 'Chat eliminata con successo',
+			chat_id: chat_id,
+		}			
 	}
 };

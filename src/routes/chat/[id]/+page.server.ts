@@ -98,6 +98,8 @@ export const actions = {
 		} catch (error) {
 			return fail(500, { error: 'Failed to send message' });
 		}
-	}
+	},
+
+	
 } satisfies Actions;
 

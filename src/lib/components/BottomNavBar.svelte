@@ -10,11 +10,10 @@
 
 	async function newChat(){
 		let ris = await fetch('/api/new_chat', {
-			method: 'POST',
+			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({}),
 		})
 		if (ris.ok) {
 			let data = await ris.json();

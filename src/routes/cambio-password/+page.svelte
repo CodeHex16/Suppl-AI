@@ -8,12 +8,13 @@
 		<h1 class="py-4 text-center text-2xl font-extrabold">Cambio password</h1>
 		<form method="POST" use:enhance>
 			{#if $page.form?.success}
+			<!-- TODO: TOGLIERE STILE INLINE -->
 				<p style="color:green; justify; text-justify: inter-word;">
 					La password è stata cambiata con successo. Puoi accedere con la nuova password.
 				</p>
 				<a href="../">
 					<div
-						class="rounded-full border-none bg-blue-500 p-3 text-center font-bold text-white hover:bg-blue-600"
+						class="rounded-full border-none item-primary p-3 text-center font-bold"
 					>
 						<p>Vai alla homepage</p>
 					</div>

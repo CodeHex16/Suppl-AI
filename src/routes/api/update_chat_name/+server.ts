@@ -35,7 +35,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	console.log("title api", title);
 
 	// Salva nel database
-	const response2 = await fetch(`http://${LLM_URL}/chats/${requestData['chat_id']}/name?new_name=${title}`, {
+	const response2 = await fetch(`http://${DATABASE_URL}/chats/${requestData['chat_id']}/name?new_name=${title}`, {
 		method: 'PATCH',
 		headers: {
 			Authorization: `Bearer ${cookies.get('token')}`,

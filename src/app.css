@@ -169,6 +169,11 @@ html {
 }
 
 .bg-gray {
+	background-color: #f7f7f7;
+	color: black;
+}
+
+a.bg-gray{
 	background-color: #eeeeee;
 	color: black;
 }
@@ -187,10 +192,6 @@ button.bg-gray:hover {
 .dark button.bg-gray:hover,
 .dark a:hover .bg-gray {
 	background-color: #5d5d5d;
-}
-
-a.bg-gray {
-	background-color: white;
 }
 
 a:hover .bg-gray {

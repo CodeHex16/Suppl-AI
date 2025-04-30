@@ -37,6 +37,10 @@
 					required
 					class="rounded-full border-none bg-gray px-4 py-2"
 				/>
+				<div>
+					<input type="checkbox" id="remember_me" name="remember_me" class="rounded-full bg-gray p-3 mr-2 border-none" />
+					<label for="remember_me" class="text-sm">Ricordami</label> 
+				</div>
 				<button
 					type="submit"
 					class="rounded-full border-none item-primary p-3 text-center font-bold"

@@ -1,6 +1,15 @@
 <script lang="ts">
-	import { MessageCircle } from 'lucide-svelte';
+	import { MessageCircle, Trash } from 'lucide-svelte';
 	let { data } = $props();
+
+	function parseDate(date: string) {
+		const dateObj = new Date(date);
+		return dateObj.toLocaleString('it-IT', {
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit'
+		});
+	}
 </script>
 
 {#if data.length === 0}
@@ -9,11 +18,25 @@
 
 <!-- TODO: fix this cycle -->
 {#each data as chat}
-	<a
-		href="/chat/{chat.id}"
-		class="flex gap-3 rounded-xl bg-gray p-4 transition duration-150 ease-in"
-	>
-		<MessageCircle />
-		{chat.name}
-	</a>
+	<div class="bg-gray rounded-xl flex items-center justify-between">
+		<a
+			href="/chat/{chat.id}"
+			class="flex items-center gap-3  p-4 transition duration-150 ease-in"
+		>
+			<MessageCircle />
+			<div class="grid items-center">
+				{chat.name}
+				<p class="text-sm opacity-60">{parseDate(chat.created_at)}</p>
+			</div>
+		</a>
+		<form method="POST" action="/?/deleteChat" class="ml-auto">
+			<input type="hidden" name="chat_id" value={chat.id} />
+			<button
+				type="submit"
+				class="rounded-full p-4 transition duration-150 ease-in hover:text-red-500"
+			>
+				<Trash class="h-6 w-6" />
+			</button>
+		</form>
+	</div>
 {/each}

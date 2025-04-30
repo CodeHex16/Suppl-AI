@@ -1,8 +1,8 @@
 import type { Actions, ActionFailure } from '@sveltejs/kit';
 import { fail, redirect } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+import { env } from '$env/dynamic/public';
 
-const API_URL = env.DATABASE_API_URL;
+const DATABASE_URL = env.PUBLIC_DATABASE_URL;
 
 //Questa pagina viene usata sia per il recupero password che per il primo cambio password
 export const load = async ({ cookies }) => {
@@ -36,16 +36,16 @@ export const actions: Actions = {
 			}
 
 			const payload = JSON.stringify({
-				//email: jwtDecode(token).sub,
                 password: password,
                 current_password: currentPassword
 			});
 
 			// console.log('payload: ', payload);
-			const response = await fetch(`${API_URL}/user/passw`, {
+			const response = await fetch(`http://${DATABASE_URL}/users/password`, {
 				method: 'PATCH',
 				headers: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
 				},
 				body: payload
 			});
