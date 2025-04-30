@@ -38,7 +38,7 @@
 						placeholder="Password123!"
 						value=""
 						required
-						class="rounded-full border-none bg-gray-100 p-2 px-4"
+						class="rounded-full border-none bg-gray p-2 px-4"
 					/>
 					<label for="password">Nuova password</label>
 					<input
@@ -48,7 +48,7 @@
 						placeholder="pASSWORD321!"
 						value=""
 						required
-						class="rounded-full border-none bg-gray-100 p-2 px-4"
+						class="rounded-full border-none bg-gray p-2 px-4"
 					/>
 					<label for="passwordConfirm">Conferma password</label>
 					<input
@@ -58,11 +58,11 @@
 						placeholder="pASSWORD321!"
 						value=""
 						required
-						class="rounded-full border-none bg-gray-100 p-2 px-4"
+						class="rounded-full border-none bg-gray p-2 px-4"
 					/>
 					<button
 						type="submit"
-						class="rounded-full border-none bg-blue-500 p-3 text-center font-bold text-white hover:bg-blue-600"
+						class="rounded-full border-none item-primary p-3 text-center font-bold text-white hover:bg-blue-600"
 						>Cambia password</button
 					>
 				</div>

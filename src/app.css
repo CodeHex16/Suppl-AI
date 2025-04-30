@@ -78,7 +78,7 @@
 
 @layer components {
 	.item-primary {
-		@apply bg-[var(--color-primary)] text-[var(--color-primary-text)] transition hover:bg-[var(--color-primary-hover)];
+		@apply bg-[var(--color-primary)] text-[var(--color-primary-text)] transition-all ease-in hover:bg-[var(--color-primary-hover)];
 	}
 
 	.bg-primary {

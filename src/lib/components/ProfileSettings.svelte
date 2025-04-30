@@ -12,7 +12,7 @@
 		</button>
 	</form>
 	<form action="/logout" method="GET">
-		<button type="submit" class="mt-4 w-full rounded-full bg-red-500 p-2 text-white">
+		<button type="submit" class="w-full rounded-full bg-red-500 hover:bg-red-600 transition-all ease-in p-2 text-white">
 			Esci dall'account
 		</button>
 	</form>
