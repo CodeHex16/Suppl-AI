@@ -4,6 +4,7 @@
 	import Messages from '$lib/components/Messages.svelte';
 	import { enhance } from '$app/forms';
 	import { invalidate } from '$app/navigation';
+	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
@@ -11,7 +12,6 @@
 	let waitingForResponse = $state(false);
 	let scrollToDiv: HTMLDivElement;
 	let answer = $state('');
-	$inspect(answer);
 	let abortController: AbortController | null = null;
 
 	let messages = $state(data.chat.messages);
@@ -30,7 +30,6 @@
 		
 		abortController = new AbortController();
 		answer = '';
-		waitingForResponse = true;
 
 		try {
 			const response = await fetch('/api/stream_chat', {
@@ -60,13 +59,10 @@
 					if (line.startsWith('data: ')) {
 						try {
 							const data = line.substring(6);
-							console.log('data:', data);
-							if (data === '[DONE]') {
-								break;
+							if (data !== '[DONE]') {
+								answer += data;
+								scrollToBottom();
 							}
-							answer += data;
-
-							//scrollToBottom();
 						} catch (err) {
 							console.error('Errore parsing SSE:', err);
 						}
@@ -85,7 +81,7 @@
 				},
 				body: JSON.stringify({
 					content: answer,
-					chat_id: data.chat_id
+					chat_id: $page.params.id
 				})
 			});
 
@@ -127,13 +123,12 @@
 </script>
 
 <div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">
-	<p class="text-center text-2xl">{answer}</p>
 	<ChatNavBar {data} />
 	<div class="flex-grow overflow-y-auto">
 		<Messages
-			isStreaming={waitingForResponse}
-			streamingAnswer={waitingForResponse ? answer : ''}
-			messages={messages}
+			data={waitingForResponse
+				? [...messages, { sender: 'bot', content: answer, isLoading: true }]
+				: messages}
 		/>
 		<div bind:this={scrollToDiv}></div>
 	</div>

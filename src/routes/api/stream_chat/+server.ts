@@ -6,13 +6,12 @@ const LLM_URL = env.PUBLIC_LLM_URL;
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const requestData = await request.json();
-	console.log('Request data:', requestData);
 
 	if (!requestData) {
 		throw new Error('No request data');
 	}
 
-	const chatResponse = await fetch(`http://${LLM_URL}/`, {
+	const chatResponse = await fetch(`http://${LLM_URL}`, {
 		headers: {
 			Authorization: `Bearer ${cookies.get('token')}`,
 			'Content-Type': 'application/json'
@@ -26,7 +25,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
 	if (!chatResponse.ok) {
 		const err = await chatResponse.json();
-		throw new Error(err);
+		throw new Error(err.error.message);
 	}
 
 	return chatResponse;

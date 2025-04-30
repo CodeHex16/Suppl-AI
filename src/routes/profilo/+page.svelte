@@ -4,7 +4,6 @@
 	import ProfileSettings from '$lib/components/ProfileSettings.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	let { data } = $props();
-	$inspect(data);
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
