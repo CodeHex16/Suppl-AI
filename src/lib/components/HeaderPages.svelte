@@ -5,7 +5,7 @@
 	let {data, title} = $props();
 </script>
 
-<header class="mt-4">
+<header class="mx-4">
 	<nav class="grid-chat-nav grid  my-4">
 		<a href="/">
 			<div class="h-12 w-12 justify-self-start rounded-full bg-gray shadow-md p-3 transition">

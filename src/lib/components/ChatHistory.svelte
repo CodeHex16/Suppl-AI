@@ -23,7 +23,7 @@
 			href="/chat/{chat.id}"
 			class="flex items-center gap-3  p-4 transition duration-150 ease-in"
 		>
-			<MessageCircle />
+			<!-- <MessageCircle /> -->
 			<div class="grid items-center">
 				{chat.name}
 				<p class="text-sm opacity-60">{parseDate(chat.created_at)}</p>

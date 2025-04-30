@@ -1,29 +1,25 @@
 import type { User } from '$lib/types';
+import { env } from '$env/dynamic/public';
+
+const DATABASE_URL = env.PUBLIC_DATABASE_URL;
 
 export const load = async (data) => {
-    const users: User[] = [
-		{
-			id: 1,
-			name: 'Mario Rossi',
-			role: 'Admin',
-			creationDate: '2025-03-15',
-			email: 'mario.rossi@gmail.com'
-		},
-		{
-			id: 2,
-			name: 'Luca Bianchi',
-			role: 'User',
-			creationDate: '2025-01-12',
-			email: 'luca.bianchi@gmail.com'
-		},
-		{
-			id: 3,
-			name: 'Giulia Verdi',
-			role: 'User',
-			creationDate: '2025-02-20',
-			email: 'giulia.verdi@gmail.com'
+    const response = await fetch(`http://${DATABASE_URL}/users`, {
+		method: 'GET',
+		headers: {
+			Authorization: 'Bearer ' + data.cookies.get('token')
 		}
-	];
+	});
+    const ris = await response.json();
+	console.log('ris', ris);
+	
+    const users: User[] = ris.map((user: any) => {
+		return {
+			email: user._id,
+			name: user.name,
+			role: user.scopes[0],
+		}	
+	});
 
 
     return {
