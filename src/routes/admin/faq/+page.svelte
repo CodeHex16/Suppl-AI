@@ -5,98 +5,88 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import Faq from '$lib/components/NewFAQModal.svelte';
 	import UpdateFaq from'$lib/components/UpdateFAQModal.svelte';
-	import { writable, derived } from 'svelte/store';
+	import HeaderPages from '$lib/components/HeaderPages.svelte';
 
 	let { data } = $props();
-    const faqs = writable(data.faqs ?? []);
-	const showNewFAQ = writable(false);
+    let faqs = $state(data.faqs ?? []);
+	let showNewFAQ = $state(false);
 
-	const showUpdateFAQ = writable(false);
-	const editingFAQ = writable<any>(null);
+	let showUpdateFAQ = $state(false);
+	let editingFAQ = $state<any>(null);
 
-	const query = writable('');
-	const selectedFaq = writable<number | null>(null);
+	let query = $state('');
+	let selectedFaq = $state<number | null>(null);
 
 	function toggleFaq(id: number) {
-		selectedFaq.update((current) => (current === id ? null : id));
+		selectedFaq = selectedFaq === id ? null : id;
 		console.log(selectedFaq)
 	}
 
-	const filteredFaq = derived([query], ([$query]) => {
-		if (!data?.faqs) return [];
-		return data.faqs.filter((doc) =>
-			doc.question.toLowerCase().includes($query.toLowerCase()) ||
-			doc.abbr.toLowerCase().includes($query.toLowerCase()) ||
-			doc.author.toLowerCase().includes($query.toLowerCase())
-		);
-	});
+	const filteredFaq = $derived(
+		faqs.filter((f) => 
+            f.question.toLowerCase().includes(query.toLowerCase())||
+			f.title.toLowerCase().includes(query.toLowerCase())||
+			f.author.toLowerCase().includes(query.toLowerCase())||
+			f.answer.toLowerCase().includes(query.toLowerCase())
+		)
+	)
 
 	function newFAQ(faq: any) {
 		console.log('Nuova FAQ aggiunta:', faqs); // 👈 Log della nuova FAQ
-		faqs.update(prev => [...prev, {id: Date.now(), ...faq}]);
-		showNewFAQ.set(false);
+		faqs = [...faqs, {id: Date.now(), ...faq }];
+		showNewFAQ = false;
 	}
 
 	function updateFAQ(faq: any) {
-		console.log('Faq aggiornata (input):', faqs); // 👈 Log prima dell'update
+		console.log('Faq aggiornata (input):', faq); // 👈 Log prima dell'update
 
-		faqs.update((list) => {
-			const updatedList = list.map((u) => (u.id === faq.id ? { ...u, ...faqs } : u));
-			console.log('Lista faq aggiornata:', updatedList); // 👈 Log della lista aggiornata
-			return updatedList;
-		});
+		faqs = faqs.map((u) => (u.id === faq.id ? { ...u, ...faq } : u));
+		console.log('Lista faq aggiornata:', faqs); // 👈 Log della lista aggiornata
 
-		// Log finale dello store faqs (assicurati che venga aggiornato)
-		faqs.subscribe((val) => {
-			console.log('Valore attuale dello store `faq`:', val);
-		})();
+		// Log finale dello store `users` (assicurati che venga aggiornato)
+		console.log('Valore attuale dello stato `faq`:', faqs);
 
-		showUpdateFAQ.set(false);
-		editingFAQ.set(null);
+		showUpdateFAQ = false;
+		editingFAQ = null;
 	}
 
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
-	<header class="mt-4">
-		<nav class="grid grid-cols-3 items-center px-4">
-			<a href="/">
-				<div class="h-12 w-12 justify-self-start rounded-full bg-gray shadow-md p-3 transition">
-					<ArrowLeft />
-				</div>
-			</a>
-			<h1 class="text-center text-lg font-semibold">Gestione FAQ</h1>
-			<ThemeToggle />
-		</nav>
-	</header>
+	<HeaderPages {data} title="Gestione FAQ" />
 
-	{#if $showNewFAQ}
+	{#if showNewFAQ}
 		<Faq
-			on:submitUser={(e) => newFAQ(e.detail)}
-			on:cancel={() => showNewFAQ.set(false)}
+			on:submitFaq={(e) => newFAQ(e.detail)}
+			on:cancel={() => showNewFAQ = false}
 		/>
 	{/if}
-	{#if $showUpdateFAQ}
-	    <UpdateFaq
-		    faq={$editingFAQ}
-		    on:submitFaq={(e) => updateFAQ(e.detail)}
-		    on:cancel={() => {
-			    showUpdateFAQ.set(false);
-			    editingFAQ.set(null);
-		    }}
-	    />
-    {/if}
-	<main class="flex flex-col pt-2 flex-grow overflow-y-auto">
+
+	{#if showUpdateFAQ}
+	<UpdateFaq
+		faq = {editingFAQ}
+		on:submitFaq={(e) => updateFAQ(e.detail)}
+		on:cancel={() => {
+			showUpdateFAQ = false;
+			editingFAQ = null;
+		}}
+	/>
+{/if}
+
+
+<main class="flex flex-col pt-2 flex-grow">
+	<!-- Barra di ricerca e pulsante per nuova faq -->
+
 		<!-- Lista FAQ -->
-		{#if $filteredFaq.length > 0}
-			{#each $filteredFaq as faq (faq.id)}
+		{#if filteredFaq.length > 0}
+			{#each filteredFaq as faq (faq.id)}
 				<FaqItem
 					{faq}
-					open={$selectedFaq === faq.id}
+					open={selectedFaq === faq.id}
 					on:toggle={() => toggleFaq(faq.id)}
 					on:edit={(e) => {
-						editingFAQ.set(e.detail);
-						showUpdateFAQ.set(true);
+						editingFAQ = e.detail;
+						showUpdateFAQ = true;
 					}}
 				/>
 			{/each}
@@ -110,14 +100,14 @@
 				<div class="relative flex-grow mr-4">
 					<input
 						type="text"
-						bind:value={$query}
+						bind:value={query}
 						placeholder="Cerca FAQ..."
                         class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white"
 					/>
 					<Search class="absolute left-3 top-2.5 w-5 h-5 text-gray-500" />
 				</div>
 				<button
-					onclick={() => showNewFAQ.set(true)}
+					onclick={() => showNewFAQ= true}
                     class="flex items-center justify-center h-12 w-12 rounded-full item-primary transition duration-150 ease-in"
 				>
 					<Plus />

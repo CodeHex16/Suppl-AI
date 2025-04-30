@@ -24,7 +24,8 @@ export interface Faq {
 	author: string;
 	creationDate: string;
 	question: string;
-	abbr: string;
+	title: string;
+	answer: string;
 }
 
 export interface MessageContext {
