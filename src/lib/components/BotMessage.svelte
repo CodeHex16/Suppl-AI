@@ -11,13 +11,13 @@
 	let like = false;
 	let dislike = false;
 
-	async function toggleThumbsUp() {
+	function toggleThumbsUp() {
 		like = !like;
 		dislike = false;
 		console.log('like: ', like);
 	}
 
-	async function toggleThumbsDown() {
+	function toggleThumbsDown() {
 		dislike = !dislike;
 		like = false;
 		console.log('dislike: ', dislike);
@@ -40,51 +40,29 @@
 			{/if}
 			<div class="ml-8 mt-1 flex flex-row-reverse">
 				<button
-					class="ml-2 mr-2 h-10 w-10 bg-gray-100 p-2 hover:bg-gray-200"
-					on:click={toggleThumbsUp}
+					class="ml-2 mr-2 rounded-full h-10 w-10 p-2 hover:bg-gray-200"
+					onclick={toggleThumbsUp}
 					aria-label="Like"
-					title="Mi piace"
+					title="Risposta utile"
 				>
 					{#if like}
-						<div class="item-primary">
-							<ThumbsUp />
-						</div>
+						<ThumbsUp class="item-primary"/>
 					{:else}
-						<div class="bg-gray-100 text-gray-500">
-							<ThumbsUp />
-						</div>
+						<ThumbsUp class="bg-inherit text-gray-500"/>
 					{/if}
 				</button>
 				<button
-					class="ml-2 mr-2 h-10 w-10 bg-gray-100 p-2 hover:bg-gray-200"
-					on:click={toggleThumbsDown}
+					class="ml-2 mr-2 rounded-full h-10 w-10 p-2 hover:bg-gray-200"
+					onclick={toggleThumbsDown}
 					aria-label="Dislike"
-					title="Non mi piace"
+					title="Risposta non utile"
 				>
 					{#if dislike}
-						<div class="item-primary">
-							<ThumbsDown />
-						</div>
+						<ThumbsDown class="item-primary"/>
 					{:else}
-						<div class="bg-gray-100 text-gray-500">
-							<ThumbsDown />
-						</div>
+						<ThumbsDown class="bg-inherit text-gray-500"/>
 					{/if}
 				</button>
-				<!--
-				<input id="thumbUp" type="radio" name="thumbUp" value="1" class="peer hidden" />
-				<label
-					for="1"
-					class="ml-2 mr-2 block h-10 w-10 cursor-pointer select-none rounded-full bg-gray-100 p-2 hover:bg-gray-200 peer-checked:bg-green-700"
-				>
-					<ThumbsUp /></label
-				>
-				<input id="thumbDown" type="radio" name="thumbDown" value="2" class="peer hidden" />
-				<label
-					for="2"
-					class="ml-2 mr-2 block h-10 w-10 cursor-pointer select-none rounded-full bg-gray-100 p-2 hover:bg-gray-200 peer-checked:bg-red-700"
-					><ThumbsDown /></label
-				>-->
 			</div>
 		</div>
 	</div>

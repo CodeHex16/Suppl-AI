@@ -2,6 +2,7 @@
 	import ChatNavBar from '$lib/components/ChatNavBar.svelte';
 	import SendMessage from '$lib/components/SendMessage.svelte';
 	import Messages from '$lib/components/Messages.svelte';
+	import DeleteChatModal from '$lib/components/DeleteChatModal.svelte';
 	import { enhance } from '$app/forms';
 	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -17,6 +18,8 @@
 	let messages = $state(data.chat.messages);
 	// Store per il nome della chat, per renderizzare la UI in modo reattivo
 	let chatName = writable(data.chat.name);
+
+	const showModalDelete = writable(false);
 
 	function scrollToBottom() {
 		setTimeout(function () {
@@ -122,11 +125,32 @@
 	onMount(() => {
 		scrollToBottom();
 	});
+
+	function openDeleteModal() {
+		showModalDelete.set(true);
+	}
+
 </script>
 
 <div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">
+
+	<!--Delete Chat Modal-->
+	{#if $showModalDelete}
+		<DeleteChatModal
+			chatName={$chatName}
+			chatId={$page.params.id}
+			on:delete={() => {
+				showModalDelete.set(false);
+				window.location.href = '/';
+			}}
+			on:cancel={() => showModalDelete.set(false)}
+		/>
+	{/if}
+
 	<!-- Usa il valore reattivo del nome della chat -->
-	<ChatNavBar data={$chatName} />
+	<ChatNavBar 
+		data={$chatName}
+		on:deleteChat={()=>openDeleteModal()}/>
 	<div class="flex-grow overflow-y-auto">
 		<Messages
 			data={waitingForResponse
