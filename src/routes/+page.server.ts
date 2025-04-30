@@ -58,15 +58,19 @@ export const load: PageServerLoad = async (data) => {
 export const actions: Actions = {
 	// Azione per cambiare il tema
 	toggleTheme: async ({ cookies, request }) => {
+		const req = await request.formData();
+		const reqTheme = req.get('theme');
+		console.log('toggleTheme', reqTheme);
 		const currentTheme = cookies.get('theme') ?? 'light';
-		const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+		const newTheme = reqTheme ? reqTheme.toString() : (currentTheme === 'dark' ? 'light' : 'dark');
 
+		console.log('Cambio tema:', newTheme);
 		cookies.set('theme', newTheme, {
 			path: '/',
 			maxAge: 60 * 60 * 24 * 365, // 1 anno
-			httpOnly: false, // Necessario per leggerlo anche lato client se serve (ma lo script in app.html usa localStorage)
-			sameSite: 'lax'
+			httpOnly: true,
 		});
+
 		return { success: true, theme: newTheme };
 	},
 

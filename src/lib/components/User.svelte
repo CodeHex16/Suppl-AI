@@ -2,12 +2,7 @@
 	// Importa le nuove icone
 	import { ChevronDown, Trash2, PenIcon, Mail, Tag } from 'lucide-svelte';
 
-	let { user, open, onEdit, onToggle } = $props<{
-		user: { id: any; name: string; email: string; role: string; creationDate: string };
-		open: boolean;
-		onEdit: (user: any) => void;
-		onToggle: () => void;
-	}>();
+	let { user, open, onEdit, onToggle } = $props();
 </script>
 
 <div class="mx-4 mb-4 rounded-xl bg-white p-4 shadow-md transition">
@@ -40,12 +35,10 @@
 
 	{#if open}
 		<div class="mt-4 border-t border-gray-500 border-opacity-50 pt-4 text-sm text-gray-500">
-			<!-- Email con icona -->
 			<div class="mb-2 flex items-center">
 				<Mail class="mr-2 h-4 w-4 text-gray-500" />
 				<p class="text-gray-300">{user.email}</p>
 			</div>
-			<!-- Ruolo con icona -->
 			<div class="flex items-center">
 				<Tag class="mr-2 h-4 w-4 text-gray-500" />
 				<p class="text-sm text-gray-300">{user.role}</p>

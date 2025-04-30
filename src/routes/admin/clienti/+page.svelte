@@ -8,6 +8,7 @@
 
 	let { data } = $props();
 	let users = $state(data.users ?? []);
+	$inspect(users);
 	let showModalNew = $state(false);
 
 	let showModalUpdate = $state(false);
@@ -30,9 +31,21 @@
 		)
 	);
 
-	function newUser(user: any) {
-		console.log('Nuovo utente aggiunto:', user); // 👈 Log del nuovo utente
-		users = [...users, { id: Date.now(), ...user }];
+	async function newUser(user: any) {
+		console.log('Nuovo utente aggiunto:', user);
+		const ris = await fetch('/api/users', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(user)
+		});
+		if (ris.ok) {
+			const newUser = await ris.json();
+			users = [...users, newUser.user];
+		} else {
+			console.error('Error adding user:', await ris.text());
+		}
 		showModalNew = false;
 	}
 
@@ -68,22 +81,41 @@
 		/>
 	{/if}
 
-	<main class="flex flex-grow flex-col pt-2">
-		{#if utentiFiltrati.length > 0}
-			{#each utentiFiltrati as user (user.email)}
+	<main class="flex flex-col overflow-hidden pt-2">
+		<div
+			class="scroll-snap-y-container flex max-h-[calc(100vh-18em)] flex-col gap-2 overflow-y-auto"
+		>
+			{#if users.length === 0}
+				<p class="mt-10 text-center text-gray-500">Nessun utente trovato.</p>
+			{/if}
+			{#if selectedUser === 'all'}
 				<UserItem
-					{user}
-					open={selectedUser === user.email}
-					onToggle={() => toggleUser(user.email)}
+					user={{ name: 'Tutti gli utenti', email: 'all', role: 'all' }}
+					open={true}
+					onToggle={() => toggleUser('all')}
 					onEdit={(editedUser) => {
 						editingUser = editedUser;
 						showModalUpdate = true;
 					}}
 				/>
-			{/each}
-		{:else}
-			<p class="mt-10 text-center text-gray-500">Nessun utente trovato.</p>
-		{/if}
+			{/if}
+
+			{#if utentiFiltrati.length > 0}
+				{#each utentiFiltrati as user (user.email)}
+					<UserItem
+						{user}
+						open={selectedUser === user.email}
+						onToggle={() => toggleUser(user.email)}
+						onEdit={(editedUser) => {
+							editingUser = editedUser;
+							showModalUpdate = true;
+						}}
+					/>
+				{/each}
+			{:else}
+				<p class="mt-10 text-center text-gray-500">Nessun utente trovato.</p>
+			{/if}
+		</div>
 
 		<div class="rounded-t-3xl bg-white p-4 shadow-md">
 			<div class="mb-4 flex items-center justify-between">
