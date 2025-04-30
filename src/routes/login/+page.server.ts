@@ -39,10 +39,8 @@ export const actions: Actions = {
 
 			if (!response.ok) {
 				const errorBody = await response.json().catch(() => ({}));
-				// Convert arrays or objects to string for proper display
-				const formattedErrorBody = JSON.stringify(errorBody);
-				console.error('Dettagli errore:', formattedErrorBody);
-				return fail(403, { error: 'Credenziali non valide', dettagli: formattedErrorBody });
+				console.error('Dettagli errore:', JSON.stringify(errorBody));
+				return fail(403, { error: 'Credenziali non valide', dettagli: JSON.stringify(errorBody) });
 			}
 
 			const { access_token } = await response.json();
@@ -56,6 +54,7 @@ export const actions: Actions = {
 				maxAge: 60 * 60 * 24 * 7, // 1 settimana
 				sameSite: 'strict'
 			});
+			console.log('Token salvato nel cookie:', access_token);
 		} catch (error) {
 			console.error("Errore durante l'autenticazione:", error);
 			return fail(500, { error: 'Errore di connessione al server' });

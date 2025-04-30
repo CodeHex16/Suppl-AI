@@ -1,7 +1,6 @@
 import type { Actions, ActionFailure } from '@sveltejs/kit';
 import { fail, redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import { jwtDecode } from 'jwt-decode';
 
 const API_URL = env.DATABASE_API_URL;
 
@@ -12,6 +11,7 @@ export const load = async ({ cookies }) => {
 	if (!token) {
 		return redirect(303, '/');
 	}
+
 };
 
 export const actions: Actions = {
@@ -36,14 +36,14 @@ export const actions: Actions = {
 			}
 
 			const payload = JSON.stringify({
-				email: jwtDecode(token).sub,
+				//email: jwtDecode(token).sub,
                 password: password,
                 current_password: currentPassword
 			});
 
 			// console.log('payload: ', payload);
-			const response = await fetch(`${API_URL}/user/update_password`, {
-				method: 'PUT',
+			const response = await fetch(`${API_URL}/user/passw`, {
+				method: 'PATCH',
 				headers: {
 					'Content-Type': 'application/json'
 				},

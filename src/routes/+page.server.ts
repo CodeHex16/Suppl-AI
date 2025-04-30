@@ -5,13 +5,13 @@ import type { Actions, PageServerLoad } from './$types';
 
 const DATABASE_URL = env.PUBLIC_DATABASE_URL;
 
-
 export const load: PageServerLoad = async (data) => {
 	const token = data.cookies.get('token');
-	if (!token) redirect(303, '/login');
+	// if (!token) redirect(303, '/login');
 
 	let chats = null;
 	let userScopes: string[] = [];
+	let firstLogin = false;
 
 	try {
 		const verify_token = await fetch(`http://${DATABASE_URL}/auth/verify?token=${token}`, {
@@ -22,10 +22,13 @@ export const load: PageServerLoad = async (data) => {
 		});
 
 		const response = await verify_token.json();
+		console.log('verify_token', response);
 
-		if (response.status !== 'valid') {
-			data.cookies.delete('token', { path: '/' });
-			redirect(303, '/login');
+		if (response.status === 'not_initialized') {
+			firstLogin = true;
+		} else if (response.status !== 'valid') {
+			console.log('token non valido');
+			throw new Error('Token non valido');
 		}
 		userScopes = response.scopes;
 
@@ -36,8 +39,13 @@ export const load: PageServerLoad = async (data) => {
 			}
 		}).then((response) => response.json());
 	} catch (error) {
+		console.error('Errore durante la verifica del token:', error);
 		data.cookies.delete('token', { path: '/' });
-		redirect(303, '/login');
+		return redirect(303, '/login');
+	}
+
+	if (firstLogin) {
+		return redirect(303, '/cambio-password');
 	}
 
 	return {
@@ -46,7 +54,6 @@ export const load: PageServerLoad = async (data) => {
 		userScopes
 	};
 };
-
 
 export const actions: Actions = {
 	// Azione per cambiare il tema
