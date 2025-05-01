@@ -39,8 +39,8 @@
 			const response = await fetch('/api/stream_chat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ 
-					message: messageData, 
+				body: JSON.stringify({
+					message: messageData,
 					messages: messages
 				}),
 				signal: abortController.signal
@@ -90,9 +90,9 @@
 				})
 			});
 
-        	if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
-        	    await updateChatName();
-        	}
+			if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
+				await updateChatName();
+			}
 
 			answer = '';
 		} catch (err: any) {
@@ -107,16 +107,16 @@
 		const res = await fetch('/api/update_chat_name', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ 
+			body: JSON.stringify({
 				messages: messages,
-				chat_id: $page.params.id 
+				chat_id: $page.params.id
 			})
 		});
 
 		const data = await res.json();
 		if (!data.error) {
 			// Aggiorna il nome della chat nel store reattivo
-			chatName.set(data.title);  // Aggiorna il nome della chat nel store
+			chatName.set(data.title); // Aggiorna il nome della chat nel store
 		} else {
 			console.error('Errore aggiornamento nome chat:', data.error);
 		}
@@ -129,28 +129,20 @@
 	function openDeleteModal() {
 		showModalDelete.set(true);
 	}
-
 </script>
 
 <div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">
-
 	<!--Delete Chat Modal-->
 	{#if $showModalDelete}
 		<DeleteChatModal
 			chatName={$chatName}
 			chatId={$page.params.id}
-			on:delete={() => {
-				showModalDelete.set(false);
-				window.location.href = '/';
-			}}
 			on:cancel={() => showModalDelete.set(false)}
 		/>
 	{/if}
 
 	<!-- Usa il valore reattivo del nome della chat -->
-	<ChatNavBar 
-		data={$chatName}
-		on:deleteChat={()=>openDeleteModal()}/>
+	<ChatNavBar data={$chatName} on:deleteChat={() => openDeleteModal()} />
 	<div class="flex-grow overflow-y-auto">
 		<Messages
 			data={waitingForResponse

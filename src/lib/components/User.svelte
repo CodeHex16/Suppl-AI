@@ -16,7 +16,7 @@
 					<PenIcon class="mr-1 h-4 w-4" />
 					<span>Modifica</span>
 				</button>
-				<button class="flex items-center text-red-600 hover:text-red-700 transition">
+				<button class="flex items-center text-red-600 hover:text-red-700 transition" on:click={() => dispatch('delete', user)}>
 					<Trash2 class="mr-1 h-4 w-4" />
 					<span>Elimina</span>
 				</button>

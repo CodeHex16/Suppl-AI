@@ -75,9 +75,6 @@ export const actions = {
 		if (!req.get('message')) return;
 
 		const content = req.get('message')?.toString();
-		//const date = new Date();
-		//console.log(date, date.toISOString());
-
 		try {
 			const response = await fetch(`${API_URL}/chats/${event.params.id}/messages`, {
 				method: 'POST',
@@ -99,6 +96,28 @@ export const actions = {
 		} catch (error) {
 			return fail(500, { error: 'Failed to send message' });
 		}
+	},
+
+	deleteChat: async (event) => {
+		if (!event.cookies.get('token')) {
+			redirect(303, '/login');
+		}
+		const chatId = event.params.id;
+		try{
+			const response = await fetch(`${API_URL}/chats/${chatId}`, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${event.cookies.get('token')}`
+				}
+			});
+
+			if (!response.ok) return fail(response.status, { error: 'Failed to delete chat' });
+			return {
+				success: true
+			};
+		} catch (error) {
+			return fail(500, { error: 'Failed to delete chat' });
+		}
 	}
 } satisfies Actions;
-
