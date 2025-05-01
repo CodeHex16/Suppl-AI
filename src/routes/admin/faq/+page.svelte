@@ -1,18 +1,22 @@
 <script lang="ts">
-	import { ArrowLeft, Search, Ellipsis, Plus } from 'lucide-svelte';
+	import { ArrowLeft, Search, Ellipsis, Plus, Delete } from 'lucide-svelte';
 	import BottomNavBar from '$lib/components/BottomNavBar.svelte';
 	import FaqItem from '$lib/components/FaqItem.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import Faq from '$lib/components/NewFAQModal.svelte';
 	import UpdateFaq from'$lib/components/UpdateFAQModal.svelte';
+	import DeleteFaq from '$lib/components/DeleteFAQModal.svelte';
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
+	import { writable } from 'svelte/store'
 
 	let { data } = $props();
-    let faqs = $state(data.faqs ?? []);
+    let faqs = writable(data.faqs ?? []);
 	let showNewFAQ = $state(false);
 
 	let showUpdateFAQ = $state(false);
 	let editingFAQ = $state<any>(null);
+     
+	let showDeleteFAQ = $state(false);
 
 	let query = $state('');
 	let selectedFaq = $state<number | null>(null);
@@ -23,7 +27,7 @@
 	}
 
 	const filteredFaq = $derived(
-		faqs.filter((f) => 
+		$faqs.filter((f) => 
             f.question.toLowerCase().includes(query.toLowerCase())||
 			f.title.toLowerCase().includes(query.toLowerCase())||
 			f.author.toLowerCase().includes(query.toLowerCase())||
@@ -33,21 +37,32 @@
 
 	function newFAQ(faq: any) {
 		console.log('Nuova FAQ aggiunta:', faqs); // 👈 Log della nuova FAQ
-		faqs = [...faqs, {id: Date.now(), ...faq }];
+		//$faqs = [...faqs, {id: Date.now(), ...faq }]; se si usa faqs con $state e non writable
+		faqs.update((prev) => [...prev, { id: Date.now(), ...faq }]);
 		showNewFAQ = false;
 	}
 
 	function updateFAQ(faq: any) {
 		console.log('Faq aggiornata (input):', faq); // 👈 Log prima dell'update
 
-		faqs = faqs.map((u) => (u.id === faq.id ? { ...u, ...faq } : u));
+		faqs.update((list) => {
+			const updatedList = list.map((u) => (u.id === faq.id ? { ...u, ...faq } : u));
+			console.log('Lista utenti aggiornata:', updatedList); // 👈 Log della lista aggiornata
+			return updatedList;
+		});
 		console.log('Lista faq aggiornata:', faqs); // 👈 Log della lista aggiornata
 
-		// Log finale dello store `users` (assicurati che venga aggiornato)
-		console.log('Valore attuale dello stato `faq`:', faqs);
+		faqs.subscribe((val) => {
+			console.log('Valore attuale dello store `faq`:', val);
+		})();
 
 		showUpdateFAQ = false;
 		editingFAQ = null;
+	}
+
+	function deleteFAQ(){
+        showDeleteFAQ = false;
+        editingFAQ = null;
 	}
 
 </script>
@@ -71,7 +86,18 @@
 			editingFAQ = null;
 		}}
 	/>
-{/if}
+    {/if}
+	{#if showDeleteFAQ}
+	<DeleteFaq
+	    faq = {editingFAQ}
+	    on:submitFaq= {() => deleteFAQ()}
+	    on:cancel={() => {
+		    showDeleteFAQ = false
+            editingFAQ = null;
+	 	    }
+		}
+    />
+    {/if}
 
 
 <main class="flex flex-col pt-2 flex-grow">
@@ -87,6 +113,10 @@
 					on:edit={(e) => {
 						editingFAQ = e.detail;
 						showUpdateFAQ = true;
+					}}
+					on:delete={(e) =>{
+						editingFAQ = e.detail;
+						showDeleteFAQ = true;
 					}}
 				/>
 			{/each}
