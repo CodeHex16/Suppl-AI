@@ -11,7 +11,7 @@
 	<div class="flex items-center justify-between">
 		<div>
 			<h3 class="text-lg font-semibold">{document.name}</h3>
-			<button class="flex items-center text-red-600 hover:text-red-700 transition">
+			<button class="flex items-center text-red-600 hover:text-red-700 transition" onclick={() => dispatch("delete", document)}>
 				<Trash2 class="mr-2 h-4 w-4" />
 				<span>Elimina</span>
 			</button>
