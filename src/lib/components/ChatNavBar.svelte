@@ -4,7 +4,7 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	const dispatch = createEventDispatcher();
 	let { data } = $props();
-</script>
+</script>	
 
 <nav class="grid-chat-nav mx-4 mb-4 grid overflow-hidden">
 	<a href="/">

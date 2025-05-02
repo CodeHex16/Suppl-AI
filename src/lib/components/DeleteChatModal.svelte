@@ -11,8 +11,8 @@
 			<h2 class="mb-2 text-lg font-semibold">Conferma Eliminazione</h2>
 			<p class="mb-2 mt-2">Sei sicuro di cancellare la chat "{chatName}"</p>
 			<div class="mt-2 flex flex-row justify-self-center">
-				<form method="POST" use:enhance action="?/deleteChat">
-					<input type="hidden" name="id" value={chatId} />
+				<form method="POST" use:enhance action="/?/deleteChat">
+					<input type="hidden" name="chat_id" value={chatId} />
 					<button
 						class="mr-2 rounded-full bg-red-600 p-2 text-white hover:bg-red-600/80"
 						type="submit"

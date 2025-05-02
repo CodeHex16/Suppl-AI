@@ -14,6 +14,7 @@
 	let scrollToDiv: HTMLDivElement;
 	let answer = $state('');
 	let abortController: AbortController | null = null;
+	let showModalDelete = $state(false);
 
 	let messages = $state(data.chat.messages);
 	let chatName = $state(data.chat.name);
@@ -107,7 +108,6 @@
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
-			body: JSON.stringify({
 				messages: messages,
 				chat_id: data.chat_id
 			})
@@ -127,22 +127,22 @@
 	});
 
 	function openDeleteModal() {
-		showModalDelete.set(true);
+		showModalDelete = true;
 	}
 </script>
 
 <div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">
 	<!--Delete Chat Modal-->
-	{#if $showModalDelete}
+	{#if showModalDelete}
 		<DeleteChatModal
-			chatName={$chatName}
-			chatId={$page.params.id}
-			on:cancel={() => showModalDelete.set(false)}
+			chatName={chatName}
+			chatId={data.chat_id}
+			on:cancel={() => showModalDelete = false}
 		/>
 	{/if}
 
 	<!-- Usa il valore reattivo del nome della chat -->
-	<ChatNavBar data={$chatName} on:deleteChat={() => openDeleteModal()} />
+	<ChatNavBar data={chatName} on:deleteChat={() => openDeleteModal()} />
 	<div class="flex-grow overflow-y-auto">
 		<Messages
 			data={waitingForResponse

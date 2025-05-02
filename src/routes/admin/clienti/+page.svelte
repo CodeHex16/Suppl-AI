@@ -9,8 +9,9 @@
 
 	let { data } = $props();
 	let users = $state(data.users ?? []);
-	$inspect(users);
+	// $inspect(users);
 	let showModalNew = $state(false);
+	let showModalDeleteUserConfirm = $state(false);
 
 	let showModalUpdate = $state(false);
 	let editingUser = $state<any>(null);
@@ -64,16 +65,16 @@
 	}
 
 	function openDeleteUserConfirm() {
-		showModalDeleteUserConfirm.set(true);
+		showModalDeleteUserConfirm = true;
 	}
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
 	<HeaderPages {data} title="Gestione utenti" />
-	{#if $showModalDeleteUserConfirm}
+	{#if showModalDeleteUserConfirm}
 	<DeleteUserConfirmModal
 		user={$editingUser}
-		on:cancel={() => showModalDeleteUserConfirm.set(false)}
+		on:cancel={() => showModalDeleteUserConfirm = false}
 	/>
 {/if}
 

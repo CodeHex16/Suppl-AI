@@ -7,11 +7,9 @@
 		return marked(text);
 	}
 
+	let like = $state(false);
+	let dislike = $state(false);
 
-	let timestamp = new Date()
-	let like = false;
-	let dislike = false;
-	
 	function toggleThumbsUp() {
 		like = !like;
 		dislike = false;
@@ -23,12 +21,24 @@
 		like = false;
 		console.log('dislike: ', dislike);
 	}
+	$inspect('data message bot', data);
+
+	function formatData(stringDate: string) {
+		const date = new Date(stringDate);
+		return date.toLocaleString('it-IT', {
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit'
+		});
+	}
 </script>
 
-<div class="flex flex-col items-stretch">
-	<div class="flex justify-start">
-		<div class="max-w-sm rounded-t-3xl rounded-br-3xl bg-white p-4 text-black">
-			<div class="text-primary font-bold">Supply</div>
+<div class="flex flex-col justify-start">
+	<div class="max-w-sm">
+		<div class="rounded-t-3xl rounded-br-3xl bg-white p-4 text-black">
+			<div class="font-bold text-primary">Supply</div>
 			{#if data.content == ''}
 				<div class="mt-4 animate-pulse">
 					<div class="mb-2 h-2 w-40 rounded bg-slate-200"></div>
@@ -39,26 +49,25 @@
 					{@html formatMessage(data.content)}
 				</div>
 			{/if}
-			<div class="ml-8 mt-1 flex flex-row-reverse">
-				{#if like}
-					<button
-						class="item-primary hover:bg-primary-200 ml-2 mr-2 h-10 w-10 rounded-full p-2"
-						onclick={toggleThumbsUp}
-						aria-label="Like"
-						title="Risposta utile"
-					>
-						<ThumbsUp class="item-primary" />
-					</button>
+		</div>
+		<div class="flex flex-row items-center justify-between">
+			<div class="flex items-stretch justify-start text-sm text-gray-500">
+				{#if data.timestamp}
+					<p>{formatData(data.timestamp)}</p>
 				{:else}
-					<button
-						class="ml-2 mr-2 h-10 w-10 rounded-full p-2 hover:bg-gray-200"
-						onclick={toggleThumbsUp}
-						aria-label="Like"
-						title="Risposta utile"
-					>
-						<ThumbsUp class="bg-inherit text-gray-500" />
-					</button>
+					<p>Adesso</p>
 				{/if}
+			</div>
+			<div class="flex flex-row-reverse">
+				<button
+					class="{like ? 'item-primary' : ''} hover:bg-primary-200 h-10 w-10 rounded-full p-2"
+					onclick={toggleThumbsUp}
+					aria-label="Like"
+					title="Risposta utile"
+				>
+					<ThumbsUp class={like ? 'bg-inherit text-gray-500' : ''} />
+				</button>
+
 				{#if dislike}
 					<button
 						class="item-primary hover:bg-primary-200 ml-2 mr-2 h-10 w-10 rounded-full p-2"
@@ -80,14 +89,6 @@
 				{/if}
 			</div>
 		</div>
-	</div>
-
-	<div class="ml-1 flex items-stretch justify-start text-xs text-gray-500">
-		{#if !timestamp}
-			<p class="mt-1">Adesso</p>
-		{:else}
-			<p class="mt-1">{timestamp}</p>
-		{/if}
 	</div>
 </div>
 

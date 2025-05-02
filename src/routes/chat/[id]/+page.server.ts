@@ -61,6 +61,10 @@ export const load = async (data) => {
 		redirect(303, '/login');
 	}
 
+	if (chat.detail == 'Chat not found') {
+		return redirect(303, '/');
+	}
+
 	const result = await updateChatNameIfNeeded(chat, data.cookies.get('token') ?? '', data.params.id);
 	if (result.error) return fail(result.error, { error: 'Failed to generate chat name' });
 
