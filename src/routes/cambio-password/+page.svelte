@@ -62,7 +62,7 @@
 					/>
 					<button
 						type="submit"
-						class="rounded-full border-none item-primary p-3 text-center font-bold text-white hover:bg-blue-600"
+						class="rounded-full border-none item-primary p-3 text-center font-bold"
 						>Cambia password</button
 					>
 				</div>

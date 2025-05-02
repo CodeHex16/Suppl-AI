@@ -37,7 +37,7 @@
 						name="password"
 						placeholder="Inserisci la tua password"
 						required
-						class="rounded-full border-none bg-gray-100 px-4 py-2"
+						class="rounded-full border-none bg-gray px-4 py-2"
 					/>
 	
 					<div class="mt-2 flex flex-row justify-self-center">

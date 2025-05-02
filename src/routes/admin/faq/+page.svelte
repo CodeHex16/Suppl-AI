@@ -63,9 +63,6 @@
 	<HeaderPages {data} title="Gestione FAQ" />
 
 	{#if showNewFAQ}
-	<HeaderPages {data} title="Gestione FAQ" />
-
-	{#if showNewFAQ}
 		<Faq
 			on:submitFaq={(e) => newFAQ(e.detail)}
 			on:cancel={() => showNewFAQ = false}
@@ -95,17 +92,14 @@
     {/if}
 
 
-<main class="flex flex-col pt-2 flex-grow">
-	<!-- Barra di ricerca e pulsante per nuova faq -->
+	<main class="flex flex-col pt-2 flex-grow">
+		<!-- Barra di ricerca e pulsante per nuova faq -->
 
 		<!-- Lista FAQ -->
 		{#if filteredFaq.length > 0}
 			{#each filteredFaq as faq (faq.id)}
-		{#if filteredFaq.length > 0}
-			{#each filteredFaq as faq (faq.id)}
 				<FaqItem
 					{faq}
-					open={selectedFaq === faq.id}
 					open={selectedFaq === faq.id}
 					on:toggle={() => toggleFaq(faq.id)}
 					on:edit={(e) => {
@@ -145,4 +139,5 @@
 	</main>
 
 	<BottomNavBar {data} />
+
 </div>

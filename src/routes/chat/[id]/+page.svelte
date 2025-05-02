@@ -142,7 +142,7 @@
 	{/if}
 
 	<!-- Usa il valore reattivo del nome della chat -->
-	<ChatNavBar data={chatName} on:deleteChat={() => openDeleteModal()} />
+	<ChatNavBar data={data} on:deleteChat={() => openDeleteModal()} />
 	<div class="flex-grow overflow-y-auto">
 		<Messages
 			data={waitingForResponse

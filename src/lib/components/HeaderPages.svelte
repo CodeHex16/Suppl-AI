@@ -3,6 +3,7 @@
 	import ThemeToggle from './ThemeToggle.svelte';
 
 	let {data, title} = $props();
+	$inspect("header pages",data);
 </script>
 
 <header class="mx-4">

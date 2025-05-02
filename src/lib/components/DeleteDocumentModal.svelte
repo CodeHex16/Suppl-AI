@@ -5,10 +5,10 @@
 
 	let { document } = $props();
 
-    let id = document.id;
+    let id = $state(document.id);
 	let author = $state(document.author);
 	let name = $state(document.name);
-    let creationDate = document.creationDate;
+    let creationDate = $state(document.creationDate);
 
     function submitForm() {
 		dispatch('submitDocument', {

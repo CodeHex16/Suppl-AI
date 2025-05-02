@@ -21,7 +21,7 @@
 					>
 				</form>
 				<button
-					class="mr-2 rounded-full bg-gray-100 p-2 hover:bg-gray-200"
+					class="mr-2 rounded-full bg-gray p-2"
 					type="button"
 					aria-label="Cancel"
 					title="Annulla"

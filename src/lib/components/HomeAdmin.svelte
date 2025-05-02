@@ -2,7 +2,7 @@
 	import { User, FileText, BarChart, MessageCircleQuestion, Settings } from 'lucide-svelte';
 </script>
 
-<div class="grid grid-cols-2 gap-4 px-4">
+<div class="grid grid-cols-2 gap-4 px-4 mb-4">
 	<a href="/admin/clienti" class="admin-btn item-primary">
 		<User class="h-6 w-6" />
 		Clienti
@@ -20,12 +20,12 @@
 		FAQ
 	</a>
 </div>
-<div class="mb-6 mt-4 px-4">
+<!-- <div class="mb-6 mt-4 px-4">
 	<a href="/admin/gestione_piattaforma" class="admin-btn item-primary">
 		<Settings class="h-6 w-6" />
 		Gestione Piattaforma
 	</a>
-</div>
+</div> -->
 
 <style>
 	.admin-btn {

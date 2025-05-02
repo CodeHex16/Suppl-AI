@@ -26,9 +26,9 @@
 		{/if}
 
 		<div class="flex-grow rounded-t-3xl bg-white shadow-md p-4">
-			<h2 class="mb-6 ml-2 mt-2 text-xl font-semibold">Cronologia Chat</h2>
+			<h2 class="mb-3 ml-2 text-xl font-semibold">Cronologia Chat</h2>
 			<div
-				class="scroll-snap-y-container flex max-h-52 min-h-40 flex-col space-y-4 overflow-y-auto"
+				class="flex max-h-52 min-h-40 flex-col space-y-4 overflow-y-auto"
 			>
 				{#await data.chats}
 					<div role="status" class="m-auto">
