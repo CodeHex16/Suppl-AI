@@ -100,10 +100,11 @@ export const actions = {
 
 	deleteChat: async (event) => {
 		if (!event.cookies.get('token')) {
-			redirect(303, '/login');
+			throw redirect(303, '/login');
 		}
+
 		const chatId = event.params.id;
-		try{
+		try {
 			const response = await fetch(`${API_URL}/chats/${chatId}`, {
 				method: 'DELETE',
 				headers: {
@@ -112,12 +113,15 @@ export const actions = {
 				}
 			});
 
-			if (!response.ok) return fail(response.status, { error: 'Failed to delete chat' });
-			return {
-				success: true
-			};
+			if (!response.ok) {
+				return fail(response.status, { error: "Errore durante l'eliminazione della chat" });
+			}
+
+			// Redirect to the homepage after successful deletion
+			throw redirect(303, '/');
 		} catch (error) {
-			return fail(500, { error: 'Failed to delete chat' });
+			console.error("Errore durante l'eliminazione della chat: ", error);
+			return fail(500, { error: "Errore durante l'eliminazione della chat" });
 		}
 	}
 } satisfies Actions;

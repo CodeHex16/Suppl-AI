@@ -1,16 +1,17 @@
 <script lang="ts">
 	import { ThumbsUp, ThumbsDown } from 'lucide-svelte';
-	let { content, timestamp } = $props();
+	let { content } = $props();
 	import { marked } from 'marked';
 
 	function formatMessage(text: string) {
 		return marked(text);
 	}
-	console.log('date: ', timestamp);
 
+
+	let timestamp = new Date()
 	let like = false;
 	let dislike = false;
-
+	
 	function toggleThumbsUp() {
 		like = !like;
 		dislike = false;
@@ -39,37 +40,51 @@
 				</div>
 			{/if}
 			<div class="ml-8 mt-1 flex flex-row-reverse">
-				<button
-					class="ml-2 mr-2 rounded-full h-10 w-10 p-2 hover:bg-gray-200"
-					onclick={toggleThumbsUp}
-					aria-label="Like"
-					title="Risposta utile"
-				>
-					{#if like}
-						<ThumbsUp class="item-primary"/>
-					{:else}
-						<ThumbsUp class="bg-inherit text-gray-500"/>
-					{/if}
-				</button>
-				<button
-					class="ml-2 mr-2 rounded-full h-10 w-10 p-2 hover:bg-gray-200"
-					onclick={toggleThumbsDown}
-					aria-label="Dislike"
-					title="Risposta non utile"
-				>
-					{#if dislike}
-						<ThumbsDown class="item-primary"/>
-					{:else}
-						<ThumbsDown class="bg-inherit text-gray-500"/>
-					{/if}
-				</button>
+				{#if like}
+					<button
+						class="item-primary hover:bg-primary-200 ml-2 mr-2 h-10 w-10 rounded-full p-2"
+						onclick={toggleThumbsUp}
+						aria-label="Like"
+						title="Risposta utile"
+					>
+						<ThumbsUp class="item-primary" />
+					</button>
+				{:else}
+					<button
+						class="ml-2 mr-2 h-10 w-10 rounded-full p-2 hover:bg-gray-200"
+						onclick={toggleThumbsUp}
+						aria-label="Like"
+						title="Risposta utile"
+					>
+						<ThumbsUp class="bg-inherit text-gray-500" />
+					</button>
+				{/if}
+				{#if dislike}
+					<button
+						class="item-primary hover:bg-primary-200 ml-2 mr-2 h-10 w-10 rounded-full p-2"
+						onclick={toggleThumbsDown}
+						aria-label="Dislike"
+						title="Risposta non utile"
+					>
+						<ThumbsDown class="item-primary" />
+					</button>
+				{:else}
+					<button
+						class="ml-2 mr-2 h-10 w-10 rounded-full p-2 hover:bg-gray-200"
+						onclick={toggleThumbsDown}
+						aria-label="Dislike"
+						title="Risposta non utile"
+					>
+						<ThumbsDown class="bg-inherit text-gray-500" />
+					</button>
+				{/if}
 			</div>
 		</div>
 	</div>
 
 	<div class="ml-1 flex items-stretch justify-start text-xs text-gray-500">
 		{#if !timestamp}
-			<p class="mt-1">Data non definita</p>
+			<p class="mt-1">Adesso</p>
 		{:else}
 			<p class="mt-1">{timestamp}</p>
 		{/if}
