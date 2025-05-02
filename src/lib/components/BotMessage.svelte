@@ -5,20 +5,22 @@
 	function formatMessage(text: string) {
 		return marked(text);
 	}
-	$inspect('BotMessage data:', data);
+
+	//TODO: add timestamp
+	let like = true
 </script>
 
 <div class="flex justify-start">
-	<div class="max-w-sm rounded-t-3xl rounded-br-3xl bg-white p-4 text-black">
+	<div class="max-w-sm rounded-t-3xl rounded-br-3xl bg-white p-4 text-black}">
 		<div class="text-primary font-bold">Suppl-AI</div>
-		{#if data == ''}
+		{#if data.content == ''}
 			<div class="mt-4 animate-pulse">
 				<div class="mb-2 h-2 w-40 rounded bg-slate-200"></div>
 				<div class="mb-2 h-2 w-5/6 rounded bg-slate-200"></div>
 			</div>
 		{:else}
 			<div class="markdown-content">
-				{@html formatMessage(data)}
+				{@html formatMessage(data.content)}
 			</div>
 		{/if}
 	</div>

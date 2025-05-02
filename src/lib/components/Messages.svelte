@@ -9,12 +9,12 @@
 		{#each data as message}
 			{#if message.sender === 'bot'}
 				{#if message.isLoading}
-					<BotMessage data={message.content} />
+					<BotMessage data={message} />
 				{:else}
-					<BotMessage data={message.content} />
+					<BotMessage data={message} />
 				{/if}
 			{:else}
-				<UserMessage data={message.content} />
+				<UserMessage data={message} />
 			{/if}
 		{/each}
 	</div>
