@@ -22,7 +22,7 @@ export const load = async (data) => {
 	});
 
 
-    return {
-        users: users
-    };
+	return {
+		users: users
+	};
 };

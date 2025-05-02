@@ -2,6 +2,7 @@
 	import ChatNavBar from '$lib/components/ChatNavBar.svelte';
 	import SendMessage from '$lib/components/SendMessage.svelte';
 	import Messages from '$lib/components/Messages.svelte';
+	import DeleteChatModal from '$lib/components/DeleteChatModal.svelte';
 	import { enhance } from '$app/forms';
 	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -88,6 +89,9 @@
 			if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
 				await updateChatName();
 			}
+			if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
+				await updateChatName();
+			}
 
 			answer = '';
 		} catch (err: any) {
@@ -102,6 +106,7 @@
 		const res = await fetch('/api/update_chat_name', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
 			body: JSON.stringify({
 				messages: messages,
 				chat_id: data.chat_id
@@ -120,10 +125,24 @@
 	onMount(() => {
 		scrollToBottom();
 	});
+
+	function openDeleteModal() {
+		showModalDelete.set(true);
+	}
 </script>
 
 <div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">
-	<ChatNavBar {data} />
+	<!--Delete Chat Modal-->
+	{#if $showModalDelete}
+		<DeleteChatModal
+			chatName={$chatName}
+			chatId={$page.params.id}
+			on:cancel={() => showModalDelete.set(false)}
+		/>
+	{/if}
+
+	<!-- Usa il valore reattivo del nome della chat -->
+	<ChatNavBar data={$chatName} on:deleteChat={() => openDeleteModal()} />
 	<div class="flex-grow overflow-y-auto">
 		<Messages
 			data={waitingForResponse

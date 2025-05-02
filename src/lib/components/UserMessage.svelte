@@ -1,9 +1,19 @@
 <script>
 	let { data } = $props();
+	let timestamp = data.timestamp;
 </script>
 
-<div class="flex justify-end">
-	<div class="min-w-20 max-w-xs rounded-t-3xl rounded-bl-3xl bg-primary p-4">
-		{data}
+<div class="items-stretch">
+	<div class="flex justify-end">
+		<div class="bg-primary min-w-20 max-w-xs rounded-t-3xl rounded-bl-3xl p-4">
+			{data.content}
+		</div>
+	</div>
+	<div class="mr-1 flex items-stretch justify-end text-xs text-gray-500">
+		{#if !timestamp}
+		<p class="mt-1">Data non definita</p>
+		{:else}
+		<p class="mt-1">{timestamp}</p>
+		{/if}
 	</div>
 </div>

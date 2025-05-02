@@ -5,6 +5,7 @@
 	import Modal from '$lib/components/NewUserModal.svelte';
 	import UpdateModal from '$lib/components/UpdateUserModal.svelte';
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
+	import DeleteUserConfirmModal from '$lib/components/DeleteUserConfirmModal.svelte';
 
 	let { data } = $props();
 	let users = $state(data.users ?? []);
@@ -61,14 +62,24 @@
 		showModalUpdate = false;
 		editingUser = null;
 	}
+
+	function openDeleteUserConfirm() {
+		showModalDeleteUserConfirm.set(true);
+	}
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
 	<HeaderPages {data} title="Gestione utenti" />
+	{#if $showModalDeleteUserConfirm}
+	<DeleteUserConfirmModal
+		user={$editingUser}
+		on:cancel={() => showModalDeleteUserConfirm.set(false)}
+	/>
+{/if}
 
-	{#if showModalNew}
-		<Modal onSubmitUser={(user) => newUser(user)} onCancel={() => (showModalNew = false)} />
-	{/if}
+{#if showModalNew}
+<Modal onSubmitUser={(user) => newUser(user)} onCancel={() => (showModalNew = false)} />
+{/if}
 
 	{#if showModalUpdate}
 		<UpdateModal
