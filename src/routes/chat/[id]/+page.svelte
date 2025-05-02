@@ -5,7 +5,6 @@
 	import DeleteChatModal from '$lib/components/DeleteChatModal.svelte';
 	import { enhance } from '$app/forms';
 	import { invalidate } from '$app/navigation';
-	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
@@ -83,7 +82,7 @@
 				},
 				body: JSON.stringify({
 					content: answer,
-					chat_id: $page.params.id
+					chat_id: data.chat_id
 				})
 			});
 
@@ -122,6 +121,7 @@
 		}
 	}
 
+
 	onMount(() => {
 		scrollToBottom();
 	});
@@ -137,12 +137,11 @@
 		<DeleteChatModal
 			chatName={chatName}
 			chatId={data.chat_id}
-			on:cancel={() => showModalDelete = false}
+			onCancel={() => showModalDelete = false}
 		/>
 	{/if}
 
-	<!-- Usa il valore reattivo del nome della chat -->
-	<ChatNavBar data={data} on:deleteChat={() => openDeleteModal()} />
+	<ChatNavBar data={data} deleteChat={openDeleteModal} />
 	<div class="flex-grow overflow-y-auto">
 		<Messages
 			data={waitingForResponse

@@ -22,11 +22,11 @@
 		</div>
 	</div>
 	<div class="flex justify-end">
-		<div class="text-gray mr-4 text-sm opacity-80">
+		<div class="text-gray mr-2 text-sm opacity-80">
 			{#if data.timestamp}
-				<p>{formatData(data.timestamp)}</p>
+				<p class="my-2">{formatData(data.timestamp)}</p>
 			{:else}
-				<p>Adesso</p>
+				<p class="my-2">Adesso</p>
 			{/if}
 		</div>
 

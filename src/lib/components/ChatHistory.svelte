@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { MessageCircle, Trash } from 'lucide-svelte';
-	let { data } = $props();
+	let { data, onDelete } = $props();
 
 	function parseDate(date: string) {
 		const dateObj = new Date(date);
@@ -29,14 +29,12 @@
 				<p class="text-sm opacity-60">{parseDate(chat.created_at)}</p>
 			</div>
 		</a>
-		<form method="POST" action="/?/deleteChat" class="ml-auto">
-			<input type="hidden" name="chat_id" value={chat.id} />
-			<button
-				type="submit"
-				class="rounded-full p-4 transition duration-150 ease-in hover:text-red-500"
-			>
-				<Trash class="h-6 w-6" />
-			</button>
-		</form>
+		<button
+			type="button"
+			class="ml-auto rounded-full p-4 transition duration-150 ease-in hover:text-red-500"
+			onclick={() => onDelete(chat)}
+		>
+			<Trash class="h-6 w-6" />
+		</button>
 	</div>
 {/each}

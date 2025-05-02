@@ -112,11 +112,11 @@ html {
 
 /* Background puntinato */
 .bg-dotted {
-	@apply absolute inset-0 h-full w-full bg-background bg-[radial-gradient(#cacaca_1px,transparent_1px)] [background-size:16px_16px];
+	@apply absolute inset-0 h-full w-full bg-gray-200 bg-[radial-gradient(#bbbbbb_1px,transparent_1px)] [background-size:16px_16px];
 }
 
 .dark .bg-dotted {
-	@apply bg-[radial-gradient(#4a4a4a_1px,transparent_1px)];
+	@apply bg-background bg-[radial-gradient(#616161,transparent_1px)] ;
 }
 
 /* Vetro trasparente */
@@ -169,7 +169,7 @@ html {
 }
 
 .bg-gray {
-	background-color: #f7f7f7;
+	@apply bg-gray-200;
 	color: black;
 }
 

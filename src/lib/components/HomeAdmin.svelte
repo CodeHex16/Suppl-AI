@@ -20,12 +20,12 @@
 		FAQ
 	</a>
 </div>
-<!-- <div class="mb-6 mt-4 px-4">
+<div class="mb-4 px-4">
 	<a href="/admin/gestione_piattaforma" class="admin-btn item-primary">
 		<Settings class="h-6 w-6" />
-		Gestione Piattaforma
+		Impostazioni
 	</a>
-</div> -->
+</div>
 
 <style>
 	.admin-btn {

@@ -23,7 +23,7 @@
 
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
 	<div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
-		<h2 class="mb-4 text-lg font-semibold">Modifica Utente</h2>
+		<h2 class="mb-4 text-lg font-semibold text-center">Modifica Utente</h2>
 
 		<!-- Name Input with Icon -->
 		<div class="relative mb-3">
@@ -63,13 +63,19 @@
 			</select>
 		</div>
 
-		<div class="flex justify-end space-x-2">
+		<div class="mt-4 flex justify-center gap-4">
 			<button
-				class="rounded-lg bg-gray px-4 py-2 text-gray-700 transition duration-150 ease-in hover:bg-gray-300"
+				class="bg-gray rounded-full px-4 py-2"
+				type="button"
+				aria-label="Cancel"
+				title="Annulla"
 				onclick={onCancel}>Annulla</button
 			>
-			<button class="item-primary rounded-lg px-4 py-2" onclick={submitForm}
-				>Salva</button
+			<button
+				class="item-primary rounded-full px-4 py-2"
+				type="submit"
+				aria-label="Confirm"
+				title="Conferma">Conferma</button
 			>
 		</div>
 	</div>

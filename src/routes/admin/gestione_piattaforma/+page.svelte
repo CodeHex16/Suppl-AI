@@ -128,7 +128,7 @@
 
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
-	<HeaderPages {data} title="Gestione piattaforma" />
+	<HeaderPages {data} title="Impostazioni" />
 
 	<main class="flex flex-col pt-2 flex-grow">
 		<form onsubmit={handleSubmit}>

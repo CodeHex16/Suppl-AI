@@ -72,7 +72,6 @@
 
 	function openDeleteUserConfirm() {
 		showModalDeleteUserConfirm = true;
-		console.log('openDeleteUserConfirm', showModalDeleteUserConfirm);
 	}
 </script>
 
