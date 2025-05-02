@@ -21,7 +21,6 @@
 		like = false;
 		console.log('dislike: ', dislike);
 	}
-	$inspect('data message bot', data);
 
 	function formatData(stringDate: string) {
 		const date = new Date(stringDate);
@@ -30,7 +29,8 @@
 			month: '2-digit',
 			day: '2-digit',
 			hour: '2-digit',
-			minute: '2-digit'
+			minute: '2-digit',
+			timeZone: 'Europe/Rome'
 		});
 	}
 </script>
@@ -51,42 +51,31 @@
 			{/if}
 		</div>
 		<div class="flex flex-row items-center justify-between">
-			<div class="flex items-stretch justify-start text-sm text-gray-500">
+			<div class="text-gray ml-4 my-auto text-sm opacity-80">
 				{#if data.timestamp}
-					<p>{formatData(data.timestamp)}</p>
+					<p class="mt-2">{formatData(data.timestamp)}</p>
 				{:else}
 					<p>Adesso</p>
 				{/if}
 			</div>
-			<div class="flex flex-row-reverse">
+			<div class="flex flex-row-reverse mr-4">
 				<button
-					class="{like ? 'item-primary' : ''} hover:bg-primary-200 h-10 w-10 rounded-full p-2"
+					class="{like ? 'item-primary' : ''} flex items-center justify-center rounded-full p-2"
 					onclick={toggleThumbsUp}
 					aria-label="Like"
 					title="Risposta utile"
 				>
-					<ThumbsUp class={like ? 'bg-inherit text-gray-500' : ''} />
+					<ThumbsUp class="h-4 w-4" />
 				</button>
 
-				{#if dislike}
-					<button
-						class="item-primary hover:bg-primary-200 ml-2 mr-2 h-10 w-10 rounded-full p-2"
-						onclick={toggleThumbsDown}
-						aria-label="Dislike"
-						title="Risposta non utile"
-					>
-						<ThumbsDown class="item-primary" />
-					</button>
-				{:else}
-					<button
-						class="ml-2 mr-2 h-10 w-10 rounded-full p-2 hover:bg-gray-200"
-						onclick={toggleThumbsDown}
-						aria-label="Dislike"
-						title="Risposta non utile"
-					>
-						<ThumbsDown class="bg-inherit text-gray-500" />
-					</button>
-				{/if}
+				<button
+					class="{dislike ? 'item-primary' : ''} flex items-center justify-center rounded-full p-2"
+					onclick={toggleThumbsDown}
+					aria-label="Dislike"
+					title="Risposta non utile"
+				>
+					<ThumbsDown class="h-4 w-4"/>
+				</button>
 			</div>
 		</div>
 	</div>

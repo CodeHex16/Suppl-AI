@@ -1,6 +1,18 @@
-<script>
+<script lang="ts">
 	let { data } = $props();
-	let timestamp = data.timestamp;
+
+
+	function formatData(stringDate: string) {
+		const date = new Date(stringDate);
+		return date.toLocaleString('it-IT', {
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			timeZone: 'Europe/Rome'
+		});
+	}
 </script>
 
 <div class="items-stretch">
@@ -9,11 +21,14 @@
 			{data.content}
 		</div>
 	</div>
-	<div class="mr-1 flex items-stretch justify-end text-xs text-gray-500">
-		{#if !timestamp}
-		<p class="mt-1">Data non definita</p>
-		{:else}
-		<p class="mt-1">{timestamp}</p>
-		{/if}
+	<div class="flex justify-end">
+		<div class="text-gray mr-4 text-sm opacity-80">
+			{#if data.timestamp}
+				<p>{formatData(data.timestamp)}</p>
+			{:else}
+				<p>Adesso</p>
+			{/if}
+		</div>
+
 	</div>
 </div>
