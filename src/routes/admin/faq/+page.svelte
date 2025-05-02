@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { ArrowLeft, Search, Ellipsis, Plus } from 'lucide-svelte';
+	import { ArrowLeft, Search, Ellipsis, Plus, Delete } from 'lucide-svelte';
 	import BottomNavBar from '$lib/components/BottomNavBar.svelte';
 	import FaqItem from '$lib/components/FaqItem.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import Faq from '$lib/components/NewFAQModal.svelte';
 	import UpdateFaq from'$lib/components/UpdateFAQModal.svelte';
+	import DeleteFaq from '$lib/components/DeleteFAQModal.svelte';
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 
 	let { data } = $props();
-    let faqs = $state(data.faqs ?? []);
+	let faqs = $state(data.faqs ?? []);
 	let showNewFAQ = $state(false);
 
 	let showUpdateFAQ = $state(false);
@@ -16,17 +17,20 @@
 
 	let query = $state('');
 	let selectedFaq = $state<number | null>(null);
+	let showDeleteFAQ = $state(false);
 
 	function toggleFaq(id: number) {
+		selectedFaq = selectedFaq === id ? null : id;
 		selectedFaq = selectedFaq === id ? null : id;
 		console.log(selectedFaq)
 	}
 
 	const filteredFaq = $derived(
 		faqs.filter((doc) =>
-			doc.question.toLowerCase().includes(query.toLowerCase()) ||
-			doc.abbr.toLowerCase().includes(query.toLowerCase()) ||
-			doc.author.toLowerCase().includes(query.toLowerCase())
+			doc.question.toLowerCase().includes(query.toLowerCase().trim()) ||
+			doc.answer.toLowerCase().includes(query.toLowerCase().trim()) ||
+			doc.title.toLowerCase().includes(query.toLowerCase().trim()) ||
+			doc.author.toLowerCase().includes(query.toLowerCase().trim())
 		)
 	);
 
@@ -48,38 +52,69 @@
 		editingFAQ = null;
 	}
 
+	function deleteFAQ(){
+        showDeleteFAQ = false;
+        editingFAQ = null;
+	}
+
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
 	<HeaderPages {data} title="Gestione FAQ" />
 
 	{#if showNewFAQ}
+	<HeaderPages {data} title="Gestione FAQ" />
+
+	{#if showNewFAQ}
 		<Faq
-			on:submitUser={(e) => newFAQ(e.detail)}
+			on:submitFaq={(e) => newFAQ(e.detail)}
 			on:cancel={() => showNewFAQ = false}
 		/>
 	{/if}
+
 	{#if showUpdateFAQ}
-	    <UpdateFaq
-		    faq={editingFAQ}
-		    on:submitFaq={(e) => updateFAQ(e.detail)}
-		    on:cancel={() => {
-			    showUpdateFAQ = false;
-			    editingFAQ = null;
-		    }}
-	    />
+	<UpdateFaq
+		faq = {editingFAQ}
+		on:submitFaq={(e) => updateFAQ(e.detail)}
+		on:cancel={() => {
+			showUpdateFAQ = false;
+			editingFAQ = null;
+		}}
+	/>
     {/if}
-	<main class="flex flex-col pt-2 flex-grow overflow-y-auto">
+	{#if showDeleteFAQ}
+	<DeleteFaq
+	    faq = {editingFAQ}
+	    on:submitFaq= {() => deleteFAQ()}
+	    on:cancel={() => {
+		    showDeleteFAQ = false
+            editingFAQ = null;
+	 	    }
+		}
+    />
+    {/if}
+
+
+<main class="flex flex-col pt-2 flex-grow">
+	<!-- Barra di ricerca e pulsante per nuova faq -->
+
 		<!-- Lista FAQ -->
+		{#if filteredFaq.length > 0}
+			{#each filteredFaq as faq (faq.id)}
 		{#if filteredFaq.length > 0}
 			{#each filteredFaq as faq (faq.id)}
 				<FaqItem
 					{faq}
 					open={selectedFaq === faq.id}
+					open={selectedFaq === faq.id}
 					on:toggle={() => toggleFaq(faq.id)}
 					on:edit={(e) => {
 						editingFAQ = e.detail;
 						showUpdateFAQ = true;
+					}}
+					on:delete={(e) =>{
+						editingFAQ = e.detail;
+						showDeleteFAQ = true;
 					}}
 				/>
 			{/each}

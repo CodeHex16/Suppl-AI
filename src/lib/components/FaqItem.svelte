@@ -6,21 +6,21 @@
 	
 	const dispatch = createEventDispatcher();
 
-	const abbrQuestion = faq.abbr.length > 30
-		? faq.abbr.slice(0, 40) + '…'
-		: faq.abbr;
+	const abbrQuestion = faq.title.length > 30
+		? faq.title.slice(0, 40) + '…'
+		: faq.title;
 </script>
 
 <div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">
 	<div class="flex items-center justify-between">
 		<div>
-			<h3 class="text-lg font-semibold">{open ? faq.abbr : abbrQuestion}</h3>
+			<h3 class="text-lg font-semibold">{open ? faq.title : abbrQuestion}</h3>
 			<div class="flex space-x-4">
 				<button class="flex items-center text-yellow-500 hover:text-yellow-600 transition" onclick={() => dispatch('edit', faq)}>
 					<PenIcon class="mr-1 h-4 w-4" />
 					<span>Modifica</span>
 				</button>
-				<button class="flex items-center text-red-600 hover:text-red-700 transition">
+				<button class="flex items-center text-red-600 hover:text-red-700 transition" onclick={() => dispatch('delete', faq)}>
 					<Trash2 class="mr-1 h-4 w-4" />
 					<span>Elimina</span>
 				</button>
@@ -38,6 +38,7 @@
 		<div class="mt-4 border-t pt-4 text-sm text-gray-700">
 			<p class="text-sm text-gray">{faq.author} • {faq.creationDate}</p>
 			<p class="mb-4 text-gray">{faq.question}</p>
+			<p class="mb-4 text-gray">{faq.answer}</p>
 		</div>
 	{/if}
 </div>

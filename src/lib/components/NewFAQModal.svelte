@@ -5,14 +5,16 @@
 
 
 	let question = '';
-	let abbr = '';
+	let title = '';
 	let author = '';
+	let answer = '';
 
 	function submitForm() {
 		dispatch('submitFaq', {
 			question,
-			abbr,
+			title,
 			author,
+			answer,
 			creationDate: new Date().toISOString()
 		});
 	}
@@ -26,10 +28,13 @@
 			<input type="text" bind:value={author} placeholder="Autore" required class="w-full pl-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
 		</div>
 		<div class="mb-3">
-			<input type="text" bind:value={abbr} placeholder="Domanda abbreviata" required class="w-full pl-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
+			<input type="text" bind:value={title} placeholder="Domanda abbreviata" required class="w-full pl-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
 		</div>
 		<div class="mb-3">
 			<input type="text" bind:value={question} placeholder="Domanda completa" required class="w-full pl-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
+		</div>
+		<div class="mb-3">
+			<input type="text" bind:value={answer} placeholder="Risposta" required class="w-full pl-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
 		</div>
 
 		<div class="flex justify-end space-x-2">

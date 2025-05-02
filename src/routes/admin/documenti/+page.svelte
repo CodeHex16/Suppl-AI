@@ -4,6 +4,7 @@
 	import DocumentItem from '$lib/components/Document.svelte';
 	import Doc from '$lib/components/NewDocumentModal.svelte';
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
+	import DeleteDocument from '$lib/components/DeleteDocumentModal.svelte';
 
 	let { data } = $props();
 
@@ -12,6 +13,8 @@
 
 	let query = $state('');
 	let selectedDocument = $state<number | null>(null);
+
+	let eliminateDocument = $state(false);
 
 	function toggleDocument(id: number) {
 		selectedDocument = selectedDocument === id ? null : id;
@@ -30,6 +33,11 @@
 		documents = [...documents, {id: Date.now(), ...doc}];
 		showNewDocument = false;
 	}
+
+	function deleteDocumentRequest(){
+		eliminateDocument = true;
+		selectedDocument = null;
+	}
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
@@ -38,7 +46,19 @@
 	{#if showNewDocument}
 	<Doc
 		on:submitDocument={(e) => newDocument(e.detail)}
-		on:cancel={() => showNewDocument = false}
+		on:cancel={() =>
+			showNewDocument = false}
+	/>
+   {/if}
+   {#if eliminateDocument}
+	<DeleteDocument
+	    document = {selectedDocument}
+		on:submitDocument={() => deleteDocumentRequest()}
+		on:cancel={() => {
+			eliminateDocument = false;
+            selectedDocument = null;
+		    }
+		}
 	/>
    {/if}
 
@@ -51,6 +71,7 @@
 					{document}
 					open={selectedDocument === document.id}
 					on:toggle={() => toggleDocument(document.id)}
+					on:delete={() => deleteDocumentRequest()}
 				/>
 			{/each}
 		{:else}
