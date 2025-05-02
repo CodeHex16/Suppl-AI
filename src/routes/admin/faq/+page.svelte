@@ -4,7 +4,7 @@
 	import FaqItem from '$lib/components/FaqItem.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import Faq from '$lib/components/NewFAQModal.svelte';
-	import UpdateFaq from'$lib/components/UpdateFAQModal.svelte';
+	import UpdateFaq from '$lib/components/UpdateFAQModal.svelte';
 	import DeleteFaq from '$lib/components/DeleteFAQModal.svelte';
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 
@@ -22,21 +22,22 @@
 	function toggleFaq(id: number) {
 		selectedFaq = selectedFaq === id ? null : id;
 		selectedFaq = selectedFaq === id ? null : id;
-		console.log(selectedFaq)
+		console.log(selectedFaq);
 	}
 
 	const filteredFaq = $derived(
-		faqs.filter((doc) =>
-			doc.question.toLowerCase().includes(query.toLowerCase().trim()) ||
-			doc.answer.toLowerCase().includes(query.toLowerCase().trim()) ||
-			doc.title.toLowerCase().includes(query.toLowerCase().trim()) ||
-			doc.author.toLowerCase().includes(query.toLowerCase().trim())
+		faqs.filter(
+			(doc) =>
+				doc.question.toLowerCase().includes(query.toLowerCase().trim()) ||
+				doc.answer.toLowerCase().includes(query.toLowerCase().trim()) ||
+				doc.title.toLowerCase().includes(query.toLowerCase().trim()) ||
+				doc.author.toLowerCase().includes(query.toLowerCase().trim())
 		)
 	);
 
 	function newFAQ(faq: any) {
 		console.log('Nuova FAQ aggiunta:', faq); // 👈 Log della nuova FAQ
-		faqs = [...faqs, {id: Date.now(), ...faq}];
+		faqs = [...faqs, { id: Date.now(), ...faq }];
 		showNewFAQ = false;
 	}
 
@@ -52,47 +53,41 @@
 		editingFAQ = null;
 	}
 
-	function deleteFAQ(){
-        showDeleteFAQ = false;
-        editingFAQ = null;
+	function deleteFAQ() {
+		showDeleteFAQ = false;
+		editingFAQ = null;
 	}
-
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
 	<HeaderPages {data} title="Gestione FAQ" />
 
 	{#if showNewFAQ}
-		<Faq
-			on:submitFaq={(e) => newFAQ(e.detail)}
-			on:cancel={() => showNewFAQ = false}
-		/>
+		<Faq on:submitFaq={(e) => newFAQ(e.detail)} on:cancel={() => (showNewFAQ = false)} />
 	{/if}
 
 	{#if showUpdateFAQ}
-	<UpdateFaq
-		faq = {editingFAQ}
-		on:submitFaq={(e) => updateFAQ(e.detail)}
-		on:cancel={() => {
-			showUpdateFAQ = false;
-			editingFAQ = null;
-		}}
-	/>
-    {/if}
+		<UpdateFaq
+			faq={editingFAQ}
+			on:submitFaq={(e) => updateFAQ(e.detail)}
+			on:cancel={() => {
+				showUpdateFAQ = false;
+				editingFAQ = null;
+			}}
+		/>
+	{/if}
 	{#if showDeleteFAQ}
-	<DeleteFaq
-	    faq = {editingFAQ}
-	    on:submitFaq= {() => deleteFAQ()}
-	    on:cancel={() => {
-		    showDeleteFAQ = false
-            editingFAQ = null;
-	 	    }
-		}
-    />
-    {/if}
+		<DeleteFaq
+			faq={editingFAQ}
+			on:submitFaq={() => deleteFAQ()}
+			on:cancel={() => {
+				showDeleteFAQ = false;
+				editingFAQ = null;
+			}}
+		/>
+	{/if}
 
-
-	<main class="flex flex-col pt-2 flex-grow">
+	<main class="flex flex-grow flex-col pt-2">
 		<!-- Barra di ricerca e pulsante per nuova faq -->
 
 		<!-- Lista FAQ -->
@@ -106,31 +101,31 @@
 						editingFAQ = e.detail;
 						showUpdateFAQ = true;
 					}}
-					on:delete={(e) =>{
+					on:delete={(e) => {
 						editingFAQ = e.detail;
 						showDeleteFAQ = true;
 					}}
 				/>
 			{/each}
 		{:else}
-			<p class="text-center text-gray-500 mt-10">Nessuna FAQ trovata.</p>
+			<p class="mt-10 text-center text-gray-500">Nessuna FAQ trovata.</p>
 		{/if}
 
 		<!-- Ricerca + Nuova FAQ -->
 		<div class="rounded-t-3xl bg-white p-4">
-			<div class="flex justify-between items-center mb-4">
-				<div class="relative flex-grow mr-4">
+			<div class="mb-4 flex items-center justify-between">
+				<div class="relative mr-4 flex-grow">
 					<input
 						type="text"
 						bind:value={query}
 						placeholder="Cerca FAQ..."
-                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white"
+						class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4"
 					/>
-					<Search class="absolute left-3 top-2.5 w-5 h-5 text-gray-500" />
+					<Search class="absolute left-3 top-2.5 h-5 w-5 text-gray-500" />
 				</div>
 				<button
-					onclick={() => showNewFAQ = true}
-                    class="flex items-center justify-center h-12 w-12 rounded-full item-primary transition duration-150 ease-in"
+					onclick={() => (showNewFAQ = true)}
+					class="item-primary flex h-12 w-12 items-center justify-center rounded-full transition duration-150 ease-in"
 				>
 					<Plus />
 				</button>
@@ -139,5 +134,4 @@
 	</main>
 
 	<BottomNavBar {data} />
-
 </div>

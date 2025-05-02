@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { ChevronDown, Trash2, PenIcon, Mail, Tag } from 'lucide-svelte';
 
-	let { user, open, onEdit, onToggle } = $props();
+	let { user, open, onEdit, onToggle, onDelete } = $props();
 
-	function deleteUser() {
-		// Implementa la logica per eliminare l'utente
-	}
+
 </script>
 
 <div class="mx-4 mb-4 rounded-xl bg-white p-4 shadow-md transition">
@@ -22,7 +20,7 @@
 				</button>
 				<button
 					class="flex items-center text-red-600 transition hover:text-red-700"
-					onclick={deleteUser}
+					onclick={onDelete}
 				>
 					<Trash2 class="mr-1 h-4 w-4" />
 					<span>Elimina</span>

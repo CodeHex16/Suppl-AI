@@ -65,10 +65,10 @@
 
 		<div class="flex justify-end space-x-2">
 			<button
-				class="rounded-lg bg-gray-200 px-4 py-2 text-gray-700 transition duration-150 ease-in hover:bg-gray-300"
+				class="rounded-lg bg-gray px-4 py-2 text-gray-700 transition duration-150 ease-in hover:bg-gray-300"
 				onclick={onCancel}>Annulla</button
 			>
-			<button class="item-primary rounded-lg px-4 py-2 text-white" onclick={submitForm}
+			<button class="item-primary rounded-lg px-4 py-2" onclick={submitForm}
 				>Salva</button
 			>
 		</div>

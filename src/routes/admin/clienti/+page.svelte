@@ -9,7 +9,6 @@
 
 	let { data } = $props();
 	let users = $state(data.users ?? []);
-	// $inspect(users);
 	let showModalNew = $state(false);
 	let showModalDeleteUserConfirm = $state(false);
 
@@ -21,7 +20,6 @@
 
 	function toggleUser(email: string) {
 		selectedUser = selectedUser === email ? null : email;
-		console.log(selectedUser);
 	}
 
 	const utentiFiltrati = $derived(
@@ -51,36 +49,50 @@
 		showModalNew = false;
 	}
 
-	function updateUser(user: any) {
-		console.log('Utente aggiornato (input):', user); // 👈 Log prima dell'update
-
+	async function updateUser(user: any) {
 		users = users.map((u) => (u.id === user.id ? { ...u, ...user } : u));
-		console.log('Lista utenti aggiornata:', users); // 👈 Log della lista aggiornata
 
-		// Log finale dello store `users` (assicurati che venga aggiornato)
-		console.log('Valore attuale dello stato `users`:', users);
-
+		const ris = await fetch(`/api/users`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(user)
+		});
+		if (ris.ok) {
+			const updatedUser = await ris.json();
+			users = users.map((u) => (u.id === updatedUser.user.id ? updatedUser.user : u));
+		} else {
+			console.error('Error updating user:', await ris.text());
+		}
 		showModalUpdate = false;
 		editingUser = null;
+		selectedUser = null;
 	}
 
 	function openDeleteUserConfirm() {
 		showModalDeleteUserConfirm = true;
+		console.log('openDeleteUserConfirm', showModalDeleteUserConfirm);
 	}
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
 	<HeaderPages {data} title="Gestione utenti" />
 	{#if showModalDeleteUserConfirm}
-	<DeleteUserConfirmModal
-		user={$editingUser}
-		on:cancel={() => showModalDeleteUserConfirm = false}
-	/>
-{/if}
+		<DeleteUserConfirmModal
+			user={editingUser}
+			onCancel={() => (showModalDeleteUserConfirm = false)}
+			onSubmitUser={() => {
+				users = users.filter((u) => u.email !== editingUser.email);
+				showModalDeleteUserConfirm = false;
+				editingUser = null;
+			}}
+		/>
+	{/if}
 
-{#if showModalNew}
-<Modal onSubmitUser={(user) => newUser(user)} onCancel={() => (showModalNew = false)} />
-{/if}
+	{#if showModalNew}
+		<Modal onSubmitUser={(user) => newUser(user)} onCancel={() => (showModalNew = false)} />
+	{/if}
 
 	{#if showModalUpdate}
 		<UpdateModal
@@ -100,17 +112,6 @@
 			{#if users.length === 0}
 				<p class="mt-10 text-center text-gray-500">Nessun utente trovato.</p>
 			{/if}
-			{#if selectedUser === 'all'}
-				<UserItem
-					user={{ name: 'Tutti gli utenti', email: 'all', role: 'all' }}
-					open={true}
-					onToggle={() => toggleUser('all')}
-					onEdit={(editedUser) => {
-						editingUser = editedUser;
-						showModalUpdate = true;
-					}}
-				/>
-			{/if}
 
 			{#if utentiFiltrati.length > 0}
 				{#each utentiFiltrati as user (user.email)}
@@ -118,9 +119,13 @@
 						{user}
 						open={selectedUser === user.email}
 						onToggle={() => toggleUser(user.email)}
-						onEdit={(editedUser) => {
-							editingUser = editedUser;
+						onEdit={() => {
+							editingUser = user;
 							showModalUpdate = true;
+						}}
+						onDelete={() => {
+							editingUser = user;
+							openDeleteUserConfirm();
 						}}
 					/>
 				{/each}
