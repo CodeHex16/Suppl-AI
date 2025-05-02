@@ -5,25 +5,19 @@
 <div class="grid grid-cols-2 gap-4 px-4 mb-4">
 	<a href="/admin/clienti" class="admin-btn item-primary">
 		<User class="h-6 w-6" />
-		Clienti
+		<span class="truncate">Clienti</span>
 	</a>
 	<a href="/admin/documenti" class="admin-btn item-primary">
 		<FileText class="h-6 w-6" />
-		Documenti
+		<span class="truncate">Documenti</span>
 	</a>
 	<a href="/admin/statistiche" class="admin-btn item-primary">
 		<BarChart class="h-6 w-6" />
-		Statistiche
+		<span class="truncate">Statistiche</span>
 	</a>
 	<a href="/admin/faq" class="admin-btn item-primary">
 		<MessageCircleQuestion class="h-6 w-6" />
-		FAQ
-	</a>
-</div>
-<div class="mb-4 px-4">
-	<a href="/admin/gestione_piattaforma" class="admin-btn item-primary">
-		<Settings class="h-6 w-6" />
-		Impostazioni
+		<span class="truncate">FAQ</span>
 	</a>
 </div>
 

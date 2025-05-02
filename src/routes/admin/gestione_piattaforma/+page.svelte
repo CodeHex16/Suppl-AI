@@ -9,7 +9,7 @@
 
 	let { data } = $props();
 
-	let cssColor = "#ffffff"; // Valore iniziale, verrà sovrascritto in onMount
+	let cssColor = '#ffffff'; // Valore iniziale, verrà sovrascritto in onMount
 
 	let primaryColor = $state('#007BFF'); // default fallback
 	let chatRetention = $state('30');
@@ -21,7 +21,9 @@
 	let faviconName = $state('Nessun file selezionato');
 
 	onMount(() => {
-		const currentPrimary = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
+		const currentPrimary = getComputedStyle(document.documentElement)
+			.getPropertyValue('--color-primary')
+			.trim();
 		if (currentPrimary) {
 			cssColor = currentPrimary; // Salva il colore CSS iniziale
 			primaryColor = currentPrimary; // Imposta lo stato iniziale
@@ -39,7 +41,7 @@
 		setColors();
 	});
 
-	function setColors(){
+	function setColors() {
 		if (typeof document === 'undefined') return;
 
 		const color = primaryColor; // Accesso diretto
@@ -51,11 +53,10 @@
 		document.documentElement.style.setProperty('--color-primary-hover', hoverColor);
 	}
 
-
 	async function uploadFile(file: File, name: string) {
 		const formData = new FormData();
 		formData.append('file', file);
-		formData.append('name', name)
+		formData.append('name', name);
 
 		const res = await fetch(`/api/upload_image`, {
 			method: 'POST',
@@ -69,7 +70,6 @@
 		}
 	}
 
-
 	async function handleSubmit() {
 		console.log('Colore primario:', primaryColor); // Accesso diretto
 		console.log('Durata chat:', chatRetention); // Accesso diretto
@@ -77,7 +77,6 @@
 		if (logoLightFile) await uploadFile(logoLightFile, 'logo_light.png'); // Accesso diretto
 		if (logoDarkFile) await uploadFile(logoDarkFile, 'logo_dark.png'); // Accesso diretto
 		if (faviconFile) await uploadFile(faviconFile, 'favicon.png'); // Accesso diretto
-
 
 		const resColor = await fetch('/api/update_colors', {
 			method: 'POST',
@@ -107,10 +106,12 @@
 		const B = (num & 0x0000ff) - amt;
 		return (
 			'#' +
-			(0x1000000 +
+			(
+				0x1000000 +
 				(R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
 				(G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
-				(B < 255 ? (B < 1 ? 0 : B) : 255))
+				(B < 255 ? (B < 1 ? 0 : B) : 255)
+			)
 				.toString(16)
 				.slice(1)
 		);
@@ -126,79 +127,77 @@
 	}
 </script>
 
-
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
 	<HeaderPages {data} title="Impostazioni" />
 
-	<main class="flex flex-col pt-2 flex-grow">
+	<main class="flex flex-grow flex-col">
 		<form onsubmit={handleSubmit}>
-
-			<!-- Colore primario -->
-			<div class="mb-4 rounded-xl bg-white shadow-md p-4 transition">
-				<label class="block mb-2 font-medium text-sm">
-					Colore primario <span class="text-xs">(Salvare le impostazioni per applicare)</span>
-				</label>
-				<div class="flex items-center justify-between">
-					<div class="flex items-center gap-4">
-						<input
-							type="color"
-							bind:value={primaryColor} 
-							class="w-12 h-12 cursor-pointer"
-						/>
-						<span class="text-sm text-gray">{primaryColor}</span>
+			<div class="max-h-[calc(100vh-17em)] overflow-y-auto px-4">
+				<!-- Colore primario -->
+				<div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">
+					<label for="color" class="mb-4 block font-semibold"> Colore primario </label>
+					<div class="flex items-center justify-between">
+						<div class="flex items-center gap-4">
+							<div class="relative h-12 w-12">
+								<div
+									class="absolute inset-0 rounded-full border border-gray-300 dark:border-gray-600 bg-[var(--color-primary)]"
+								></div>
+								<input
+									id="color"
+									type="color"
+									bind:value={primaryColor}
+									class="absolute inset-0 h-full w-full cursor-pointer rounded-full opacity-0"
+									aria-label="Seleziona colore primario"
+								/>
+							</div>
+							<span class="text-sm">{primaryColor}</span>
+						</div>
+						<button
+							onclick={resetPrimaryColor}
+							type="button"
+							class="item-primary rounded-full px-4 py-2"
+						>
+							Reset
+						</button>
 					</div>
-					<button
-						onclick={resetPrimaryColor}
-						type="button"
-						class="rounded-lg py-2 px-4 item-primary"
-					>
-						Reset
-					</button>
 				</div>
-			</div>
 
-			<!-- Passa le variabili $state direttamente -->
-			<FileUpload
-				label="Logo della WebApp"
-				contextLabel="Light Mode"
-				bind:file={logoLightFile}
-				bind:name={logoLightName}
-			/>
+				<FileUpload
+					label="Logo della WebApp"
+					contextLabel="Light Mode"
+					bind:file={logoLightFile}
+					bind:name={logoLightName}
+				/>
 
-			<FileUpload
-				label="Logo della WebApp"
-				contextLabel="Dark Mode"
-				bind:file={logoDarkFile}
-				bind:name={logoDarkName}
-			/>
+				<FileUpload
+					label="Logo della WebApp"
+					contextLabel="Dark Mode"
+					bind:file={logoDarkFile}
+					bind:name={logoDarkName}
+				/>
 
-			<FileUpload
-				label="Favicon della WebApp"
-				bind:file={faviconFile}
-				bind:name={faviconName}
-			/>
+				<FileUpload label="Favicon della WebApp" bind:file={faviconFile} bind:name={faviconName} />
 
-
-			<!-- Durata salvataggio chat -->
-			<div class="mb-4 rounded-xl bg-white shadow-md p-4 transition">
-				<label class="block mb-2 font-medium text-sm">Durata salvataggio chat</label>
-				<select
-					bind:value={chatRetention}
-					class="w-full rounded-lg border border-gray-300 bg-white p-2 focus:outline-none"
-				>
-					<option value="30">30 giorni</option>
-					<option value="60">60 giorni</option>
-					<option value="90">90 giorni</option>
-					<option value="365">1 anno</option>
-				</select>
+				<!-- Durata salvataggio chat -->
+				<div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">
+					<label for="chatRetention" class="mb-4 block font-semibold">Durata salvataggio chat</label
+					>
+					<select
+						bind:value={chatRetention}
+						id="chatRetention"
+						class="w-full rounded-full border border-gray-300 bg-white px-4 py-4 placeholder:opacity-50 dark:border-gray-500"
+					>
+						<option value="30">30 giorni</option>
+						<option value="60">60 giorni</option>
+						<option value="90">90 giorni</option>
+						<option value="365">1 anno</option>
+					</select>
+				</div>
 			</div>
 
 			<!-- Pulsante Salva -->
 			<div class="rounded-t-3xl bg-white p-4 shadow-md">
-				<button
-					type="submit"
-					class="mt-2 w-full mb-4 py-3 rounded-lg item-primary"
-				>
+				<button type="submit" class="item-primary mb-4 w-full rounded-full py-3">
 					Salva impostazioni
 				</button>
 			</div>

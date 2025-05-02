@@ -4,6 +4,7 @@
 	import HomeAdmin from '$lib/components/HomeAdmin.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import DeleteChatModal from '$lib/components/DeleteChatModal.svelte';
+	import { Settings } from 'lucide-svelte';
 
 	let { data } = $props();
 	let isAdmin = $derived(data.userScopes.includes('admin') === true);
@@ -14,6 +15,14 @@
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl overflow-x-hidden">
 	<header class="relative py-4">
+		<div class="absolute left-4 top-4 z-50">
+			<a
+				href="/admin/gestione_piattaforma"
+				class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full item-primary p-3 shadow-md transition"
+			>
+				<Settings class="h-6 w-6" />
+			</a>
+		</div>
 		<div class="absolute right-4 top-4 z-50">
 			<!-- Toggle in alto a destra -->
 			<ThemeToggle {data} />
