@@ -19,7 +19,7 @@ export const actions: Actions = {
 		const username = data.get('username')?.toString();
 		const password = data.get('password')?.toString();
 		const remember_me = data.get('remember_me')?.toString() === 'on' ? 'true' : 'false';
-		console.log("remember_me", remember_me);
+		console.log("login data", data);
 
 		if (!username || !password) {
 			return fail(400, { error: 'Username e password sono richiesti' });

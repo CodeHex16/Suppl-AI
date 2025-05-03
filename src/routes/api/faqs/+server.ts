@@ -4,7 +4,7 @@ import { env } from '$env/dynamic/public';
 
 const DATABASE_URL = env.PUBLIC_DATABASE_URL;
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
+export const POST: RequestHandler = async ({ request, cookies, fetch }) => {
 	try {
 		const token = cookies.get('token');
 		const req = await request.json();
