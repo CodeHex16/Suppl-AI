@@ -1,27 +1,20 @@
 <script lang="ts">
-	let { onsubmitFaq, oncancel } = $props<{
-		onsubmitFaq: (faq: {
-			question: string;
-			title: string;
-			author: string;
-			answer: string;
-			creationDate: string;
-		}) => void;
-		oncancel: () => void;
-	}>();
+	let { onSubmitFaq, onCancel } = $props();
 
 	import { User, HelpCircle, MessageSquareText, Tag } from 'lucide-svelte';
 
 	let question = $state('');
 	let title = $state('');
-	let author = $state('');
 	let answer = $state('');
 
 	function submitForm() {
-		onsubmitFaq({
-			question,
+		if (!title || !question || !answer) {
+			alert('Compila tutti i campi');
+			return;
+		}
+		onSubmitFaq({
 			title,
-			author,
+			question,
 			answer,
 			creationDate: new Date().toISOString()
 		});
@@ -38,6 +31,7 @@
 				bind:value={title}
 				placeholder="Titolo FAQ"
 				name="title"
+				maxlength="30"
 				required
 				class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 placeholder:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
 			/>
@@ -49,7 +43,7 @@
 				bind:value={question}
 				placeholder="Domanda completa"
 				required
-				rows="3"
+				rows="2"
 				class="w-full resize-none rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 placeholder:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
 			></textarea>
 		</div>
@@ -59,7 +53,7 @@
 				bind:value={answer}
 				placeholder="Risposta"
 				required
-				rows="5"
+				rows="6"
 				class="w-full resize-none rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 placeholder:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
 			></textarea>
 		</div>
@@ -67,11 +61,11 @@
 		<div class="flex justify-end space-x-2">
 			<button
 				class="bg-gray rounded-lg px-4 py-2 transition duration-150 ease-in"
-				onclick={oncancel}>Annulla</button
+				onclick={onCancel}>Annulla</button
 			>
 			<button
 				class="item-primary rounded-lg px-4 py-2 transition duration-150 ease-in"
-				onclick={submitForm}>Salva</button
+				onclick={submitForm}>Aggiungi</button
 			>
 		</div>
 	</div>

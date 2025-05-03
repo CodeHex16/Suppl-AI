@@ -1,77 +1,67 @@
 <script lang="ts">
-	let { faq, onsubmitFaq, oncancel } = $props<{
-		faq: any;
-		onsubmitFaq: (faq: any) => void;
-		oncancel: () => void;
-	}>();
+	let { faq, onSubmitFaq, onCancel } = $props();
+	import { User, HelpCircle, MessageSquareText, Tag } from 'lucide-svelte';
 
-	let id = faq.id;
-	let author = $state(faq.author);
+	let id = $state(faq._id);
 	let question = $state(faq.question);
 	let title = $state(faq.title);
 	let answer = $state(faq.answer);
-	let creationDate = faq.creationDate;
 
 	function submitForm() {
-		onsubmitFaq({
+		onSubmitFaq({
 			id,
-			author,
 			question,
 			title,
 			answer,
-			creationDate
 		});
 	}
 </script>
 
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
 	<div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
-		<h2 class="mb-4 text-lg font-semibold">Modifica FAQ</h2>
-		<div class="mb-3">
-			<input
-				type="text"
-				bind:value={author}
-				placeholder="Autore"
-				required
-				class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-			/>
-		</div>
-		<div class="mb-3">
+		<h2 class="mb-4 text-center text-lg font-semibold">Modifica FAQ</h2>
+		<div class="relative mb-3">
+			<Tag class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
 			<input
 				type="text"
 				bind:value={title}
-				placeholder="Domanda abbreviata"
+				placeholder="Titolo FAQ"
+				name="title"
+				maxlength="30"
 				required
-				class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+				class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 placeholder:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
 			/>
 		</div>
-		<div class="mb-3">
-			<input
-				type="text"
+
+		<div class="relative mb-3">
+			<HelpCircle class="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+			<textarea
 				bind:value={question}
 				placeholder="Domanda completa"
 				required
-				class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-			/>
+				rows="2"
+				class="w-full resize-none rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 placeholder:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+			></textarea>
 		</div>
-		<div class="mb-3">
-			<input
-				type="text"
+		<div class="relative mb-3">
+			<MessageSquareText class="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+			<textarea
 				bind:value={answer}
 				placeholder="Risposta"
 				required
-				class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-			/>
+				rows="6"
+				class="w-full resize-none rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 placeholder:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+			></textarea>
 		</div>
 
 		<div class="flex justify-end space-x-2">
 			<button
 				class="bg-gray rounded-lg px-4 py-2 transition duration-150 ease-in"
-				onclick={oncancel}>Annulla</button
+				onclick={onCancel}>Annulla</button
 			>
 			<button
 				class="item-primary rounded-lg px-4 py-2 transition duration-150 ease-in"
-				onclick={submitForm}>Salva</button
+				onclick={submitForm}>Modifica</button
 			>
 		</div>
 	</div>

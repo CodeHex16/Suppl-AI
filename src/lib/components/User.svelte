@@ -28,7 +28,7 @@
 	{#if open}
 		<div
 			class="mt-4 flex space-x-4 border-t border-gray-500 border-opacity-50 pt-4"
-			transition:slide={{ duration: 150 }}
+			transition:slide={{ duration: 200 }}
 		>
 			<button
 				class="box-border flex items-center rounded-full border-2 border-amber-500 px-4 py-2 transition hover:bg-amber-500"

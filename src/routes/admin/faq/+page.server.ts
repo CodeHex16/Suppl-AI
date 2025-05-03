@@ -37,10 +37,9 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 		throw error(500, 'Formato dati FAQ non valido');
 	}
 	
-	console.log('Risposta API per le FAQ:', ris);
 
     return {
-        faqs: []
+        faqs: ris
     };
 };
 

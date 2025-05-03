@@ -12,7 +12,7 @@
 				<ArrowLeft />
 			</div>
 		</a>
-		<div class="h-12 w-fit justify-self-center rounded-full bg-white p-3 px-6 transition shadow-md">
+		<div class="h-12 w-fit justify-self-center rounded-full bg-white p-3 px-6 transition shadow-md flex items-center justify-center">
 			<h1 class="text-center text-lg font-semibold">{title}</h1>
 		</div>
 		<ThemeToggle {data}/>

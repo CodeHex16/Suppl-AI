@@ -10,7 +10,6 @@
 	}
 
 	function handleDelete() {
-
 		deleteChat();
 		isMenuOpen = false;
 	}
@@ -44,7 +43,7 @@
 				class="absolute right-0 top-full z-10 mt-2 w-auto origin-top-right"
 				role="menu"
 				aria-orientation="vertical"
-				transition:fly={{ duration: 150 }}
+				transition:fly={{ duration: 200 }}
 			>
 				<button
 					type="button"

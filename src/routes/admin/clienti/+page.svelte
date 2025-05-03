@@ -76,7 +76,7 @@
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
-	<HeaderPages {data} title="Gestione utenti" />
+	<HeaderPages {data} title="Gestione clienti" />
 	{#if showModalDeleteUserConfirm}
 		<DeleteUserConfirmModal
 			user={editingUser}
@@ -106,7 +106,7 @@
 
 	<main class="flex flex-col overflow-hidden pt-2">
 		<div
-			class="scroll-snap-y-container flex max-h-[calc(100vh-18em)] flex-col gap-2 overflow-y-auto"
+			class="scroll-snap-y-container flex max-h-[calc(100vh-17em)] flex-col gap-2 overflow-y-auto"
 		>
 			{#if users.length === 0}
 				<p class="mt-10 text-center text-gray-500">Nessun utente trovato.</p>
@@ -129,7 +129,7 @@
 					/>
 				{/each}
 			{:else}
-				<p class="text-center text-gray p-8">Ancora nessun cliente</p>
+				<p class="text-gray p-8 text-center">Ancora nessun cliente</p>
 			{/if}
 		</div>
 

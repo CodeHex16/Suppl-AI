@@ -1,28 +1,37 @@
 <script lang="ts">
-	import { ArrowLeft, Search, Ellipsis, Plus, Delete } from 'lucide-svelte';
+	import { Search, Plus } from 'lucide-svelte';
 	import BottomNavBar from '$lib/components/BottomNavBar.svelte';
 	import FaqItem from '$lib/components/FaqItem.svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import Faq from '$lib/components/NewFAQModal.svelte';
 	import UpdateFaq from '$lib/components/UpdateFAQModal.svelte';
 	import DeleteFaq from '$lib/components/DeleteFAQModal.svelte';
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
+	import { invalidateAll } from '$app/navigation';
+
+	interface FAQ {
+		_id: string;
+		title: string;
+		question: string;
+		answer: string;
+		created_at: string;
+		updated_at: string;
+	}
 
 	let { data } = $props();
-	let faqs = $state(data.faqs ?? []);
-	$inspect("faqs",faqs);
+	// Explicitly type the faqs state variable
+	let faqs = $state<FAQ[]>(data.faqs ?? []);
 	let showNewFAQ = $state(false);
 
 	let showUpdateFAQ = $state(false);
-	let editingFAQ = $state<any>(null);
+
+	let editingFAQ = $state<FAQ | null>(null);
 
 	let query = $state('');
-	let selectedFaq = $state<number | null>(null);
+	let selectedFaqId = $state<string | null>(null);
 	let showDeleteFAQ = $state(false);
 
-	function toggleFaq(id: number) {
-		selectedFaq = selectedFaq === id ? null : id;
-		console.log(selectedFaq);
+	function toggleFaq(faq: FAQ) {
+		selectedFaqId = selectedFaqId === faq._id ? null : faq._id;
 	}
 
 	const filteredFaq = $derived(
@@ -30,48 +39,67 @@
 			(doc) =>
 				doc.question.toLowerCase().includes(query.toLowerCase().trim()) ||
 				doc.answer.toLowerCase().includes(query.toLowerCase().trim()) ||
-				doc.title.toLowerCase().includes(query.toLowerCase().trim()) ||
-				doc.author.toLowerCase().includes(query.toLowerCase().trim())
+				doc.title.toLowerCase().includes(query.toLowerCase().trim())
 		)
 	);
 
-	function newFAQ(faq: any) {
-		console.log('Nuova FAQ aggiunta:', faq); // 👈 Log della nuova FAQ
-		faqs = [...faqs, { id: Date.now(), ...faq }];
-		showNewFAQ = false;
+	async function newFAQ(faq: { question: string; answer: string; title: string }) {
+		console.log('Nuova FAQ aggiunta:', faq);
+		const ris = await fetch('/api/faqs', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(faq)
+		});
+		if (ris.ok) {
+			const faq = await ris.json();
+
+			faqs = [...faqs, faq.faq];
+			showNewFAQ = false;
+		} else {
+			console.error('Error adding FAQ:', await ris.text());
+		}
 	}
 
-	function updateFAQ(faq: any) {
-		console.log('Faq aggiornata (input):', faq); // 👈 Log prima dell'update
-
-		faqs = faqs.map((u) => (u.id === faq.id ? { ...u, ...faq } : u));
-		console.log('Lista faq aggiornata:', faqs); // 👈 Log della lista aggiornata
-
-		console.log('Valore attuale dello stato `faqs`:', faqs);
-
-		showUpdateFAQ = false;
-		editingFAQ = null;
+	async function updateFAQ(faq: { id: string; question: string; answer: string; title: string }) {
+		const ris = await fetch(`/api/faqs`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(faq)
+		});
+		if (ris.ok) {
+			await invalidateAll();
+			faqs = faqs.map((f) => (f._id === faq.id ? { ...f, ...faq } : f));
+			showUpdateFAQ = false;
+		} else {
+			console.error('Error updating FAQ:', await ris.text());
+		}
 	}
 
-	function deleteFAQ() {
-		showDeleteFAQ = false;
-		editingFAQ = null;
-	}
+	async function deleteFAQ(form: any) {
 
-	function handleNewFAQSubmit(faqData: any) {
-		newFAQ(faqData);
-	}
-
-	function handleUpdateFAQSubmit(faqData: any) {
-		updateFAQ(faqData);
-	}
-
-	function handleDeleteFAQSubmit() {
-		deleteFAQ(); // Assumendo che deleteFAQ gestisca la logica di eliminazione (es. chiamata API) e aggiorni lo stato `faqs`
-		// Se deleteFAQ non aggiorna lo stato, fallo qui:
-		// faqs = faqs.filter(f => f.id !== editingFAQ.id);
-		// showDeleteFAQ = false;
-		// editingFAQ = null;
+		console.log('FAQ eliminata', form.get('id'));
+		const ris = await fetch(`/api/faqs`, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				id: form.get('id'),
+				current_password: form.get('current_password')
+			})
+		});
+		if (ris.ok) {
+			faqs = faqs.filter((f) => f._id !== form.get('id'));
+			await invalidateAll();
+			showDeleteFAQ = false;
+			editingFAQ = null;
+		} else {
+			console.error('Error deleting FAQ:', await ris.text());
+		}
 	}
 
 	function handleModalCancel() {
@@ -96,31 +124,36 @@
 	<HeaderPages {data} title="Gestione FAQ" />
 
 	{#if showNewFAQ}
-		<Faq onsubmitFaq={handleNewFAQSubmit} oncancel={handleModalCancel} />
+		<Faq onSubmitFaq={newFAQ} onCancel={handleModalCancel} />
 	{/if}
 
 	{#if showUpdateFAQ}
-		<UpdateFaq faq={editingFAQ} onsubmitFaq={handleUpdateFAQSubmit} oncancel={handleModalCancel} />
+		<UpdateFaq faq={editingFAQ} onSubmitFaq={updateFAQ} onCancel={handleModalCancel} />
 	{/if}
 	{#if showDeleteFAQ}
-		<DeleteFaq faq={editingFAQ} onsubmitFaq={handleDeleteFAQSubmit} oncancel={handleModalCancel} />
+		<DeleteFaq faq={editingFAQ} onSubmitFaq={deleteFAQ} onCancel={handleModalCancel} />
 	{/if}
 
-	<main class="flex flex-grow flex-col ">
+	<main class="flex flex-grow flex-col">
 		<!-- Lista FAQ -->
-		{#if filteredFaq.length > 0}
-			{#each filteredFaq as faq (faq.id)}
-				<FaqItem
-					{faq}
-					open={selectedFaq === faq.id}
-					ontoggle={() => toggleFaq(faq.id)}
-					onedit={() => handleEditFaq(faq)}
-					ondelete={() => handleDeleteFaq(faq)}
-				/>
-			{/each}
-		{:else}
-			<p class="text-center text-gray py-16">Ancora nessuna FAQ</p>
-		{/if}
+
+		<div
+			class="scroll-snap-y-container flex max-h-[calc(100vh-17em)] flex-col gap-2 overflow-y-auto px-4"
+		>
+			{#if filteredFaq.length > 0}
+				{#each filteredFaq as faq}
+					<FaqItem
+						{faq}
+						open={selectedFaqId === faq._id}
+						onToggle={() => toggleFaq(faq)}
+						onEdit={() => handleEditFaq(faq)}
+						onDelete={() => handleDeleteFaq(faq)}
+					/>
+				{/each}
+			{:else}
+				<p class="text-gray py-16 text-center">Ancora nessuna FAQ</p>
+			{/if}
+		</div>
 
 		<!-- Ricerca + Nuova FAQ -->
 		<div class="rounded-t-3xl bg-white p-4">

@@ -10,7 +10,6 @@
 	let isAdmin = $derived(data.userScopes.includes('admin') === true);
 	let showModalDelete = $state(false);
 	let selectedChat = $state('');
-	$inspect('selectedChat', selectedChat);
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl overflow-x-hidden">
