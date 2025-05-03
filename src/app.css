@@ -148,7 +148,7 @@ html {
 	color: white;
 }
 
-.dark input::placeholder {
+.dark input::placeholder, .dark textarea::placeholder  {
 	color: white;
 }
 

@@ -3,10 +3,7 @@
 	import { invalidate } from '$app/navigation';
 	import { goto } from '$app/navigation';
 	let { data } = $props();
-	import { page } from '$app/stores';
-	import { env } from '$env/dynamic/public';
-
-	const DATABASE_URL = env.PUBLIC_DATABASE_URL;
+	import { page } from '$app/state';
 
 	async function newChat(){
 		let ris = await fetch('/api/new_chat', {
@@ -25,7 +22,8 @@
 		}
 	}
 
-	let isHome = $page.url.pathname === '/';
+	let isHome = page.url.pathname === '/';
+	let isProfile = page.url.pathname === '/profilo'; // Added to track profile page
 </script>
 
 <footer class="flex justify-around bg-white shadow-md pt-2">
@@ -52,7 +50,7 @@
 	</div>
 	<a href="/profilo" class="">
 		<div
-			class="flex flex-col items-center gap-1 rounded-full p-2 px-4 text-sm {isHome &&
+			class="flex flex-col items-center gap-1 rounded-full p-2 px-4 text-sm {!isProfile &&
 				'opacity-50'} transition duration-150 ease-in hover:bg-gray-100 hover:opacity-100"
 		>
 			<User />

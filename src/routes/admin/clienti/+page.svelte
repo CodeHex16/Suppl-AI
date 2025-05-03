@@ -129,7 +129,7 @@
 					/>
 				{/each}
 			{:else}
-				<p class="mt-10 text-center text-gray-500">Nessun utente trovato.</p>
+				<p class="text-center text-gray p-8">Ancora nessun cliente</p>
 			{/if}
 		</div>
 

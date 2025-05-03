@@ -25,7 +25,7 @@
 </script>
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
     <div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
-        <h2 class="mb-4 text-lg font-semibold">Modifica Utente</h2>
+        <h2 class="mb-4 text-lg font-semibold text-center">Nuovo Utente</h2>
 
         <!-- Name Input with Icon -->
         <div class="relative mb-3">

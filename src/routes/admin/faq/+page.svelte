@@ -10,6 +10,7 @@
 
 	let { data } = $props();
 	let faqs = $state(data.faqs ?? []);
+	$inspect("faqs",faqs);
 	let showNewFAQ = $state(false);
 
 	let showUpdateFAQ = $state(false);
@@ -20,7 +21,6 @@
 	let showDeleteFAQ = $state(false);
 
 	function toggleFaq(id: number) {
-		selectedFaq = selectedFaq === id ? null : id;
 		selectedFaq = selectedFaq === id ? null : id;
 		console.log(selectedFaq);
 	}
@@ -57,58 +57,69 @@
 		showDeleteFAQ = false;
 		editingFAQ = null;
 	}
+
+	function handleNewFAQSubmit(faqData: any) {
+		newFAQ(faqData);
+	}
+
+	function handleUpdateFAQSubmit(faqData: any) {
+		updateFAQ(faqData);
+	}
+
+	function handleDeleteFAQSubmit() {
+		deleteFAQ(); // Assumendo che deleteFAQ gestisca la logica di eliminazione (es. chiamata API) e aggiorni lo stato `faqs`
+		// Se deleteFAQ non aggiorna lo stato, fallo qui:
+		// faqs = faqs.filter(f => f.id !== editingFAQ.id);
+		// showDeleteFAQ = false;
+		// editingFAQ = null;
+	}
+
+	function handleModalCancel() {
+		showNewFAQ = false;
+		showUpdateFAQ = false;
+		showDeleteFAQ = false;
+		editingFAQ = null;
+	}
+
+	function handleEditFaq(faq: any) {
+		editingFAQ = faq;
+		showUpdateFAQ = true;
+	}
+
+	function handleDeleteFaq(faq: any) {
+		editingFAQ = faq;
+		showDeleteFAQ = true;
+	}
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">
 	<HeaderPages {data} title="Gestione FAQ" />
 
 	{#if showNewFAQ}
-		<Faq on:submitFaq={(e) => newFAQ(e.detail)} on:cancel={() => (showNewFAQ = false)} />
+		<Faq onsubmitFaq={handleNewFAQSubmit} oncancel={handleModalCancel} />
 	{/if}
 
 	{#if showUpdateFAQ}
-		<UpdateFaq
-			faq={editingFAQ}
-			on:submitFaq={(e) => updateFAQ(e.detail)}
-			on:cancel={() => {
-				showUpdateFAQ = false;
-				editingFAQ = null;
-			}}
-		/>
+		<UpdateFaq faq={editingFAQ} onsubmitFaq={handleUpdateFAQSubmit} oncancel={handleModalCancel} />
 	{/if}
 	{#if showDeleteFAQ}
-		<DeleteFaq
-			faq={editingFAQ}
-			on:submitFaq={() => deleteFAQ()}
-			on:cancel={() => {
-				showDeleteFAQ = false;
-				editingFAQ = null;
-			}}
-		/>
+		<DeleteFaq faq={editingFAQ} onsubmitFaq={handleDeleteFAQSubmit} oncancel={handleModalCancel} />
 	{/if}
 
-	<main class="flex flex-grow flex-col pt-2">
-		<!-- Barra di ricerca e pulsante per nuova faq -->
-
+	<main class="flex flex-grow flex-col ">
 		<!-- Lista FAQ -->
 		{#if filteredFaq.length > 0}
 			{#each filteredFaq as faq (faq.id)}
 				<FaqItem
 					{faq}
 					open={selectedFaq === faq.id}
-					on:toggle={() => toggleFaq(faq.id)}
-					on:edit={(e) => {
-						editingFAQ = e.detail;
-						showUpdateFAQ = true;
-					}}
-					on:delete={(e) => {
-						editingFAQ = e.detail;
-						showDeleteFAQ = true;
-					}}
+					ontoggle={() => toggleFaq(faq.id)}
+					onedit={() => handleEditFaq(faq)}
+					ondelete={() => handleDeleteFaq(faq)}
 				/>
 			{/each}
 		{:else}
-			<p class="mt-10 text-center text-gray-500">Nessuna FAQ trovata.</p>
+			<p class="text-center text-gray py-16">Ancora nessuna FAQ</p>
 		{/if}
 
 		<!-- Ricerca + Nuova FAQ -->
@@ -119,7 +130,7 @@
 						type="text"
 						bind:value={query}
 						placeholder="Cerca FAQ..."
-						class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4"
+						class="w-full rounded-full border border-gray-300 bg-white py-2 pl-10 pr-4 placeholder:opacity-50"
 					/>
 					<Search class="absolute left-3 top-2.5 h-5 w-5 text-gray-500" />
 				</div>

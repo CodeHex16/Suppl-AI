@@ -1,19 +1,19 @@
 <script lang="ts">
-    import { type Writable, writable, derived } from 'svelte/store';
-	import { createEventDispatcher } from 'svelte';
-	const dispatch = createEventDispatcher();
-
-    let { faq } = $props();
+	let { faq, onsubmitFaq, oncancel } = $props<{
+		faq: any;
+		onsubmitFaq: (faq: any) => void;
+		oncancel: () => void;
+	}>();
 
 	let id = faq.id;
 	let author = $state(faq.author);
 	let question = $state(faq.question);
 	let title = $state(faq.title);
 	let answer = $state(faq.answer);
-    let creationDate = faq.creationDate;
+	let creationDate = faq.creationDate;
 
 	function submitForm() {
-		dispatch('submitFaq', {
+		onsubmitFaq({
 			id,
 			author,
 			question,
@@ -24,23 +24,55 @@
 	}
 </script>
 
-<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-	<div class="bg-white rounded-xl p-6 w-[90%] max-w-md shadow-xl">
-		<h2 class="text-lg font-semibold mb-4">Modifica FAQ</h2>
-
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+	<div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
+		<h2 class="mb-4 text-lg font-semibold">Modifica FAQ</h2>
 		<div class="mb-3">
-			<input type="text" bind:value={title} placeholder="Domanda abbreviata" required class="w-full pl-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
+			<input
+				type="text"
+				bind:value={author}
+				placeholder="Autore"
+				required
+				class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+			/>
 		</div>
 		<div class="mb-3">
-			<input type="text" bind:value={question} placeholder="Domanda completa" required class="w-full pl-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
+			<input
+				type="text"
+				bind:value={title}
+				placeholder="Domanda abbreviata"
+				required
+				class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+			/>
 		</div>
 		<div class="mb-3">
-			<input type="text" bind:value={answer} placeholder="Risposta" required class="w-full pl-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
+			<input
+				type="text"
+				bind:value={question}
+				placeholder="Domanda completa"
+				required
+				class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+			/>
+		</div>
+		<div class="mb-3">
+			<input
+				type="text"
+				bind:value={answer}
+				placeholder="Risposta"
+				required
+				class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+			/>
 		</div>
 
 		<div class="flex justify-end space-x-2">
-			<button class="px-4 py-2 rounded-lg bg-gray transition duration-150 ease-in" onclick={() => dispatch('cancel')}>Annulla</button>
-			<button class="px-4 py-2 rounded-lg item-primary transition duration-150 ease-in" onclick={submitForm}>Salva</button>
+			<button
+				class="bg-gray rounded-lg px-4 py-2 transition duration-150 ease-in"
+				onclick={oncancel}>Annulla</button
+			>
+			<button
+				class="item-primary rounded-lg px-4 py-2 transition duration-150 ease-in"
+				onclick={submitForm}>Salva</button
+			>
 		</div>
 	</div>
 </div>

@@ -1,26 +1,19 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import { enhance } from '$app/forms';
-    const dispatch = createEventDispatcher();
+	let { faq, onsubmitFaq, oncancel } = $props<{
+		faq: any;
+		onsubmitFaq: (faq: any) => void;
+		oncancel: () => void;
+	}>();
 
-	let { faq } = $props();
-
-    let id = faq.id;
+	let id = faq.id;
 	let author = $state(faq.author);
 	let question = $state(faq.question);
 	let title = $state(faq.title);
 	let answer = $state(faq.answer);
-    let creationDate = faq.creationDate;
+	let creationDate = faq.creationDate;
 
-    function submitForm() {
-		dispatch('submitFaq', {
-			id,
-			author,
-			question,
-			title,
-			answer,
-			creationDate
-		});
+	function submitForm() {
+		onsubmitFaq({ id, title });
 	}
 </script>
 
@@ -30,30 +23,29 @@
 			<h2 class="mb-2 text-lg font-semibold">Conferma Eliminazione</h2>
 			<p class="mb-2 mt-2">Sei sicuro di voler eliminare la FAQ "{title}"?</p>
 			<div class="center mt-2 flex flex-row">
-				<form method="POST" use:enhance>
+				<form onsubmit={submitForm}>
 					<input
 						type="password"
 						id="password"
 						name="password"
 						placeholder="Inserisci la tua password"
 						required
-						class="rounded-full border-none bg-gray px-4 py-2"
+						class="bg-gray rounded-full border-none px-4 py-2"
 					/>
-	
+
 					<div class="mt-2 flex flex-row justify-self-center">
 						<button
 							class="mr-2 rounded-full bg-red-600 p-1 text-white hover:bg-red-600/80"
-							type="button"
+							type="submit"
 							aria-label="Confirm"
-							title="Conferma"
-							onclick = {submitForm}>Conferma</button
+							title="Conferma">Conferma</button
 						>
 						<button
 							class="mr-2 rounded-full bg-orange-600 p-1 hover:bg-orange-600/80"
 							type="button"
 							aria-label="Cancel"
 							title="Annulla"
-							onclick={() => dispatch('cancel')}>Annulla</button
+							onclick={oncancel}>Annulla</button
 						>
 					</div>
 				</form>
