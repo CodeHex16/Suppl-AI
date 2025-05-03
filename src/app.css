@@ -124,12 +124,6 @@ html {
 	@apply h-full rounded-t-3xl bg-white bg-opacity-80 bg-clip-padding p-4 backdrop-blur-3xl backdrop-filter;
 }
 
-.logo {
-	max-width: 80%;
-	max-height: 80px;
-	display: none;
-}
-
 .light-mode {
 	display: block;
 }

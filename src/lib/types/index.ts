@@ -5,11 +5,9 @@ export interface Message {
 }
 
 export interface User {
-	id: number,
+	email: string,
 	name: string,
 	role: string,
-	creationDate: string,
-	email: string
 }
 
 export interface Document {

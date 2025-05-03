@@ -76,7 +76,7 @@
 
 		if (logoLightFile) await uploadFile(logoLightFile, 'logo_light.png'); // Accesso diretto
 		if (logoDarkFile) await uploadFile(logoDarkFile, 'logo_dark.png'); // Accesso diretto
-		if (faviconFile) await uploadFile(faviconFile, 'favicon.png'); // Accesso diretto
+		if (faviconFile) await uploadFile(faviconFile, 'favicon.ico'); // Accesso diretto
 
 		const resColor = await fetch('/api/update_colors', {
 			method: 'POST',

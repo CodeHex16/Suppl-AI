@@ -4,7 +4,7 @@
 	import Messages from '$lib/components/Messages.svelte';
 	import DeleteChatModal from '$lib/components/DeleteChatModal.svelte';
 	import { enhance } from '$app/forms';
-	import { invalidate } from '$app/navigation';
+	import { invalidate, invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
@@ -116,6 +116,7 @@
 		if (!data_json.error) {
 			chatName = data_json.title;
 			data.chat.name = data_json.title;
+			await invalidateAll();
 		} else {
 			console.error('Errore aggiornamento nome chat:', data_json.error);
 		}
