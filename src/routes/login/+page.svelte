@@ -23,7 +23,7 @@
 					id="email"
 					name="username"
 					placeholder="Email"
-					value="test@test.it"
+					value=""
 					required
 					class="rounded-full border-none bg-gray p-2 px-4"
 				/>
@@ -33,7 +33,7 @@
 					id="password"
 					name="password"
 					placeholder="Password"
-					value="testtest"
+					value=""
 					required
 					class="rounded-full border-none bg-gray px-4 py-2"
 				/>

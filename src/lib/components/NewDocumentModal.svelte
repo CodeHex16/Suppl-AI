@@ -1,63 +1,61 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	const dispatch = createEventDispatcher();
-
-	let name = '';
-	let author = '';
+	let { onSubmitDocument, onCancel } = $props<{
+		onSubmitDocument: (data: { name: string; files: FileList; creationDate: string }) => void;
+		onCancel: () => void;
+	}>();
 
 	function submitForm() {
-		dispatch('submitDocument', {
-			name,
-			author,
-			creationDate: new Date().toISOString()
-		});
+		if (fileInput.files && fileInput.files.length > 0) {
+			onSubmitDocument({
+				files: fileInput.files,
+				creationDate: new Date().toISOString()
+			});
+		} else {
+			console.error('Nessun file selezionato');
+		}
 	}
 
-	let files: any, fileInput;
+	let fileInput: HTMLInputElement;
+	let files = $state(null);
+
+	$inspect(files);
 </script>
 
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
 	<div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
-		<h2 class="mb-4 text-lg font-semibold">Inserimento File</h2>
+		<h2 class="mb-4 text-center text-lg font-semibold">Inserimento File</h2>
+		<form onsubmit={submitForm}>
+			<div class="mb-4">
+				<label for="file">Seleziona uno o più file</label>
+				<input
+					bind:this={fileInput}
+					bind:value={files}
+					id="file"
+					type="file"
+					accept=".txt, .pdf"
+					required
+					multiple
+					class="text-gray file:bg-gray mt-2 block w-full cursor-pointer rounded-lg border border-gray-400 p-4
+					text-sm file:mr-4 file:rounded-full file:border-0 file:px-4 file:py-2
+					file:text-sm file:font-semibold hover:file:bg-blue-600 focus:border-blue-500
+					focus:outline-none focus:ring-2 focus:ring-blue-500 dark:file:bg-[#4a4a4a] dark:file:text-white"
+				/>
+			</div>
 
-		<div class="mb-3">
-			<input
-			id="name"	
-			type="text"
-				bind:value={name}
-				placeholder="Nome del documento"
-				required
-				class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-			/>
-		</div>
-		<div class="mb-3">
-			<label for="file">Seleziona uno o più file</label>
-			<input
-				bind:value={files}
-				bind:this={fileInput}
-				id="file"
-				type="file"
-				accept=".txt, .pdf"
-				required
-				multiple
-				class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-			/>
-			{#if files && files[0]}
-				<p>
-					{files[0].name}
-				</p>
-			{/if}
-		</div>
-
-		<div class="flex justify-end space-x-2">
-			<button
-				class="bg-gray rounded-lg px-4 py-2 transition duration-150 ease-in"
-				onclick={() => dispatch('cancel')}>Annulla</button
-			>
-			<button
-				class="item-primary rounded-lg px-4 py-2 transition duration-150 ease-in"
-				onclick={submitForm}>Salva</button
-			>
-		</div>
+			<div class="flex justify-end space-x-2">
+				<button
+					class="bg-gray rounded-lg px-4 py-2 transition duration-150 ease-in"
+					onclick={onCancel}
+				>
+					Annulla
+				</button>
+				<button
+					class="item-primary rounded-lg px-4 py-2 transition duration-150 ease-in"
+					type="submit"
+				>
+					Carica
+				</button>
+			</div>
+		</form>
 	</div>
 </div>

@@ -20,8 +20,14 @@
 				</div>
 			</div>
 		</div>
-		<button class="text-gray-500 transition hover:text-gray-700" onclick={onToggle}>
-			<ChevronDown class={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+		<button
+			class="text-gray rounded-full p-2 transition hover:bg-gray-200 dark:hover:text-black"
+			onclick={onToggle}
+			aria-label={open ? `Chiudi dettagli ${user.name}` : `Apri dettagli ${user.name}`}
+		>
+			<ChevronDown
+				class={`h-5 w-5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+			/>
 		</button>
 	</div>
 

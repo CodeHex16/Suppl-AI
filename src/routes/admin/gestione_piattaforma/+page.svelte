@@ -9,9 +9,9 @@
 
 	let { data } = $props();
 
-	let cssColor = '#ffffff'; // Valore iniziale, verrà sovrascritto in onMount
+	let cssColor = '#ffffff'; 
 
-	let primaryColor = $state('#007BFF'); // default fallback
+	let primaryColor = $state('#007BFF'); 
 	let chatRetention = $state('30');
 	let logoLightFile = $state<File | null>(null);
 	let logoLightName = $state('Nessun file selezionato');
@@ -25,26 +25,23 @@
 			.getPropertyValue('--color-primary')
 			.trim();
 		if (currentPrimary) {
-			cssColor = currentPrimary; // Salva il colore CSS iniziale
-			primaryColor = currentPrimary; // Imposta lo stato iniziale
+			cssColor = currentPrimary; 
+			primaryColor = currentPrimary; 
 		}
-		// Non chiamare setColors() qui, $effect lo farà automaticamente
 	});
 
 	function resetPrimaryColor() {
-		primaryColor = cssColor; // Assegnazione diretta
-		// Non è necessario chiamare setColors() manualmente, $effect reagirà
+		primaryColor = cssColor; 
 	}
 
 	$effect(() => {
-		// Questa funzione viene chiamata automaticamente quando primaryColor cambia
 		setColors();
 	});
 
 	function setColors() {
 		if (typeof document === 'undefined') return;
 
-		const color = primaryColor; // Accesso diretto
+		const color = primaryColor; 
 		const textColor = getContrastColor(color);
 		const hoverColor = darken(color, 10);
 
@@ -71,12 +68,12 @@
 	}
 
 	async function handleSubmit() {
-		console.log('Colore primario:', primaryColor); // Accesso diretto
-		console.log('Durata chat:', chatRetention); // Accesso diretto
+		console.log('Colore primario:', primaryColor); 
+		console.log('Durata chat:', chatRetention);
 
-		if (logoLightFile) await uploadFile(logoLightFile, 'logo_light.png'); // Accesso diretto
-		if (logoDarkFile) await uploadFile(logoDarkFile, 'logo_dark.png'); // Accesso diretto
-		if (faviconFile) await uploadFile(faviconFile, 'favicon.ico'); // Accesso diretto
+		if (logoLightFile) await uploadFile(logoLightFile, 'logo_light.png'); 
+		if (logoDarkFile) await uploadFile(logoDarkFile, 'logo_dark.png'); 
+		if (faviconFile) await uploadFile(faviconFile, 'favicon.ico'); 
 
 		const resColor = await fetch('/api/update_colors', {
 			method: 'POST',
@@ -84,9 +81,9 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				COLOR_PRIMARY: primaryColor, // Accesso diretto
-				COLOR_PRIMARY_TEXT: getContrastColor(primaryColor), // Accesso diretto
-				COLOR_PRIMARY_HOVER: darken(primaryColor, 10) // Accesso diretto
+				COLOR_PRIMARY: primaryColor, 
+				COLOR_PRIMARY_TEXT: getContrastColor(primaryColor), 
+				COLOR_PRIMARY_HOVER: darken(primaryColor, 10) 
 			})
 		});
 
