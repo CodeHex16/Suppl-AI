@@ -18,7 +18,6 @@
 	}
 
 	let { data } = $props();
-	// Explicitly type the faqs state variable
 	let faqs = $state<FAQ[]>(data.faqs ?? []);
 	let showNewFAQ = $state(false);
 
@@ -80,7 +79,6 @@
 	}
 
 	async function deleteFAQ(form: any) {
-
 		console.log('FAQ eliminata', form.get('id'));
 		const ris = await fetch(`/api/faqs`, {
 			method: 'DELETE',
@@ -135,13 +133,11 @@
 	{/if}
 
 	<main class="flex flex-grow flex-col">
-		<!-- Lista FAQ -->
-
 		<div
 			class="scroll-snap-y-container flex max-h-[calc(100vh-17em)] flex-col gap-2 overflow-y-auto px-4"
 		>
 			{#if filteredFaq.length > 0}
-				{#each filteredFaq as faq}
+				{#each filteredFaq as faq (faq._id)}
 					<FaqItem
 						{faq}
 						open={selectedFaqId === faq._id}

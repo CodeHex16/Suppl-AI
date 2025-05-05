@@ -12,14 +12,18 @@
 	onMount(() => {
 		if (data.rating) {
 			like = true;
-		}
-		else if (data.rating === false) {
+		} else if (data.rating === false) {
 			dislike = true;
-		}
-		else {
+		} else {
 			like = false;
 			dislike = false;
 		}
+	});
+
+	marked.use({
+		gfm: true,
+		breaks: true,
+		pedantic: false
 	});
 
 	function formatMessage(text: string) {
@@ -32,7 +36,7 @@
 	function rateMessage(chatId: string, messageId: string, rating: boolean | null) {
 		console.log('like: ', like, 'dislike: ', dislike);
 
-		if(!(like || dislike)) {
+		if (!(like || dislike)) {
 			rating = null;
 		}
 
@@ -78,7 +82,7 @@
 
 <div class="flex flex-col justify-start">
 	<div class="max-w-sm">
-		<div class="rounded-t-3xl rounded-br-3xl bg-white p-4 text-black">
+		<div class="rounded-t-3xl rounded-br-3xl bg-white p-4 text-black shadow-md">
 			<!-- TODO: Scegliere che versione usare -->
 			<!-- <div class="font-bold item-primary px-2 rounded-full w-fit">Suppl-AI</div> -->
 			<div class="font-bold text-primary">Suppl-AI</div>
@@ -88,23 +92,26 @@
 					<div class="mb-2 h-2 w-5/6 rounded bg-slate-200"></div>
 				</div>
 			{:else}
-				<div class="markdown-content">
+				<div class="markdown-content prose dark:prose-invert">
+					<!-- {data.content} -->
 					{@html formatMessage(data.content)}
 				</div>
 			{/if}
 		</div>
-		<div class="flex flex-row items-center justify-between ">
-			<div class="text-gray ml-2 my-auto text-sm opacity-80">
+		<div class="flex flex-row items-center justify-between">
+			<div class="text-gray my-auto ml-2 text-sm opacity-80">
 				{#if data.timestamp}
 					<p class=" my-2">{formatData(data.timestamp)}</p>
 				{:else}
 					<p class=" my-2">Adesso</p>
 				{/if}
 			</div>
-			<div class="flex flex-row-reverse mr-2">
+			<div class="mr-2 flex flex-row-reverse">
 				<button
 					id="like-button-{data._id}"
-					class="{like ? 'item-primary' : 'text-gray opacity-60'}  flex items-center justify-center rounded-full p-2"
+					class="{like
+						? 'item-primary'
+						: 'text-gray opacity-60'}  flex items-center justify-center rounded-full p-2"
 					onclick={toggleThumbsUp}
 					aria-label="Like"
 					title="Risposta utile"
@@ -114,12 +121,14 @@
 
 				<button
 					id="dislike-button-{data._id}"
-					class="{dislike ? 'item-primary' : 'text-gray opacity-60'}  flex items-center justify-center rounded-full p-2"
+					class="{dislike
+						? 'item-primary'
+						: 'text-gray opacity-60'}  flex items-center justify-center rounded-full p-2"
 					onclick={toggleThumbsDown}
 					aria-label="Dislike"
 					title="Risposta non utile"
 				>
-					<ThumbsDown class="h-4 w-4"/>
+					<ThumbsDown class="h-4 w-4" />
 				</button>
 			</div>
 		</div>

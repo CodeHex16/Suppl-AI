@@ -28,8 +28,8 @@ export const actions: Actions = {
 			if (!response.ok) {
 				const errorData = await response.json();
 				console.error('Dettagli errore:', JSON.stringify(errorData));
-				if (errorData.error === 'User not found') {
-					return fail(400, { error: "L'email non è associata a nessun account" });
+				if (errorData.detail.includes('User not found')) {
+					return fail(404, { error: "L'email non è associata a nessun account" });
 				}
 				return fail(500, { error: 'Errore di connessione al server' });
 			}
