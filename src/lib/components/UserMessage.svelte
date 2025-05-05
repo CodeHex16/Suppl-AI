@@ -17,7 +17,7 @@
 
 <div class="items-stretch">
 	<div class="flex justify-end">
-		<div class="bg-primary min-w-20 max-w-xs rounded-t-3xl rounded-bl-3xl p-4">
+		<div class="bg-primary min-w-20 max-w-xs rounded-t-3xl rounded-bl-3xl p-4 shadow-md">
 			{data.content}
 		</div>
 	</div>

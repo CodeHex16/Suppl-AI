@@ -5,34 +5,34 @@
 	import Doc from '$lib/components/NewDocumentModal.svelte';
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 	import DeleteDocument from '$lib/components/DeleteDocumentModal.svelte';
+	import { type Document } from '$lib/types';
+	import { invalidate, invalidateAll } from '$app/navigation';
 
 	let { data } = $props();
 
-	let documents = $state(data.documents ?? []);
 	let showNewDocument = $state(false);
 
 	let query = $state('');
-	let selectedDocument = $state<number | null>(null);
+	let selectedDocument = $state<string | null>(null);
 
 	let eliminateDocument = $state(false);
 
-	function toggleDocument(id: number) {
+	function toggleDocument(id: string) {
 		selectedDocument = selectedDocument === id ? null : id;
 		console.log(selectedDocument);
 	}
 
 	const filteredDocument = $derived(
-		documents.filter(
+		data.documents.filter(
 			(doc) =>
-				doc.name.toLowerCase().includes(query.toLowerCase()) ||
-				doc.author.toLowerCase().includes(query.toLowerCase())
+				doc.title.toLowerCase().includes(query.toLowerCase()) ||
+				doc.owner_email.toLowerCase().includes(query.toLowerCase())
 		)
 	);
 
-	function newDocument(doc: any) {
-		console.log('Nuovo documento aggiunto:', documents); // 👈 Log del nuovo documento
-		documents = [...documents, { id: Date.now(), ...doc }];
+	async function onSubmitDocument() {
 		showNewDocument = false;
+		await invalidateAll();
 	}
 
 	function deleteDocumentRequest() {
@@ -48,14 +48,15 @@
 
 	function confirmDeleteDocument() {
 		if (selectedDocument !== null) {
-			documents = documents.filter((doc) => doc.id !== selectedDocument);
+			data.documents = data.documents.filter((doc) => doc._id !== selectedDocument);
 			console.log('Documento eliminato:', selectedDocument);
 		}
 		eliminateDocument = false;
 		selectedDocument = null;
 	}
 
-	function cancelDeleteDocument() {
+	async function cancelDeleteDocument() {
+		await invalidateAll();
 		eliminateDocument = false;
 		selectedDocument = null; // Deseleziona anche in caso di annullamento
 	}
@@ -65,7 +66,7 @@
 	<HeaderPages {data} title="Gestione documenti" />
 
 	{#if showNewDocument}
-		<Doc onSubmitDocument={(doc) => newDocument(doc)} onCancel={() => (showNewDocument = false)} />
+		<Doc onSubmitDocument={onSubmitDocument} onCancel={() => (showNewDocument = false)} />
 	{/if}
 	{#if eliminateDocument && selectedDocument !== null}
 		<DeleteDocument
@@ -75,25 +76,26 @@
 		/>
 	{/if}
 
-	<main class="flex flex-grow flex-col overflow-y-auto pt-2">
-		<!-- Lista documenti -->
-		{#if filteredDocument.length > 0}
-			<div class="px-4">
-				{#each filteredDocument as document (document.id)}
-					<DocumentItem
-						{document}
-						open={selectedDocument === document.id}
-						onToggle={() => toggleDocument(document.id)}
-						onDelete={() => {
-							selectedDocument = document.id;
-							deleteDocumentRequest();
-						}}
-					/>
-				{/each}
-			</div>
-		{:else}
-			<p class="mt-10 text-center text-gray-500">Nessun documento trovato.</p>
-		{/if}
+	<main class="flex flex-grow flex-col">
+		<div class="scroll-snap-y-container flex max-h-[calc(100vh-17em)] flex-col gap-2 overflow-y-auto px-4">
+			<!-- Lista documenti -->
+			{#if filteredDocument.length > 0}
+
+					{#each filteredDocument as document (document._id)}
+						<DocumentItem
+							{document}
+							open={selectedDocument === document._id}
+							onToggle={() => toggleDocument(document._id)}
+							onDelete={() => {
+								selectedDocument = document._id;
+								deleteDocumentRequest();
+							}}
+						/>
+					{/each}
+			{:else}
+				<p class="text-gray py-16 text-center">Ancora nessun documento</p>
+			{/if}
+		</div>
 
 		<div class="rounded-t-3xl bg-white p-4 shadow-md">
 			<div class="mb-4 flex items-center justify-between">

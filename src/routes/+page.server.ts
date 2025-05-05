@@ -7,7 +7,7 @@ const DATABASE_URL = env.PUBLIC_DATABASE_URL;
 
 export const load: PageServerLoad = async (data) => {
 	const token = data.cookies.get('token');
-	// if (!token) redirect(303, '/login');
+	if (!token) return redirect(303, '/login');
 
 	let chats = null;
 	let userScopes: string[] = [];
@@ -27,7 +27,7 @@ export const load: PageServerLoad = async (data) => {
 		if (response.status === 'not_initialized') {
 			firstLogin = true;
 		} else if (response.status !== 'valid') {
-			console.log('token non valido');
+			data.cookies.delete('token', { path: '/' });
 			throw new Error('Token non valido');
 		}
 		userScopes = response.scopes;

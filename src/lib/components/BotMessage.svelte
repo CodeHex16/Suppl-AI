@@ -3,6 +3,12 @@
 	let { data } = $props();
 	import { marked } from 'marked';
 
+	marked.use({
+		gfm: true,
+		breaks: true,
+		pedantic: false
+	});
+
 	function formatMessage(text: string) {
 		return marked(text);
 	}
@@ -37,32 +43,35 @@
 
 <div class="flex flex-col justify-start">
 	<div class="max-w-sm">
-		<div class="rounded-t-3xl rounded-br-3xl bg-white p-4 text-black">
+		<div class="rounded-t-3xl rounded-br-3xl bg-white p-4 text-black shadow-md">
 			<!-- TODO: Scegliere che versione usare -->
 			<!-- <div class="font-bold item-primary px-2 rounded-full w-fit">Suppl-AI</div> -->
-			<div class="font-bold text-primary">Suppl-AI</div>
+			<div class="text-primary font-bold">Suppl-AI</div>
 			{#if data.content == ''}
 				<div class="mt-4 animate-pulse">
 					<div class="mb-2 h-2 w-40 rounded bg-slate-200"></div>
 					<div class="mb-2 h-2 w-5/6 rounded bg-slate-200"></div>
 				</div>
 			{:else}
-				<div class="markdown-content">
+				<div class="prose dark:prose-invert markdown-content  ">
+					<!-- {data.content} -->
 					{@html formatMessage(data.content)}
 				</div>
 			{/if}
 		</div>
-		<div class="flex flex-row items-center justify-between ">
-			<div class="text-gray ml-2 my-auto text-sm opacity-80">
+		<div class="flex flex-row items-center justify-between">
+			<div class="text-gray my-auto ml-2 text-sm opacity-80">
 				{#if data.timestamp}
 					<p class=" my-2">{formatData(data.timestamp)}</p>
 				{:else}
 					<p class=" my-2">Adesso</p>
 				{/if}
 			</div>
-			<div class="flex flex-row-reverse mr-2">
+			<div class="mr-2 flex flex-row-reverse">
 				<button
-					class="{like ? 'item-primary' : 'text-gray opacity-60'}  flex items-center justify-center rounded-full p-2"
+					class="{like
+						? 'item-primary'
+						: 'text-gray opacity-60'}  flex items-center justify-center rounded-full p-2"
 					onclick={toggleThumbsUp}
 					aria-label="Like"
 					title="Risposta utile"
@@ -71,12 +80,14 @@
 				</button>
 
 				<button
-					class="{dislike ? 'item-primary' : 'text-gray opacity-60'}  flex items-center justify-center rounded-full p-2"
+					class="{dislike
+						? 'item-primary'
+						: 'text-gray opacity-60'}  flex items-center justify-center rounded-full p-2"
 					onclick={toggleThumbsDown}
 					aria-label="Dislike"
 					title="Risposta non utile"
 				>
-					<ThumbsDown class="h-4 w-4"/>
+					<ThumbsDown class="h-4 w-4" />
 				</button>
 			</div>
 		</div>

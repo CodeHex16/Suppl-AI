@@ -1,9 +1,10 @@
 import fs from 'fs/promises';
 import type { LayoutServerLoad } from './$types';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 
 export const load: LayoutServerLoad = async ({ cookies }) => {
 	const theme = cookies.get('theme') as 'light' | 'dark' | undefined;
+
 	try {
 		const file = await fs.readFile('static/settings/colors.json', 'utf-8');
 		const colors = JSON.parse(file);
