@@ -1,7 +1,26 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { ThumbsUp, ThumbsDown } from 'lucide-svelte';
 	let { data } = $props();
 	import { marked } from 'marked';
+	import { page } from '$app/state';
+	import { on } from 'svelte/events';
+
+	// $inspect(data);
+	// $inspect(page.params);
+
+	onMount(() => {
+		if (data.rating) {
+			like = true;
+		}
+		else if (data.rating === false) {
+			dislike = true;
+		}
+		else {
+			like = false;
+			dislike = false;
+		}
+	});
 
 	function formatMessage(text: string) {
 		return marked(text);
@@ -10,16 +29,38 @@
 	let like = $state(false);
 	let dislike = $state(false);
 
+	function rateMessage(chatId: string, messageId: string, rating: boolean | null) {
+		console.log('like: ', like, 'dislike: ', dislike);
+
+		if(!(like || dislike)) {
+			rating = null;
+		}
+
+		console.log('rating: ', rating);
+
+		fetch('/api/rate_message', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				chat_id: chatId,
+				message_id: messageId,
+				rating: rating
+			})
+		});
+	}
+
 	function toggleThumbsUp() {
 		like = !like;
 		dislike = false;
-		console.log('like: ', like);
+
+		rateMessage(page.params.id, data._id, like);
 	}
 
 	function toggleThumbsDown() {
 		dislike = !dislike;
 		like = false;
-		console.log('dislike: ', dislike);
+
+		rateMessage(page.params.id, data._id, !dislike);
 	}
 
 	function formatData(stringDate: string) {
@@ -62,6 +103,7 @@
 			</div>
 			<div class="flex flex-row-reverse mr-2">
 				<button
+					id="like-button-{data._id}"
 					class="{like ? 'item-primary' : 'text-gray opacity-60'}  flex items-center justify-center rounded-full p-2"
 					onclick={toggleThumbsUp}
 					aria-label="Like"
@@ -71,6 +113,7 @@
 				</button>
 
 				<button
+					id="dislike-button-{data._id}"
 					class="{dislike ? 'item-primary' : 'text-gray opacity-60'}  flex items-center justify-center rounded-full p-2"
 					onclick={toggleThumbsDown}
 					aria-label="Dislike"

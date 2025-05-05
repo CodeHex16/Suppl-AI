@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { MessageCircle, Trash } from 'lucide-svelte';
+	import { MessageCircle, Trash2 } from 'lucide-svelte';
 	let { data, onDelete } = $props();
 
 	function parseDate(date: string) {
@@ -34,7 +34,7 @@
 			class="ml-auto rounded-full p-4 transition duration-150 ease-in hover:text-red-500"
 			onclick={() => onDelete(chat)}
 		>
-			<Trash class="h-6 w-6" />
+			<Trash2 class="h-6 w-6" />
 		</button>
 	</div>
 {/each}
