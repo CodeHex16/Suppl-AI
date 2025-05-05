@@ -3,35 +3,60 @@
 	import BottomNavBar from '$lib/components/BottomNavBar.svelte';
 	import HomeAdmin from '$lib/components/HomeAdmin.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import DeleteChatModal from '$lib/components/DeleteChatModal.svelte';
+	import { Settings } from 'lucide-svelte';
 
 	let { data } = $props();
-
 	let isAdmin = $derived(data.userScopes.includes('admin') === true);
+	let showModalDelete = $state(false);
+	let selectedChat = $state('');
 </script>
 
-<div class="grid-home mx-auto grid h-lvh max-w-xl">
-	<header class="relative py-4">
-		<div class="absolute right-4 top-8">
+<div class="grid-home mx-auto grid h-dvh max-w-xl overflow-x-hidden">
+	<header class="relative py-4 ">
+		{#if isAdmin}
+			<div class="absolute left-4 top-4 z-50">
+				<a
+					href="/admin/gestione_piattaforma"
+					class="item-primary flex h-12 w-12 cursor-pointer items-center justify-center rounded-full p-3 shadow-md transition"
+				>
+					<Settings class="h-6 w-6" />
+				</a>
+			</div>
+		{/if}
+		<div class="absolute right-4 top-4 z-50">
 			<!-- Toggle in alto a destra -->
 			<ThemeToggle {data} />
 		</div>
-		<div class="logo-wrapper flex h-full items-center justify-center pt-8">
-			<!-- Centratura con padding-top per compensare il toggle -->
-			<img src="./img/logo_light.png?v={Date.now()}" class="logo light-mode" alt="Logo Light" />
-			<img src="./img/logo_dark.png?v={Date.now()}" class="logo dark-mode" alt="Logo Dark" />
+		<div class="mx-auto my-auto h-full w-4/6 flex items-center justify-center mt-4 mb-4">
+			<img
+				src="./img/logo_light.png?v={Date.now()}"
+				class="logo light-mode w-full"
+				alt="Logo Light"
+			/>
+			<img
+				src="./img/logo_dark.png?v={Date.now()}"
+				class="logo dark-mode w-full"
+				alt="Logo Dark"
+			/>
 		</div>
 	</header>
 
-	<main class="">
+	{#if showModalDelete}
+		<DeleteChatModal
+			chatName={selectedChat.name}
+			chatId={selectedChat.id}
+			onCancel={() => (showModalDelete = false)}
+		/>
+	{/if}
+	<main class="flex flex-col overflow-hidden">
 		{#if isAdmin}
 			<HomeAdmin />
 		{/if}
 
-		<div class="rounded-t-3xl bg-white shadow-md p-4">
-			<h2 class="mb-6 ml-2 mt-2 text-xl font-semibold">Cronologia Chat</h2>
-			<div
-				class="scroll-snap-y-container flex max-h-52 min-h-40 flex-col space-y-4 overflow-y-auto"
-			>
+		<div class="flex-grow rounded-t-3xl bg-white p-4 shadow-md">
+			<h2 class="mb-3 ml-2 text-xl font-semibold">Cronologia Chat</h2>
+			<div class="flex max-h-52 min-h-40 flex-col space-y-4 overflow-y-auto">
 				{#await data.chats}
 					<div role="status" class="m-auto">
 						<svg
@@ -53,9 +78,15 @@
 						<span class="sr-only">Caricamento...</span>
 					</div>
 				{:then chatData}
-					<ChatHistory data={chatData} />
+					<ChatHistory
+						data={chatData}
+						onDelete={(chat) => {
+							selectedChat = chat;
+							showModalDelete = true;
+						}}
+					/>
 				{:catch}
-					<p>Caricamento chat fallito</p>
+					<p class="m-auto">Caricamento chat fallito</p>
 				{/await}
 			</div>
 		</div>

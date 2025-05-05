@@ -23,7 +23,7 @@
 					id="email"
 					name="username"
 					placeholder="Email"
-					value="test@test.it"
+					value=""
 					required
 					class="rounded-full border-none bg-gray p-2 px-4"
 				/>
@@ -33,10 +33,14 @@
 					id="password"
 					name="password"
 					placeholder="Password"
-					value="testtest"
+					value=""
 					required
 					class="rounded-full border-none bg-gray px-4 py-2"
 				/>
+				<div>
+					<input type="checkbox" id="remember_me" name="remember_me" class="rounded-full bg-gray p-3 mr-2 border-none" />
+					<label for="remember_me" class="text-sm">Ricordami</label> 
+				</div>
 				<button
 					type="submit"
 					class="rounded-full border-none item-primary p-3 text-center font-bold"

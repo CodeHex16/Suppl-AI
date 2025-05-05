@@ -3,26 +3,30 @@
 	import { invalidate } from '$app/navigation';
 	import { goto } from '$app/navigation';
 	let { data } = $props();
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
-
-	async function newChat() {
-		const chat_id = await fetch('http://localhost:8000/chats/new_chat', {
+	async function newChat(){
+		let ris = await fetch('/api/new_chat', {
 			method: 'GET',
 			headers: {
-				Authorization: 'Bearer ' + data.token
+				'Content-Type': 'application/json'
+			},
+		})
+		if (ris.ok) {
+			let data = await ris.json();
+			if (data && data.chat_id) {
+				goto('/chat/' + data.chat_id);
 			}
-		}).then((res) => res.json());
-
-
-		await invalidate('app:chat'); // per rimuovere la cache, altrimenti la lista di chat non si aggiorna
-		await goto(`/chat/${chat_id.chat_id}`);
+		} else {
+			console.error('Error creating new chat:', ris.statusText);
+		}
 	}
 
-	let isHome = $page.url.pathname === '/';
+	let isHome = page.url.pathname === '/';
+	let isProfile = page.url.pathname === '/profilo'; // Added to track profile page
 </script>
 
-<footer class="flex justify-around bg-white shadow-md pb-4 pt-2">
+<footer class="flex justify-around bg-white shadow-md pt-2">
 	<a href="/" class="">
 		<div
 			class="flex flex-col items-center gap-1 rounded-full p-2 px-4 text-sm {!isHome &&
@@ -46,7 +50,7 @@
 	</div>
 	<a href="/profilo" class="">
 		<div
-			class="flex flex-col items-center gap-1 rounded-full p-2 px-4 text-sm {isHome &&
+			class="flex flex-col items-center gap-1 rounded-full p-2 px-4 text-sm {!isProfile &&
 				'opacity-50'} transition duration-150 ease-in hover:bg-gray-100 hover:opacity-100"
 		>
 			<User />

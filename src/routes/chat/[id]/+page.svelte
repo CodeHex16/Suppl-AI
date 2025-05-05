@@ -2,20 +2,20 @@
 	import ChatNavBar from '$lib/components/ChatNavBar.svelte';
 	import SendMessage from '$lib/components/SendMessage.svelte';
 	import Messages from '$lib/components/Messages.svelte';
+	import DeleteChatModal from '$lib/components/DeleteChatModal.svelte';
 	import { enhance } from '$app/forms';
-	import { invalidate } from '$app/navigation';
+	import { invalidate, invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
-	$inspect(data);
-	
+
 	let waitingForResponse = $state(false);
 	let scrollToDiv: HTMLDivElement;
 	let answer = $state('');
 	let abortController: AbortController | null = null;
+	let showModalDelete = $state(false);
 
 	let messages = $state(data.chat.messages);
-	// Store per il nome della chat, per renderizzare la UI in modo reattivo
 	let chatName = $state(data.chat.name);
 
 	function scrollToBottom() {
@@ -28,7 +28,7 @@
 		if (abortController) {
 			abortController.abort();
 		}
-
+		
 		abortController = new AbortController();
 		answer = '';
 
@@ -36,8 +36,8 @@
 			const response = await fetch('/api/stream_chat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ 
-					message: messageData, 
+				body: JSON.stringify({
+					question: messageData,
 					messages: messages
 				}),
 				signal: abortController.signal
@@ -59,10 +59,9 @@
 				for (const line of lines) {
 					if (line.startsWith('data: ')) {
 						try {
-							const data = JSON.parse(line.substring(6));
-
-							if (data.choices && data.choices[0].delta && data.choices[0].delta.content) {
-								answer += data.choices[0].delta.content;
+							const data = line.substring(6);
+							if (data !== '[DONE]') {
+								answer += data;
 								scrollToBottom();
 							}
 						} catch (err) {
@@ -83,13 +82,16 @@
 				},
 				body: JSON.stringify({
 					content: answer,
-					chat_id: data.chat_id,
+					chat_id: data.chat_id
 				})
 			});
 
-        	if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
-        	    await updateChatName();
-        	}
+			if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
+				await updateChatName();
+			}
+			if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
+				await updateChatName();
+			}
 
 			answer = '';
 		} catch (err: any) {
@@ -104,7 +106,7 @@
 		const res = await fetch('/api/update_chat_name', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ 
+			body: JSON.stringify({
 				messages: messages,
 				chat_id: data.chat_id
 			})
@@ -112,20 +114,35 @@
 
 		const data_json = await res.json();
 		if (!data_json.error) {
-			chatName = data_json.title; 
+			chatName = data_json.title;
+			data.chat.name = data_json.title;
+			await invalidateAll();
 		} else {
 			console.error('Errore aggiornamento nome chat:', data_json.error);
 		}
 	}
 
+
 	onMount(() => {
 		scrollToBottom();
 	});
+
+	function openDeleteModal() {
+		showModalDelete = true;
+	}
 </script>
 
 <div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">
-	<!-- Usa il valore reattivo del nome della chat -->
-	<ChatNavBar {data} />
+	<!--Delete Chat Modal-->
+	{#if showModalDelete}
+		<DeleteChatModal
+			chatName={chatName}
+			chatId={data.chat_id}
+			onCancel={() => showModalDelete = false}
+		/>
+	{/if}
+
+	<ChatNavBar data={data} deleteChat={openDeleteModal} />
 	<div class="flex-grow overflow-y-auto">
 		<Messages
 			data={waitingForResponse

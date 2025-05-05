@@ -78,7 +78,7 @@
 
 @layer components {
 	.item-primary {
-		@apply bg-[var(--color-primary)] text-[var(--color-primary-text)] transition hover:bg-[var(--color-primary-hover)];
+		@apply bg-[var(--color-primary)] text-[var(--color-primary-text)] transition-all ease-in hover:bg-[var(--color-primary-hover)];
 	}
 
 	.bg-primary {
@@ -112,22 +112,16 @@ html {
 
 /* Background puntinato */
 .bg-dotted {
-	@apply absolute inset-0 h-full w-full bg-background bg-[radial-gradient(#cacaca_1px,transparent_1px)] [background-size:16px_16px];
+	@apply absolute inset-0 h-full w-full bg-gray-200 bg-[radial-gradient(#bbbbbb_1px,transparent_1px)] [background-size:16px_16px];
 }
 
 .dark .bg-dotted {
-	@apply bg-[radial-gradient(#4a4a4a_1px,transparent_1px)];
+	@apply bg-background bg-[radial-gradient(#616161,transparent_1px)];
 }
 
 /* Vetro trasparente */
 .glass {
 	@apply h-full rounded-t-3xl bg-white bg-opacity-80 bg-clip-padding p-4 backdrop-blur-3xl backdrop-filter;
-}
-
-.logo {
-	max-width: 80%;
-	max-height: 80px;
-	display: none;
 }
 
 .light-mode {
@@ -154,12 +148,13 @@ html {
 	color: white;
 }
 
-.dark input::placeholder {
+.dark input::placeholder,
+.dark textarea::placeholder {
 	color: white;
 }
 
 .bg-white {
-	background-color: white;
+	background-color: hsl(0, 0%, 98%);
 	color: black;
 }
 
@@ -168,8 +163,10 @@ html {
 	color: white;
 }
 
-.bg-gray {
-	background-color: #eeeeee;
+.bg-gray,
+a.bg-gray,
+button.bg-gray {
+	@apply bg-gray-200;
 	color: black;
 }
 
@@ -187,10 +184,6 @@ button.bg-gray:hover {
 .dark button.bg-gray:hover,
 .dark a:hover .bg-gray {
 	background-color: #5d5d5d;
-}
-
-a.bg-gray {
-	background-color: white;
 }
 
 a:hover .bg-gray {

@@ -1,8 +1,8 @@
 import type { Actions, ActionFailure } from '@sveltejs/kit';
 import { fail, redirect } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private'
+import { env } from '$env/dynamic/public';
 
-const API_URL = env.DATABASE_API_URL;
+const DATABASE_URL = env.PUBLIC_DATABASE_URL;
 
 export const load = async ({ cookies }) => {
 	const token = cookies.get('token');
@@ -18,6 +18,8 @@ export const actions: Actions = {
 
 		const username = data.get('username')?.toString();
 		const password = data.get('password')?.toString();
+		const remember_me = data.get('remember_me')?.toString() === 'on' ? 'true' : 'false';
+		console.log("login data", data);
 
 		if (!username || !password) {
 			return fail(400, { error: 'Username e password sono richiesti' });
@@ -25,7 +27,7 @@ export const actions: Actions = {
 
 		try {
 			// Chiamata API per autenticazione e ricezione JWT
-			const response = await fetch(`${API_URL}/auth/token`, {
+			const response = await fetch(`http://${DATABASE_URL}/auth/token?remember_me=${remember_me}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded'
@@ -33,19 +35,17 @@ export const actions: Actions = {
 				body: new URLSearchParams({
 					grant_type: 'password',
 					username: username,
-					password: password
+					password: password,
 				})
 			});
 
 			if (!response.ok) {
 				const errorBody = await response.json().catch(() => ({}));
-				// Convert arrays or objects to string for proper display
-				const formattedErrorBody = JSON.stringify(errorBody);
-				console.error('Dettagli errore:', formattedErrorBody);
-				return fail(403, { error: 'Credenziali non valide', dettagli: formattedErrorBody });
+				console.error('Dettagli errore:', JSON.stringify(errorBody));
+				return fail(403, { error: 'Credenziali non valide', dettagli: JSON.stringify(errorBody) });
 			}
 
-			const { access_token } = await response.json();
+			const {access_token, expires_in} = await response.json();
 
 			// Salva JWT nel cookie
 			cookies.set('token', access_token, {
@@ -53,7 +53,7 @@ export const actions: Actions = {
 				httpOnly: true,
 				secure: false,
 				//secure: process.env.NODE_ENV === 'production',
-				maxAge: 60 * 60 * 24 * 7, // 1 settimana
+				maxAge: expires_in ? expires_in : undefined,
 				sameSite: 'strict'
 			});
 		} catch (error) {

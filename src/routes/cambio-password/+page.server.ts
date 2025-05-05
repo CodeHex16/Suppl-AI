@@ -1,9 +1,8 @@
 import type { Actions, ActionFailure } from '@sveltejs/kit';
 import { fail, redirect } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import { jwtDecode } from 'jwt-decode';
+import { env } from '$env/dynamic/public';
 
-const API_URL = env.DATABASE_API_URL;
+const DATABASE_URL = env.PUBLIC_DATABASE_URL;
 
 //Questa pagina viene usata sia per il recupero password che per il primo cambio password
 export const load = async ({ cookies }) => {
@@ -18,15 +17,36 @@ export const actions: Actions = {
 	default: async ({ cookies, request }) => {
 		const data = await request.formData();
 
-        const currentPassword = data.get('currentPassword')?.toString();
+		const currentPassword = data.get('currentPassword')?.toString();
 		const password = data.get('password')?.toString();
 		const passwordConfirm = data.get('passwordConfirm')?.toString();
 
-		if (password != passwordConfirm) {
+		if (!password || !passwordConfirm) {
+			return fail(400, { error: 'Entrambi i campi password sono obbligatori' });
+		}
+
+		if (password !== passwordConfirm) {
 			return fail(400, { error: 'La password deve essere uguale in entrambi i campi' });
-		} else if (password && password.length < 8) {
+		}
+
+		// Password validation checks
+		if (password.length < 8) {
 			return fail(400, { error: 'La password deve essere lunga almeno 8 caratteri' });
 		}
+		if (!/[A-Z]/.test(password)) {
+			return fail(400, { error: 'La password deve contenere almeno una lettera maiuscola' });
+		}
+		if (!/[a-z]/.test(password)) {
+			return fail(400, { error: 'La password deve contenere almeno una lettera minuscola' });
+		}
+		if (!/\d/.test(password)) {
+			return fail(400, { error: 'La password deve contenere almeno una cifra' });
+		}
+		// Define allowed special characters, adjust as needed. Example includes common ones.
+		if (!/[!@#$%^&*(),.?":+{}|<>]/.test(password)) {
+			return fail(400, { error: 'La password deve contenere almeno un carattere speciale (es. !@#$%^&*())' });
+		}
+
 
 		try {
 			//Cambio di password
@@ -36,19 +56,31 @@ export const actions: Actions = {
 			}
 
 			const payload = JSON.stringify({
-				email: jwtDecode(token).sub,
-                password: password,
-                current_password: currentPassword
+				password: password,
+				current_password: currentPassword
 			});
 
+			console.log(payload);
+
 			// console.log('payload: ', payload);
-			const response = await fetch(`${API_URL}/user/update_password`, {
-				method: 'PUT',
+			const response = await fetch(`http://${DATABASE_URL}/users/password`, {
+				method: 'PATCH',
 				headers: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`
 				},
 				body: payload
 			});
+
+			if (!response.ok) {
+				const errorResponse = await response.json();
+				console.error('Errore: ', errorResponse);
+				if (errorResponse.error === 'Invalid password') {
+					return fail(400, { error: 'La password attuale non è corretta' });
+				} else {
+					return fail(500, { error: 'Errore di connessione al server' });
+				}
+			}
 		} catch (error) {
 			console.error('Errore: ', error);
 			return fail(500, { error: 'Errore di connessione al server' });

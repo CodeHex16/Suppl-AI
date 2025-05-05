@@ -2,7 +2,7 @@
 <html lang="it">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" href="%sveltekit.assets%/img/logo.png" />
+		<link rel="icon" href="%sveltekit.assets%/img/favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -11,21 +11,28 @@
 			rel="stylesheet"
 		/>
 		<script>
-			(function () {
-				try {
-					const theme = localStorage.getItem('theme');
-					if (
-						theme === 'dark' ||
-						(!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
-					) {
-						document.documentElement.classList.add('dark');
-					} else {
-						document.documentElement.classList.remove('dark');
-					}
-				} catch (e) {
-					/* Ignora errori */
-				}
-			})();
+            (function () {
+                try {
+                    // Trova il cookie del tema
+                    const themeCookie = document.cookie
+                        .split('; ')
+                        .find((row) => row.startsWith('theme='));
+                    // Estrai il valore del tema solo se il cookie esiste
+                    const themeValue = themeCookie ? themeCookie.split('=')[1] : null;
+                    // Controlla le preferenze di sistema
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+                    // Determina se il tema deve essere scuro
+                    const isDark = themeValue === 'dark' || (!themeValue && prefersDark);
+
+                    // Applica o rimuovi la classe 'dark' in base al risultato
+                    document.documentElement.classList.toggle('dark', isDark);
+
+                } catch (e) {
+                    // Logga l'errore per debug, ma non bloccare il rendering
+                    console.error('Error setting initial theme:', e);
+                }
+            })();
 		</script>
 		%sveltekit.head%
 	</head>

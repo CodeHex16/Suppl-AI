@@ -5,11 +5,9 @@ export interface Message {
 }
 
 export interface User {
-	id: number,
+	email: string,
 	name: string,
 	role: string,
-	creationDate: string,
-	email: string
 }
 
 export interface Document {
@@ -24,7 +22,8 @@ export interface Faq {
 	author: string;
 	creationDate: string;
 	question: string;
-	abbr: string;
+	title: string;
+	answer: string;
 }
 
 export interface MessageContext {

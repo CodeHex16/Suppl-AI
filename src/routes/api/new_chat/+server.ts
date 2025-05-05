@@ -4,39 +4,34 @@ import { env } from '$env/dynamic/public';
 
 const DATABASE_URL = env.PUBLIC_DATABASE_URL;
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
+export const GET: RequestHandler = async ({ cookies }) => {
 	try {
-		const req = await request.json();
 		const token = cookies.get('token');
 
 		if (!token) {
 			return json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
-		// Salva il messaggio del bot nel database
-		const response = await fetch(`http://${DATABASE_URL}/chats/${req.chat_id}/messages`, {
-			method: 'POST',
+		// Crea una nuova chat nel database
+		const response = await fetch(`http://${DATABASE_URL}/chats/new_chat`, {
+			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`
-			},
-			body: JSON.stringify({
-				content: req.content,
-				sender: 'bot'
-			})
+			}
 		});
 
 		if (!response.ok) {
 			const errorData = await response.json();
 			return json(
-				{ error: 'Failed to save bot message', details: errorData },
+				{ error: 'Errore durante la creazione della nuova chat', details: errorData },
 				{ status: response.status }
 			);
 		}
-
-		return json({ success: true });
+		const data = await response.json();
+		return json({ success: true , chat_id: data.chat_id});
 	} catch (error) {
-		console.error('Errore durante il salvataggio del messaggio del bot:', error);
+		console.error('Errore durante la creazione della nuova chat:', error);
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
