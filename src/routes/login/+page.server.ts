@@ -26,7 +26,6 @@ export const actions: Actions = {
 		}
 
 		try {
-			// Chiamata API per autenticazione e ricezione JWT
 			const response = await fetch(`http://${DATABASE_URL}/auth/token?remember_me=${remember_me}`, {
 				method: 'POST',
 				headers: {
@@ -47,7 +46,6 @@ export const actions: Actions = {
 
 			const {access_token, expires_in} = await response.json();
 
-			// Salva JWT nel cookie
 			cookies.set('token', access_token, {
 				path: '/',
 				httpOnly: true,
@@ -60,5 +58,6 @@ export const actions: Actions = {
 			console.error("Errore durante l'autenticazione:", error);
 			return fail(500, { error: 'Errore di connessione al server' });
 		}
+		return redirect(303, '/');
 	}
 };

@@ -1,7 +1,30 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { ThumbsUp, ThumbsDown } from 'lucide-svelte';
 	let { data } = $props();
 	import { marked } from 'marked';
+	import { page } from '$app/state';
+	import { on } from 'svelte/events';
+
+	// $inspect(data);
+	// $inspect(page.params);
+
+	onMount(() => {
+		if (data.rating) {
+			like = true;
+		} else if (data.rating === false) {
+			dislike = true;
+		} else {
+			like = false;
+			dislike = false;
+		}
+	});
+
+	marked.use({
+		gfm: true,
+		breaks: true,
+		pedantic: false
+	});
 
 	function formatMessage(text: string) {
 		return marked(text);
@@ -10,16 +33,38 @@
 	let like = $state(false);
 	let dislike = $state(false);
 
+	function rateMessage(chatId: string, messageId: string, rating: boolean | null) {
+		console.log('like: ', like, 'dislike: ', dislike);
+
+		if (!(like || dislike)) {
+			rating = null;
+		}
+
+		console.log('rating: ', rating);
+
+		fetch('/api/rate_message', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				chat_id: chatId,
+				message_id: messageId,
+				rating: rating
+			})
+		});
+	}
+
 	function toggleThumbsUp() {
 		like = !like;
 		dislike = false;
-		console.log('like: ', like);
+
+		rateMessage(page.params.id, data._id, like);
 	}
 
 	function toggleThumbsDown() {
 		dislike = !dislike;
 		like = false;
-		console.log('dislike: ', dislike);
+
+		rateMessage(page.params.id, data._id, !dislike);
 	}
 
 	function formatData(stringDate: string) {
@@ -37,7 +82,7 @@
 
 <div class="flex flex-col justify-start">
 	<div class="max-w-sm">
-		<div class="rounded-t-3xl rounded-br-3xl bg-white p-4 text-black">
+		<div class="rounded-t-3xl rounded-br-3xl bg-white p-4 text-black shadow-md">
 			<!-- TODO: Scegliere che versione usare -->
 			<!-- <div class="font-bold item-primary px-2 rounded-full w-fit">Suppl-AI</div> -->
 			<div class="font-bold text-primary">Suppl-AI</div>
@@ -47,22 +92,26 @@
 					<div class="mb-2 h-2 w-5/6 rounded bg-slate-200"></div>
 				</div>
 			{:else}
-				<div class="markdown-content">
+				<div class="markdown-content prose dark:prose-invert">
+					<!-- {data.content} -->
 					{@html formatMessage(data.content)}
 				</div>
 			{/if}
 		</div>
-		<div class="flex flex-row items-center justify-between ">
-			<div class="text-gray ml-2 my-auto text-sm opacity-80">
+		<div class="flex flex-row items-center justify-between">
+			<div class="text-gray my-auto ml-2 text-sm opacity-80">
 				{#if data.timestamp}
 					<p class=" my-2">{formatData(data.timestamp)}</p>
 				{:else}
 					<p class=" my-2">Adesso</p>
 				{/if}
 			</div>
-			<div class="flex flex-row-reverse mr-2">
+			<div class="mr-2 flex flex-row-reverse">
 				<button
-					class="{like ? 'item-primary' : 'text-gray opacity-60'}  flex items-center justify-center rounded-full p-2"
+					id="like-button-{data._id}"
+					class="{like
+						? 'item-primary'
+						: 'text-gray opacity-60'}  flex items-center justify-center rounded-full p-2"
 					onclick={toggleThumbsUp}
 					aria-label="Like"
 					title="Risposta utile"
@@ -71,12 +120,15 @@
 				</button>
 
 				<button
-					class="{dislike ? 'item-primary' : 'text-gray opacity-60'}  flex items-center justify-center rounded-full p-2"
+					id="dislike-button-{data._id}"
+					class="{dislike
+						? 'item-primary'
+						: 'text-gray opacity-60'}  flex items-center justify-center rounded-full p-2"
 					onclick={toggleThumbsDown}
 					aria-label="Dislike"
 					title="Risposta non utile"
 				>
-					<ThumbsDown class="h-4 w-4"/>
+					<ThumbsDown class="h-4 w-4" />
 				</button>
 			</div>
 		</div>

@@ -10,11 +10,12 @@ export interface User {
 	role: string,
 }
 
-export interface Document {
-	id: number;
-	name: string;
-	author: string;
-	creationDate: string
+export type Document = {
+	_id: string;
+	title: string;
+	file_path: string;
+	owner_email: string;
+	uploaded_at: string;
 }
 
 export interface Faq {

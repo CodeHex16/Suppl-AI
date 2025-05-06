@@ -1,16 +1,17 @@
 <script lang="ts">
 	import { ChevronDown, Trash2 } from 'lucide-svelte';
-	type Document = {
-		id: number;
-		name: string;
-		author: string;
-		creationDate: string;
-	};
+	import { type Document } from '$lib/types';
 
 	import { slide } from 'svelte/transition';
 
-	let { document, open, onToggle, onDelete } = $props();
+	let {
+		document,
+		open,
+		onToggle,
+		onDelete
+	}: { document: Document; open: boolean; onToggle: () => void; onDelete: () => void } = $props();
 
+	$inspect("docu open", open);
 	function formatDate(dateString: string): string {
 		const options: Intl.DateTimeFormatOptions = {
 			year: 'numeric',
@@ -25,16 +26,16 @@
 <div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">
 	<div class="flex items-center justify-between">
 		<div class="flex-1 pr-4">
-			<h3 class="text-gray truncate text-lg font-semibold">{document.name}</h3>
+			<h3 class="text-gray truncate text-lg font-semibold">{document.title}</h3>
 			{#if !open}
-				<p class="text-gray truncate text-sm opacity-50">{formatDate(document.creationDate)}</p>
+				<p class="text-gray truncate text-sm opacity-50">{formatDate(document.uploaded_at)}</p>
 			{/if}
 		</div>
 		<div class="flex items-center">
 			<button
-				class="text-gray hover:bg-gray-200 dark:hover:text-black  rounded-full p-2 transition"
+				class="text-gray rounded-full p-2 transition hover:bg-gray-200 dark:hover:text-black"
 				onclick={onToggle}
-				aria-label={open ? `Chiudi dettagli ${document.name}` : `Apri dettagli ${document.name}`}
+				aria-label={open ? `Chiudi dettagli ${document.title}` : `Apri dettagli ${document.title}`}
 			>
 				<ChevronDown
 					class={`h-5 w-5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
@@ -45,10 +46,10 @@
 
 	{#if open}
 		<div class="mt-4" transition:slide={{ duration: 200 }}>
-			<p><span class="font-medium">Caricato da:</span> {document.author}</p>
+			<p><span class="font-medium">Caricato da:</span> {document.owner_email}</p>
 			<p>
 				<span class="font-medium">Data caricamento:</span>
-				{formatDate(document.creationDate)}
+				{formatDate(document.uploaded_at)}
 			</p>
 			<div class="mt-4 border-t border-gray-500 border-opacity-50">
 				<button
