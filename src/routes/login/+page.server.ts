@@ -54,10 +54,10 @@ export const actions: Actions = {
 				maxAge: expires_in ? expires_in : undefined,
 				sameSite: 'strict'
 			});
-			return redirect(303, '/');
 		} catch (error) {
 			console.error("Errore durante l'autenticazione:", error);
 			return fail(500, { error: 'Errore di connessione al server' });
 		}
+		return redirect(303, '/');
 	}
 };
