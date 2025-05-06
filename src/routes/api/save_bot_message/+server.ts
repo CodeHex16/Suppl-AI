@@ -34,7 +34,9 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			);
 		}
 
-		return json({ success: true });
+		const data = await response.json();
+
+		return json({ success: true, data: data });
 	} catch (error) {
 		console.error('Errore durante il salvataggio del messaggio del bot:', error);
 		return json({ error: 'Internal server error' }, { status: 500 });

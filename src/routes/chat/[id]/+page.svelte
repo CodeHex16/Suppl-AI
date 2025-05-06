@@ -71,11 +71,9 @@
 				}
 			}
 
-			// Quando la risposta è completa
-			messages = [...messages, { sender: 'bot', content: answer }];
-
+			
 			waitingForResponse = false;
-			await fetch(`/api/save_bot_message`, {
+			let request = await fetch(`/api/save_bot_message`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -85,6 +83,19 @@
 					chat_id: data.chat_id
 				})
 			});
+
+			if (!request.ok) {
+				throw new Error(`HTTP error: ${request.status}`);
+			}
+			const request_json = await request.json();
+			console.log('Risposta salvata:', request_json);
+			const messageRes = request_json.data
+			console.log('Messaggio salvato:', messageRes);
+			
+			// Quando la risposta è completa
+			messages = [...messages, { '_id': messageRes._id, sender: messageRes.sender, content: messageRes.content }];
+
+		
 
 			if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
 				await updateChatName();
