@@ -6,25 +6,25 @@
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 	import DeleteDocument from '$lib/components/DeleteDocumentModal.svelte';
 	import { type Document } from '$lib/types';
-	import { invalidate, invalidateAll } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 
 	let { data } = $props();
 
 	let showNewDocument = $state(false);
 
 	let query = $state('');
-	let selectedDocument = $state<string | null>(null);
+	let selectedDocument = $state<Document | null>(null);
 
 	let eliminateDocument = $state(false);
 
-	function toggleDocument(id: string) {
-		selectedDocument = selectedDocument === id ? null : id;
-		console.log(selectedDocument);
+	function toggleDocument(doc: Document) {
+		selectedDocument = selectedDocument?._id === doc._id ? null : doc;
+		console.log('selectedDocument', selectedDocument);
 	}
 
 	const filteredDocument = $derived(
 		data.documents.filter(
-			(doc) =>
+			(doc: Document) =>
 				doc.title.toLowerCase().includes(query.toLowerCase()) ||
 				doc.owner_email.toLowerCase().includes(query.toLowerCase())
 		)
@@ -36,21 +36,37 @@
 	}
 
 	function deleteDocumentRequest() {
-		// Trova l'ID del documento da eliminare
 		const docToDeleteId = selectedDocument;
+		console.log('ID documento da eliminare:', docToDeleteId);
 		if (docToDeleteId !== null) {
 			eliminateDocument = true;
-			// Non impostare selectedDocument a null qui, serve per il modale
 		} else {
 			console.warn("Nessun documento selezionato per l'eliminazione");
 		}
 	}
 
-	function confirmDeleteDocument() {
-		if (selectedDocument !== null) {
-			data.documents = data.documents.filter((doc) => doc._id !== selectedDocument);
-			console.log('Documento eliminato:', selectedDocument);
+	async function confirmDeleteDocument(form: FormData) {
+		console.log('DELETE form', form);
+
+		const ris = await fetch('/api/documents', {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				id: form.get('id'),
+				title: form.get('title'),
+				current_password: form.get('current_password')
+			})
+		});
+
+		if (ris.status === 200) {
+			console.log('Documento eliminato con successo');
+			await invalidateAll();
+		} else {
+			console.error('Errore durante l\'eliminazione del documento');
 		}
+
 		eliminateDocument = false;
 		selectedDocument = null;
 	}
@@ -58,7 +74,6 @@
 	async function cancelDeleteDocument() {
 		await invalidateAll();
 		eliminateDocument = false;
-		selectedDocument = null; // Deseleziona anche in caso di annullamento
 	}
 </script>
 
@@ -66,32 +81,33 @@
 	<HeaderPages {data} title="Gestione documenti" />
 
 	{#if showNewDocument}
-		<Doc onSubmitDocument={onSubmitDocument} onCancel={() => (showNewDocument = false)} />
+		<Doc {onSubmitDocument} onCancel={() => (showNewDocument = false)} />
 	{/if}
 	{#if eliminateDocument && selectedDocument !== null}
 		<DeleteDocument
-			documentId={selectedDocument}
+			document={selectedDocument}
 			onConfirmDelete={confirmDeleteDocument}
 			onCancel={cancelDeleteDocument}
 		/>
 	{/if}
 
 	<main class="flex flex-grow flex-col">
-		<div class="scroll-snap-y-container flex max-h-[calc(100vh-17em)] flex-col gap-2 overflow-y-auto px-4">
+		<div
+			class="scroll-snap-y-container flex max-h-[calc(100vh-17em)] flex-col gap-2 overflow-y-auto px-4"
+		>
 			<!-- Lista documenti -->
 			{#if filteredDocument.length > 0}
-
-					{#each filteredDocument as document (document._id)}
-						<DocumentItem
-							{document}
-							open={selectedDocument === document._id}
-							onToggle={() => toggleDocument(document._id)}
-							onDelete={() => {
-								selectedDocument = document._id;
-								deleteDocumentRequest();
-							}}
-						/>
-					{/each}
+				{#each filteredDocument as document (document._id)}
+					<DocumentItem
+						{document}
+						open={selectedDocument?._id === document._id}
+						onToggle={() => toggleDocument(document)}
+						onDelete={() => {
+							selectedDocument = document;
+							deleteDocumentRequest();
+						}}
+					/>
+				{/each}
 			{:else}
 				<p class="text-gray py-16 text-center">Ancora nessun documento</p>
 			{/if}

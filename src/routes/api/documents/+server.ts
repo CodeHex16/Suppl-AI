@@ -96,14 +96,17 @@ export const DELETE: RequestHandler = async ({ request, cookies }) => {
 			);
 		}
 
-		console.log('req delete faq', req);
-		const response = await fetch(`http://${DATABASE_URL}/faqs/${req.id}`, {
+		console.log('req delete document', req);
+		const response = await fetch(`http://${LLM_URL}/documents/delete_file`, {
 			method: 'DELETE',
 			headers: {
 				Authorization: 'Bearer ' + token,
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
+				id: req.id,
+				title: req.title,
+				token: token,
 				current_password: req.current_password
 			})
 		});

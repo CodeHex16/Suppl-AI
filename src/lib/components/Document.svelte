@@ -11,6 +11,7 @@
 		onDelete
 	}: { document: Document; open: boolean; onToggle: () => void; onDelete: () => void } = $props();
 
+	$inspect("docu open", open);
 	function formatDate(dateString: string): string {
 		const options: Intl.DateTimeFormatOptions = {
 			year: 'numeric',
