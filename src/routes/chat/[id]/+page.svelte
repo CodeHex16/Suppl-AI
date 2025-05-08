@@ -5,7 +5,7 @@
 	import DeleteChatModal from '$lib/components/DeleteChatModal.svelte';
 	import { enhance } from '$app/forms';
 	import { invalidate, invalidateAll } from '$app/navigation';
-	import { onMount,tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
 
 	let { data } = $props();
 
@@ -57,13 +57,20 @@
 				const { done, value } = await reader.read();
 				if (done) break;
 
-				const chunk = decoder.decode(value, { stream: true });
+				let chunk = decoder.decode(value, { stream: true });
+				chunk = chunk.replace('\n\n\n\n', '[n]\n\n');
 				const lines = chunk.split('\n\n');
 
-				for (const line of lines) {
+				for (let line of lines) {
+					console.log('line:', JSON.stringify(line), line.startsWith('data: '));
+					if(line.startsWith('\n')){
+						answer += '\n';
+						line = line.substring(1);
+					}
 					if (line.startsWith('data: ')) {
 						try {
-							const data = line.substring(6);
+							let data = line.substring(6);
+							data = data.replace('[n]', '\n');
 							if (data !== '[DONE]') {
 								answer += data;
 								scrollToBottom();
@@ -71,11 +78,12 @@
 						} catch (err) {
 							console.error('Errore parsing SSE:', err);
 						}
+					} else if (line == '[n]' || line == "\n") {
+						answer += '\n';
 					}
 				}
 			}
 
-	
 			let request = await fetch(`/api/save_bot_message`, {
 				method: 'POST',
 				headers: {
@@ -101,11 +109,10 @@
 			waitingForResponse = false;
 			answer = '';
 			await scrollToBottom();
-			
+
 			if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
 				await updateChatName();
 			}
-
 		} catch (err: any) {
 			if (err instanceof Error && err.name !== 'AbortError') {
 				console.error('Errore stream:', err);
