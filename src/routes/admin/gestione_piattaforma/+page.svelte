@@ -75,15 +75,16 @@
 		if (logoDarkFile) await uploadFile(logoDarkFile, 'logo_dark.png'); 
 		if (faviconFile) await uploadFile(faviconFile, 'favicon.ico'); 
 
-		const resColor = await fetch('/api/update_colors', {
+		const resColor = await fetch('/api/update_settings', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				COLOR_PRIMARY: primaryColor, 
-				COLOR_PRIMARY_TEXT: getContrastColor(primaryColor), 
-				COLOR_PRIMARY_HOVER: darken(primaryColor, 10) 
+				color_primary: primaryColor, 
+				color_primary_text: getContrastColor(primaryColor), 
+				color_primary_hover: darken(primaryColor, 10),
+				chat_history: chatRetention
 			})
 		});
 
