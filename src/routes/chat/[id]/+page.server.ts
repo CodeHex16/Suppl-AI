@@ -6,7 +6,6 @@ import type { isFileServingAllowed } from 'vite';
 const API_URL = 'http://database-api:8000';
 const LLM_URL = 'http://llm-api:8001';
 
-
 async function updateChatNameIfNeeded(chat: any, token: string, chatId: string) {
 	if (chat.messages.length > 2 && chat.name == 'Chat senza nome') {
 		let chat_context = chat.messages.map((message: Message) => message.content).join(' ');
@@ -24,17 +23,17 @@ async function updateChatNameIfNeeded(chat: any, token: string, chatId: string) 
 
 		if (!response.ok) return { error: response.status };
 
-        const title = await response.json();
-        
+		const title = await response.json();
+
 		console.log('Chat name:', title);
-        // Salva nel database
-        await fetch(`${API_URL}/chats/${chatId}/name?new_name=${title}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            }
-        });
+		// Salva nel database
+		await fetch(`${API_URL}/chats/${chatId}/name?new_name=${title}`, {
+			method: 'PATCH',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			}
+		});
 
 		// Aggiorna l'oggetto chat locale
 		chat.name = title;
@@ -65,12 +64,25 @@ export const load = async (data) => {
 		return redirect(303, '/');
 	}
 
-	const result = await updateChatNameIfNeeded(chat, data.cookies.get('token') ?? '', data.params.id);
+	const faqs = await fetch(`${API_URL}/faqs`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${data.cookies.get('token')}`
+		}
+	}).then((response) => response.json());
+
+	const result = await updateChatNameIfNeeded(
+		chat,
+		data.cookies.get('token') ?? '',
+		data.params.id
+	);
 	if (result.error) return fail(result.error, { error: 'Failed to generate chat name' });
 
 	return {
 		chat: chat,
-		chat_id: data.params.id
+		chat_id: data.params.id,
+		faqs: faqs
 	};
 };
 
@@ -88,7 +100,7 @@ export const actions = {
 					Authorization: `Bearer ${event.cookies.get('token')}`
 				},
 				body: JSON.stringify({
-					content: content,
+					content: content
 				})
 			});
 
@@ -97,11 +109,8 @@ export const actions = {
 			return {
 				success: true
 			};
-
 		} catch (error) {
 			return fail(500, { error: 'Failed to send message' });
 		}
-	},
-
-	
+	}
 } satisfies Actions;

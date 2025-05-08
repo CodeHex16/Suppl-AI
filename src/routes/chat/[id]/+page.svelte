@@ -5,7 +5,7 @@
 	import DeleteChatModal from '$lib/components/DeleteChatModal.svelte';
 	import { enhance } from '$app/forms';
 	import { invalidate, invalidateAll } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { onMount,tick } from 'svelte';
 
 	let { data } = $props();
 
@@ -14,21 +14,25 @@
 	let answer = $state('');
 	let abortController: AbortController | null = null;
 	let showModalDelete = $state(false);
+	let showModalFaq = $state(false);
 
 	let messages = $state(data.chat.messages);
 	let chatName = $state(data.chat.name);
 
-	function scrollToBottom() {
+	let inputValue = $state('');
+
+	async function scrollToBottom() {
+		await tick();
 		setTimeout(function () {
 			scrollToDiv.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
-		}, 100);
+		}, 0);
 	}
 
 	async function streamResponse(messageData: string) {
 		if (abortController) {
 			abortController.abort();
 		}
-		
+
 		abortController = new AbortController();
 		answer = '';
 
@@ -71,8 +75,7 @@
 				}
 			}
 
-			
-			waitingForResponse = false;
+	
 			let request = await fetch(`/api/save_bot_message`, {
 				method: 'POST',
 				headers: {
@@ -88,23 +91,21 @@
 				throw new Error(`HTTP error: ${request.status}`);
 			}
 			const request_json = await request.json();
-			console.log('Risposta salvata:', request_json);
-			const messageRes = request_json.data
-			console.log('Messaggio salvato:', messageRes);
-			
+			const messageRes = request_json.data;
+
 			// Quando la risposta è completa
-			messages = [...messages, { '_id': messageRes._id, sender: messageRes.sender, content: messageRes.content }];
-
-		
-
-			if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
-				await updateChatName();
-			}
-			if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
-				await updateChatName();
-			}
-
+			messages = [
+				...messages,
+				{ _id: messageRes._id, sender: messageRes.sender, content: messageRes.content }
+			];
+			waitingForResponse = false;
 			answer = '';
+			await scrollToBottom();
+			
+			if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
+				await updateChatName();
+			}
+
 		} catch (err: any) {
 			if (err instanceof Error && err.name !== 'AbortError') {
 				console.error('Errore stream:', err);
@@ -133,26 +134,59 @@
 		}
 	}
 
-	onMount(() => {
-		scrollToBottom();
+	onMount(async () => {
+		await scrollToBottom();
 	});
 
 	function openDeleteModal() {
 		showModalDelete = true;
 	}
+	function openFaq() {
+		showModalFaq = true;
+		console.log('openFaq');
+	}
+	$inspect('faqs', data.faqs);
+
+	function sendFaq(faq: any) {
+		inputValue = faq.question;
+		showModalFaq = false;
+	}
 </script>
 
 <div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">
+	{#if showModalFaq}
+		<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+			<div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
+				<div class="flex flex-col items-center justify-center">
+					<h2 class="mb-2 text-lg font-semibold">Scegli una FAQ</h2>
+					<p class="my-2 text-center">Seleziona una delle FAQ per inviarla come messaggio.</p>
+					{#each data.faqs as faq}
+						<button
+							onclick={() => sendFaq(faq)}
+							class="bg-gray mb-2 w-full rounded-full px-4 py-2 text-left font-semibold transition ease-in"
+							>{faq.title}</button
+						>
+					{/each}
+
+					<div class="mt-2 flex flex-row gap-4 justify-self-center">
+						<button
+							class="bg-gray rounded-full px-4 py-2 transition ease-in"
+							type="button"
+							aria-label="Cancel"
+							title="Annulla"
+							onclick={() => (showModalFaq = false)}>Annulla</button
+						>
+					</div>
+				</div>
+			</div>
+		</div>
+	{/if}
 	<!--Delete Chat Modal-->
 	{#if showModalDelete}
-		<DeleteChatModal
-			chatName={chatName}
-			chatId={data.chat_id}
-			onCancel={() => showModalDelete = false}
-		/>
+		<DeleteChatModal {chatName} chatId={data.chat_id} onCancel={() => (showModalDelete = false)} />
 	{/if}
 
-	<ChatNavBar data={data} deleteChat={openDeleteModal} />
+	<ChatNavBar {data} deleteChat={openDeleteModal} />
 	<div class="flex-grow overflow-y-auto">
 		<Messages
 			data={waitingForResponse
@@ -186,6 +220,6 @@
 			};
 		}}
 	>
-		<SendMessage sending={waitingForResponse} />
+		<SendMessage sending={waitingForResponse} onClickFaq={openFaq} {inputValue} />
 	</form>
 </div>
