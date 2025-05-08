@@ -50,8 +50,8 @@
 	}
 
 	async function updateUser(user: any) {
-		users = users.map((u) => (u.id === user.id ? { ...u, ...user } : u));
-
+		users = users.map((u) => (u.email === user.email ? { ...u, ...user } : u));
+		console.log("Updating user:", user);
 		const ris = await fetch(`/api/users`, {
 			method: 'PUT',
 			headers: {
@@ -61,7 +61,7 @@
 		});
 		if (ris.ok) {
 			const updatedUser = await ris.json();
-			users = users.map((u) => (u.id === updatedUser.user.id ? updatedUser.user : u));
+			users = users.map((u) => (u.email === updatedUser.email ? updatedUser : u));
 		} else {
 			console.error('Error updating user:', await ris.text());
 		}

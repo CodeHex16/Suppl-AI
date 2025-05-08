@@ -5,7 +5,7 @@
 	let { sending, onClickFaq, inputValue = $bindable() } = $props();
 </script>
 
-<div class="grid-chat-bottom-bar grid gap-2">
+<div class="grid-chat-bottom-bar grid ">
 	{#if inputValue === ''}
 		<button
 			type="button"
@@ -25,7 +25,7 @@
 		autocomplete="off"
 		tabindex={0}
 		placeholder="Scrivi un messaggio"
-		class="rounded-full border-none border-transparent bg-white p-4 shadow-md focus:border-transparent focus:ring-0 {inputValue !==
+		class="mx-2 rounded-full border-none border-transparent bg-white p-4 shadow-md focus:border-transparent focus:ring-0 {inputValue !==
 		''
 			? 'col-span-2'
 			: 'col-span-1'}"

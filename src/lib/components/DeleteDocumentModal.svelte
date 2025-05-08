@@ -1,16 +1,18 @@
 <script lang="ts">
 	import { type Document } from '$lib/types';
-	let { document, onConfirmDelete, onCancel } = $props();
+	let { document, onConfirmDelete, onCancel, errorMessage } = $props();
 	import { enhance } from '$app/forms';
-
-
 </script>
 
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
 	<div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
 		<div class="flex flex-col items-center justify-center">
 			<h2 class="text-lg font-semibold">Conferma Eliminazione</h2>
+			{#if errorMessage}
+				<p class="mt-2 text-red-500">{errorMessage}</p>
+			{/if}
 			<p class="my-2 text-center">Sei sicuro di voler eliminare il documento "{document.title}"?</p>
+
 			<form
 				method="POST"
 				action="/api/users"
@@ -52,4 +54,3 @@
 		</div>
 	</div>
 </div>
-

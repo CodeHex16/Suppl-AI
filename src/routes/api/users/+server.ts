@@ -79,18 +79,24 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 			);
 		}
 
-		const response = await fetch(`http://${DATABASE_URL}/users/${req.email}`, {
+		const response = await fetch(`http://${DATABASE_URL}/users`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`
 			},
 			body: JSON.stringify({
+				_id: req.email,
 				name: req.name,
 				email: req.email,
-				scope: [req.scope]
+				scopes: [ req.role ]
 			})
 		});
+		if (response.status === 304) {
+			return json(
+				{ error: 'No content to update', details: 'No changes made' },
+			);
+		}
 
 		if (!response.ok) {
 			return json(

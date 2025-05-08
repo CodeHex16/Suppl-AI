@@ -9,8 +9,8 @@
 	}>();
 
 	let name = $state(user.name);
-	let email = $state(user.email);
 	let role = $state(user.role);
+	let email = $state(user.email);
 
 	function submitForm() {
 		onSubmitUser({
@@ -25,7 +25,6 @@
 	<div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
 		<h2 class="mb-4 text-lg font-semibold text-center">Modifica Utente</h2>
 
-		<!-- Name Input with Icon -->
 		<div class="relative mb-3">
 			<User class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
 			<input
@@ -37,19 +36,6 @@
 			/>
 		</div>
 
-		<!-- Email Input with Icon -->
-		<div class="relative mb-3">
-			<Mail class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-			<input
-				type="email"
-				bind:value={email}
-				placeholder="Email"
-				required
-				class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:opacity-50"
-			/>
-		</div>
-
-		<!-- Role Select with Icon -->
 		<div class="relative mb-4">
 			<Tag class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
 			<select
@@ -75,6 +61,7 @@
 				class="item-primary rounded-full px-4 py-2"
 				type="submit"
 				aria-label="Confirm"
+				onclick={submitForm}
 				title="Conferma">Conferma</button
 			>
 		</div>
