@@ -12,7 +12,7 @@
 	let cssColor = '#ffffff'; 
 
 	let primaryColor = $state('#007BFF'); 
-	let chatRetention = $state('30');
+	let chatRetention = $state('50');
 	let logoLightFile = $state<File | null>(null);
 	let logoLightName = $state('Nessun file selezionato');
 	let logoDarkFile = $state<File | null>(null);
@@ -177,17 +177,16 @@
 
 				<!-- Durata salvataggio chat -->
 				<div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">
-					<label for="chatRetention" class="mb-4 block font-semibold">Durata salvataggio chat</label
+					<label for="chatRetention" class="mb-4 block font-semibold">Numero massimo di messaggi nello storico delle chat</label
 					>
 					<select
 						bind:value={chatRetention}
 						id="chatRetention"
 						class="w-full rounded-full border border-gray-300 bg-white px-4 py-4 placeholder:opacity-50 dark:border-gray-500"
 					>
-						<option value="30">30 giorni</option>
-						<option value="60">60 giorni</option>
-						<option value="90">90 giorni</option>
-						<option value="365">1 anno</option>
+						<option value="50">50</option>
+						<option value="100">100</option>
+						<option value="200">200</option>
 					</select>
 				</div>
 			</div>
