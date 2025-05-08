@@ -43,7 +43,7 @@ export const POST: RequestHandler = async ({ request, cookies, fetch }) => {
 			}
 		});
 
-		const response = await fetch(`http://${LLM_URL}/documents/upload_file?token=${token}`, {
+		const response = await fetch(`http://${LLM_URL}/documents?token=${token}`, {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${token}`
@@ -97,7 +97,7 @@ export const DELETE: RequestHandler = async ({ request, cookies }) => {
 		}
 
 		console.log('req delete document', req);
-		const response = await fetch(`http://${LLM_URL}/documents/delete_file`, {
+		const response = await fetch(`http://${LLM_URL}/documents`, {
 			method: 'DELETE',
 			headers: {
 				Authorization: 'Bearer ' + token,

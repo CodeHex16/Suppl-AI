@@ -68,9 +68,6 @@
 	}
 
 	async function handleSubmit() {
-		console.log('Colore primario:', primaryColor); 
-		console.log('Durata chat:', chatRetention);
-
 		if (logoLightFile) await uploadFile(logoLightFile, 'logo_light.png'); 
 		if (logoDarkFile) await uploadFile(logoDarkFile, 'logo_dark.png'); 
 		if (faviconFile) await uploadFile(faviconFile, 'favicon.ico'); 
@@ -88,9 +85,7 @@
 			})
 		});
 
-		if (resColor.ok) {
-			console.log('Colori salvati');
-		} else {
+		if (!resColor.ok) {
 			console.error('Errore nel salvataggio colori');
 		}
 		await goto('/');
