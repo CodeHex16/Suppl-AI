@@ -133,7 +133,7 @@
 			{/if}
 		</div>
 
-		<div class="rounded-t-3xl bg-white p-4 shadow-md">
+		<div clss="rounded-t-3xl bg-white p-4 shaadow-md">
 			<div class="mb-4 flex items-center justify-between">
 				<div class="relative mr-4 flex-grow">
 					<input

@@ -62,7 +62,6 @@
 				const lines = chunk.split('\n\n');
 
 				for (let line of lines) {
-					console.log('line:', JSON.stringify(line), line.startsWith('data: '));
 					if(line.startsWith('\n')){
 						answer += '\n';
 						line = line.substring(1);
@@ -150,7 +149,6 @@
 	}
 	function openFaq() {
 		showModalFaq = true;
-		console.log('openFaq');
 	}
 	$inspect('faqs', data.faqs);
 
