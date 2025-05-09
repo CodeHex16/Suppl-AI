@@ -62,7 +62,7 @@
 				const lines = chunk.split('\n\n');
 
 				for (let line of lines) {
-					if(line.startsWith('\n')){
+					if (line.startsWith('\n')) {
 						answer += '\n';
 						line = line.substring(1);
 					}
@@ -77,7 +77,7 @@
 						} catch (err) {
 							console.error('Errore parsing SSE:', err);
 						}
-					} else if (line == '[n]' || line == "\n") {
+					} else if (line == '[n]' || line == '\n') {
 						answer += '\n';
 					}
 				}
@@ -165,13 +165,15 @@
 				<div class="flex flex-col items-center justify-center">
 					<h2 class="mb-2 text-lg font-semibold">Scegli una FAQ</h2>
 					<p class="my-2 text-center">Seleziona una delle FAQ per inviarla come messaggio.</p>
-					{#each data.faqs as faq}
-						<button
-							onclick={() => sendFaq(faq)}
-							class="bg-gray mb-2 w-full rounded-full px-4 py-2 text-left font-semibold transition ease-in"
-							>{faq.title}</button
-						>
-					{/each}
+					<div class="max-h-56 overflow-auto">
+						{#each data.faqs as faq}
+							<button
+								onclick={() => sendFaq(faq)}
+								class="bg-gray mb-2 w-full rounded-full px-4 py-2 text-left font-semibold transition ease-in"
+								>{faq.title}</button
+							>
+						{/each}
+					</div>
 
 					<div class="mt-2 flex flex-row gap-4 justify-self-center">
 						<button

@@ -56,6 +56,7 @@
 
 			faqs = [...faqs, faq.faq];
 			showNewFAQ = false;
+			await invalidateAll();
 		} else {
 			console.error('Error adding FAQ:', await ris.text());
 		}
