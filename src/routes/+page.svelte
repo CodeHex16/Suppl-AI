@@ -30,12 +30,12 @@
 		</div>
 		<div class="mx-auto my-auto h-full w-4/6 flex items-center justify-center mt-4 mb-4">
 			<img
-				src="./img/logo_light.png?v={Date.now()}"
+				src="./img/logo_light.png"
 				class="logo light-mode w-full"
 				alt="Logo Light"
 			/>
 			<img
-				src="./img/logo_dark.png?v={Date.now()}"
+				src="./img/logo_dark.png"
 				class="logo dark-mode w-full"
 				alt="Logo Dark"
 			/>
