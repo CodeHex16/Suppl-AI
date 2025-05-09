@@ -42,7 +42,7 @@
 		});
 		if (ris.ok) {
 			const newUser = await ris.json();
-			users = [...users, newUser.user];
+			users = [...users, user];
 		} else {
 			console.error('Error adding user:', await ris.text());
 		}
@@ -133,7 +133,7 @@
 			{/if}
 		</div>
 
-		<div clss="rounded-t-3xl bg-white p-4 shaadow-md">
+		<div class="rounded-t-3xl bg-white p-4 shaadow-md">
 			<div class="mb-4 flex items-center justify-between">
 				<div class="relative mr-4 flex-grow">
 					<input
