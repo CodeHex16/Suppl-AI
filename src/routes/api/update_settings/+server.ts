@@ -1,4 +1,3 @@
-// /src/routes/api/colors/+server.ts
 import type { RequestHandler } from './$types';
 import fs from 'fs/promises';
 import path from 'path';
@@ -46,7 +45,7 @@ export const GET: RequestHandler = async ({ }) => {
 
 		if (!response.ok) {
 			const errorData = await response.json();
-			return new Response(JSON.stringify({ error: 'Failed to fetch colors', details: errorData }), {
+			return new Response(JSON.stringify({ error: 'Failed to fetch settings', details: errorData }), {
 				status: response.status
 			});
 		}

@@ -20,17 +20,18 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
 		}
 		
 		db_settings = await db_settings.json();
-		const colors = {
+		const settings = {
 			COLOR_PRIMARY: db_settings.color_primary,
 			COLOR_PRIMARY_HOVER: db_settings.color_primary_hover,
-			COLOR_PRIMARY_TEXT: db_settings.color_primary_text
+			COLOR_PRIMARY_TEXT: db_settings.color_primary_text,
+			CHAT_HISTORY: db_settings.message_history
 		};
 
-		return { colors, theme: theme ?? 'light' };
+		return { settings, theme: theme ?? 'light' };
 	} catch (error) {
 		// fallback
 		return {
-			colors: {
+			settings: {
 				COLOR_PRIMARY: '#0dab44',
 				COLOR_PRIMARY_HOVER: '#09772f',
 				COLOR_PRIMARY_TEXT: '#ffffff'

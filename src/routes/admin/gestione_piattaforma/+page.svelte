@@ -12,7 +12,7 @@
 	let cssColor = '#ffffff'; 
 
 	let primaryColor = $state('#007BFF'); 
-	let chatRetention = $state('50');
+	let chatRetention = $state(String(data.settings.CHAT_HISTORY));
 	let logoLightFile = $state<File | null>(null);
 	let logoLightName = $state('Nessun file selezionato');
 	let logoDarkFile = $state<File | null>(null);
@@ -183,6 +183,7 @@
 						<option value="50">50</option>
 						<option value="100">100</option>
 						<option value="200">200</option>
+						<option value="500">500</option>
 					</select>
 				</div>
 			</div>
