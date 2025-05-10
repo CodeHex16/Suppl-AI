@@ -59,7 +59,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	}
 };
 
-export const PUT: RequestHandler = async ({ request, cookies }) => {
+export const PATCH: RequestHandler = async ({ request, cookies }) => {
 	try {
 		const token = cookies.get('token');
 		const req = await request.json();
@@ -81,7 +81,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 		}
 
 		const response = await fetch(`http://${DATABASE_URL}/users`, {
-			method: 'PUT',
+			method: 'PATCH',
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`
@@ -89,8 +89,8 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 			body: JSON.stringify({
 				_id: req.email,
 				name: req.name,
-				email: req.email,
-				scopes: [req.role]
+				scopes: [req.role],
+				admin_password: req.admin_password
 			})
 		});
 		if (response.status === 304) {

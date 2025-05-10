@@ -53,7 +53,7 @@
 		users = users.map((u) => (u.email === user.email ? { ...u, ...user } : u));
 		console.log("Updating user:", user);
 		const ris = await fetch(`/api/users`, {
-			method: 'PUT',
+			method: 'PATCH',
 			headers: {
 				'Content-Type': 'application/json'
 			},
