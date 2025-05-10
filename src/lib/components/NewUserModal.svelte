@@ -1,21 +1,19 @@
 <script lang="ts">
     import { User, Mail, Tag } from 'lucide-svelte';
 
-	let { onSubmitUser, onCancel } = $props<{
-		onSubmitUser: (user: {
-
-			name: string;
-			email: string;
-			role: string;
-		}) => void;
-		onCancel: () => void;
-	}>();
+	let { onSubmitUser, onCancel, errorMessage } = $props();
 
 	let name = $state('');
 	let email = $state('');
 	let role = $state('');
 
 	function submitForm() {
+		if (!name || !email) {
+			return;
+		}
+		if (!role) {
+			role = 'user';
+		}
 		onSubmitUser({
 			name,
 			email,
@@ -26,7 +24,9 @@
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
     <div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
         <h2 class="mb-4 text-lg font-semibold text-center">Nuovo Utente</h2>
-
+		{#if errorMessage}
+			<p class="mb-4 text-red-500 text-center">{errorMessage}</p>
+		{/if}
         <!-- Name Input with Icon -->
         <div class="relative mb-3">
             <User class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />

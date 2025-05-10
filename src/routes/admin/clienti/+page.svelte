@@ -6,6 +6,7 @@
 	import UpdateModal from '$lib/components/UpdateUserModal.svelte';
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 	import DeleteUserConfirmModal from '$lib/components/DeleteUserConfirmModal.svelte';
+	import { error } from '@sveltejs/kit';
 
 	let { data } = $props();
 	let users = $state(data.users ?? []);
@@ -14,6 +15,7 @@
 
 	let showModalUpdate = $state(false);
 	let editingUser = $state<any>(null);
+	let errorMessage = $state<string | null>(null);
 
 	let query = $state('');
 	let selectedUser = $state<string | null>(null);
@@ -41,17 +43,19 @@
 			body: JSON.stringify(user)
 		});
 		if (ris.ok) {
-			const newUser = await ris.json();
 			users = [...users, user];
+			showModalNew = false;
+			errorMessage = null;
 		} else {
-			console.error('Error adding user:', await ris.text());
+			let risText = await ris.json();
+			errorMessage = risText.error;
+			console.error('Error adding user:', errorMessage);
 		}
-		showModalNew = false;
 	}
 
 	async function updateUser(user: any) {
 		users = users.map((u) => (u.email === user.email ? { ...u, ...user } : u));
-		console.log("Updating user:", user);
+		console.log('Updating user:', user);
 		const ris = await fetch(`/api/users`, {
 			method: 'PATCH',
 			headers: {
@@ -62,12 +66,13 @@
 		if (ris.ok) {
 			const updatedUser = await ris.json();
 			users = users.map((u) => (u.email === updatedUser.email ? updatedUser : u));
+			showModalUpdate = false;
+			editingUser = null;
+			selectedUser = null;
 		} else {
-			console.error('Error updating user:', await ris.text());
+			errorMessage = await ris.text();
+			console.error('Error updating user:', errorMessage);
 		}
-		showModalUpdate = false;
-		editingUser = null;
-		selectedUser = null;
 	}
 
 	function openDeleteUserConfirm() {
@@ -90,7 +95,14 @@
 	{/if}
 
 	{#if showModalNew}
-		<Modal onSubmitUser={(user) => newUser(user)} onCancel={() => (showModalNew = false)} />
+		<Modal
+			onSubmitUser={(user) => newUser(user)}
+			onCancel={() => {
+				showModalNew = false;
+				errorMessage = null;
+			}}
+			{errorMessage}
+		/>
 	{/if}
 
 	{#if showModalUpdate}
@@ -100,6 +112,7 @@
 			onCancel={() => {
 				showModalUpdate = false;
 				editingUser = null;
+				errorMessage = null;
 			}}
 		/>
 	{/if}
@@ -133,7 +146,7 @@
 			{/if}
 		</div>
 
-		<div class="rounded-t-3xl bg-white p-4 shaadow-md">
+		<div class="shaadow-md rounded-t-3xl bg-white p-4">
 			<div class="mb-4 flex items-center justify-between">
 				<div class="relative mr-4 flex-grow">
 					<input

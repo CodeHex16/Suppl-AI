@@ -40,7 +40,25 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 				scopes: [req.role]
 			})
 		});
-
+		if (response.status === 400) {
+			let errorMessage = await response.json();
+			return json(
+				{
+					error: errorMessage.detail
+				},
+				{ status: response.status }
+			);
+		}
+		else if (response.status === 422) {
+			let errorMessage = await response.json();
+			console.log('Error message:', errorMessage);
+			return json(
+				{
+					error: "Dati inseriti non validi"
+				},
+				{ status: response.status }
+			);
+		}
 		if (!response.ok) {
 			return json(
 				{ error: "Errore durante l'aggiunta dell'utente", details: response },
