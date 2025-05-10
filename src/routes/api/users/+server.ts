@@ -9,6 +9,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		const token = cookies.get('token');
 		const req = await request.json();
 
+		console.log('Request body:', req);
 		if (!token) {
 			return json({ error: 'Unauthorized' }, { status: 401 });
 		}
@@ -36,7 +37,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			body: JSON.stringify({
 				name: req.name,
 				email: req.email,
-				scope: [req.scope]
+				scopes: [req.role]
 			})
 		});
 
@@ -53,7 +54,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			message: 'User added successfully'
 		});
 	} catch (error) {
-		console.error('Errore durante la creazione della nuova chat:', error);
+		console.error("Errore durante la creazione dell'utente:", error);
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
@@ -89,13 +90,11 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 				_id: req.email,
 				name: req.name,
 				email: req.email,
-				scopes: [ req.role ]
+				scopes: [req.role]
 			})
 		});
 		if (response.status === 304) {
-			return json(
-				{ error: 'No content to update', details: 'No changes made' },
-			);
+			return json({ error: 'No content to update', details: 'No changes made' });
 		}
 
 		if (!response.ok) {
@@ -154,10 +153,7 @@ export const DELETE: RequestHandler = async ({ request, cookies }) => {
 
 		if (!response.ok) {
 			if (response.status === 401) {
-				return json(
-					{ error: 'Unauthorized', details: 'Unauthorized' },
-					{ status: 401 }
-				);
+				return json({ error: 'Unauthorized', details: 'Unauthorized' }, { status: 401 });
 			}
 
 			return json(
