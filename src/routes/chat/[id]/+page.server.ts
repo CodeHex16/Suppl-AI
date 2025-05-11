@@ -69,6 +69,14 @@ export const load = async (data) => {
 		return redirect(303, '/');
 	}
 
+	const faqs = await fetch(`${API_URL}/faqs`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${data.cookies.get('token')}`
+		}
+	}).then((response) => response.json());
+
 	const result = await updateChatNameIfNeeded(
 		chat,
 		data.cookies.get('token') ?? '',
@@ -78,7 +86,8 @@ export const load = async (data) => {
 
 	return {
 		chat: chat,
-		chat_id: data.params.id
+		chat_id: data.params.id,
+		faqs: faqs
 	};
 };
 

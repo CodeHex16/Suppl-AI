@@ -11,7 +11,6 @@
 		onDelete
 	}: { document: Document; open: boolean; onToggle: () => void; onDelete: () => void } = $props();
 
-	$inspect("docu open", open);
 	function formatDate(dateString: string): string {
 		const options: Intl.DateTimeFormatOptions = {
 			year: 'numeric',
@@ -26,7 +25,7 @@
 <div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">
 	<div class="flex items-center justify-between">
 		<div class="flex-1 pr-4">
-			<h3 class="text-gray truncate text-lg font-semibold">{document.title}</h3>
+			<h3 class="max-w-56 overflow-hidden text-ellipsis whitespace-nowrap text-gray truncate text-lg font-semibold">{document.title}</h3>
 			{#if !open}
 				<p class="text-gray truncate text-sm opacity-50">{formatDate(document.uploaded_at)}</p>
 			{/if}

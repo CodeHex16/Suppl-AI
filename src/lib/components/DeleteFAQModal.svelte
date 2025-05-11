@@ -2,15 +2,17 @@
 	import { enhance, applyAction } from '$app/forms'; // Importa applyAction
 	import { invalidateAll } from '$app/navigation'; // Importa invalidateAll per aggiornare i dati dopo l'eliminazione
 
-	let { faq, onCancel, onSubmitFaq } = $props();
-
+	let { faq, onCancel, onSubmitFaq, errorMessage } = $props();
 </script>
 
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
 	<div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
 		<div class="flex flex-col items-center justify-center">
 			<h2 class="text-lg font-semibold">Conferma Eliminazione</h2>
-			<p class="my-2">Sei sicuro di voler eliminare la FAQ "{faq.title}"?</p>
+			{#if errorMessage}
+				<p class="text-center text-red-500">{errorMessage}</p>
+			{/if}
+			<p class="my-2 break-words text-center overflow-hidden max-w-56">Sei sicuro di voler eliminare la FAQ "{faq.title}"?</p>
 			<form
 				method="POST"
 				action="/api/users"
@@ -51,4 +53,3 @@
 		</div>
 	</div>
 </div>
-

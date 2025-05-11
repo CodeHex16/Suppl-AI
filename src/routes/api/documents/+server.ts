@@ -97,7 +97,7 @@ export const DELETE: RequestHandler = async ({ request, cookies }) => {
 		}
 
 		console.log('req delete document', req);
-		const response = await fetch(`http://${LLM_URL}/documents`, {
+		const response = await fetch(`http://${LLM_URL}/documents?token=${token}`, {
 			method: 'DELETE',
 			headers: {
 				Authorization: 'Bearer ' + token,

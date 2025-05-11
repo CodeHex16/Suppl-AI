@@ -9,6 +9,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		const token = cookies.get('token');
 		const req = await request.json();
 
+		console.log('Request body:', req);
 		if (!token) {
 			return json({ error: 'Unauthorized' }, { status: 401 });
 		}
@@ -36,10 +37,27 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			body: JSON.stringify({
 				name: req.name,
 				email: req.email,
-				scope: [req.scope]
+				scopes: [req.role]
 			})
 		});
-
+		if (response.status === 400) {
+			let errorMessage = await response.json();
+			return json(
+				{
+					error: errorMessage.detail
+				},
+				{ status: response.status }
+			);
+		} else if (response.status === 422) {
+			let errorMessage = await response.json();
+			console.log('Error message:', errorMessage);
+			return json(
+				{
+					error: 'Dati inseriti non validi'
+				},
+				{ status: response.status }
+			);
+		}
 		if (!response.ok) {
 			return json(
 				{ error: "Errore durante l'aggiunta dell'utente", details: response },
@@ -53,12 +71,12 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			message: 'User added successfully'
 		});
 	} catch (error) {
-		console.error('Errore durante la creazione della nuova chat:', error);
+		console.error("Errore durante la creazione dell'utente:", error);
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
 
-export const PUT: RequestHandler = async ({ request, cookies }) => {
+export const PATCH: RequestHandler = async ({ request, cookies }) => {
 	try {
 		const token = cookies.get('token');
 		const req = await request.json();
@@ -88,11 +106,19 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 			body: JSON.stringify({
 				_id: req.email,
 				name: req.name,
-				scope: [req.scope]
+				scopes: [req.role],
+				admin_password: req.admin_password
 			})
 		});
+		console.log('Response status:', response);
 
 		if (!response.ok) {
+			if (response.status === 304) {
+				return json({ error: 'Nessuna modifica fatta', details: 'No changes made' });
+			}
+			if (response.status === 401) {
+				return json({ error: 'Password errata', details: 'Password errata' }, { status: 401 });
+			}
 			return json(
 				{ error: "Errore durante l'aggiunta dell'utente", details: response },
 				{ status: response.status }
@@ -148,10 +174,7 @@ export const DELETE: RequestHandler = async ({ request, cookies }) => {
 
 		if (!response.ok) {
 			if (response.status === 401) {
-				return json(
-					{ error: 'Unauthorized', details: 'Unauthorized' },
-					{ status: 401 }
-				);
+				return json({ error: 'Unauthorized', details: 'Unauthorized' }, { status: 401 });
 			}
 
 			return json(

@@ -9,10 +9,11 @@
 
 	let { data } = $props();
 
-	let cssColor = '#ffffff'; 
+	let cssColor = '#ffffff';
+	let chatHistory = data.settings?.CHAT_HISTORY || 50;
 
-	let primaryColor = $state('#007BFF'); 
-	let chatRetention = $state(String(data.settings.CHAT_HISTORY));
+	let primaryColor = $state('#007BFF');
+	let chatRetention = $state(String(chatHistory));
 	let logoLightFile = $state<File | null>(null);
 	let logoLightName = $state('Nessun file selezionato');
 	let logoDarkFile = $state<File | null>(null);
@@ -25,13 +26,13 @@
 			.getPropertyValue('--color-primary')
 			.trim();
 		if (currentPrimary) {
-			cssColor = currentPrimary; 
-			primaryColor = currentPrimary; 
+			cssColor = currentPrimary;
+			primaryColor = currentPrimary;
 		}
 	});
 
 	function resetPrimaryColor() {
-		primaryColor = cssColor; 
+		primaryColor = cssColor;
 	}
 
 	$effect(() => {
@@ -41,7 +42,7 @@
 	function setColors() {
 		if (typeof document === 'undefined') return;
 
-		const color = primaryColor; 
+		const color = primaryColor;
 		const textColor = getContrastColor(color);
 		const hoverColor = darken(color, 10);
 
@@ -72,6 +73,8 @@
 		if (logoDarkFile) await uploadFile(logoDarkFile, 'logo_dark.png'); 
 		if (faviconFile) await uploadFile(faviconFile, 'favicon.ico'); 
 
+		console.log('Salvataggio impostazioni...');
+
 		const resColor = await fetch('/api/update_settings', {
 			method: 'POST',
 			headers: {
@@ -85,8 +88,10 @@
 			})
 		});
 
+		console.log('Impostazioni salvate', resColor);
+
 		if (!resColor.ok) {
-			console.error('Errore nel salvataggio colori');
+			// console.error('Errore nel salvataggio colori');
 		}
 		await goto('/');
 	}
@@ -120,12 +125,12 @@
 	}
 </script>
 
-<div class="grid-home mx-auto grid h-dvh max-w-xl">
+<div class="grid-home mx-auto grid h-dvh max-w-xl overflow-x-hidden">
 	<HeaderPages {data} title="Impostazioni" />
 
-	<main class="flex flex-grow flex-col">
-		<form onsubmit={handleSubmit}>
-			<div class="max-h-[calc(100vh-17em)] overflow-y-auto px-4">
+	<main class="flex flex-col overflow-hidden pt-2">
+		<div class="scroll-snap-y-container max-h-[calc(100vh-17em)] overflow-y-auto px-4">
+			<form onsubmit={handleSubmit}>
 				<!-- Colore primario -->
 				<div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">
 					<label for="color" class="mb-4 block font-semibold"> Colore primario </label>
@@ -133,7 +138,7 @@
 						<div class="flex items-center gap-4">
 							<div class="relative h-12 w-12">
 								<div
-									class="absolute inset-0 rounded-full border border-gray-300 dark:border-gray-600 bg-[var(--color-primary)]"
+									class="absolute inset-0 rounded-full border border-gray-300 bg-[var(--color-primary)] dark:border-gray-600"
 								></div>
 								<input
 									id="color"
@@ -186,15 +191,13 @@
 						<option value="500">500</option>
 					</select>
 				</div>
-			</div>
-
-			<!-- Pulsante Salva -->
-			<div class="rounded-t-3xl bg-white p-4 shadow-md">
-				<button type="submit" class="item-primary mb-4 w-full rounded-full py-3">
-					Salva impostazioni
-				</button>
-			</div>
-		</form>
+			</form>
+		</div>
+		<div class="rounded-t-3xl bg-white p-4 shadow-md">
+			<button type="submit" onclick={handleSubmit} class="item-primary mb-4 w-full rounded-full py-3">
+				Salva impostazioni
+			</button>
+		</div>
 	</main>
 
 	<BottomNavBar {data} />

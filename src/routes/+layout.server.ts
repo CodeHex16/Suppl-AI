@@ -1,5 +1,3 @@
-import fs from 'fs/promises';
-import path from 'path';
 import type { LayoutServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 
@@ -13,12 +11,12 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
 				'Content-Type': 'application/json'
 			}
 		});
-		
+
 		if (!db_settings.ok) {
 			const errorData = await db_settings.json();
 			return fail(db_settings.status, { error: 'Failed to fetch settings', details: errorData });
 		}
-		
+
 		db_settings = await db_settings.json();
 		const settings = {
 			COLOR_PRIMARY: db_settings.color_primary,
@@ -34,7 +32,8 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
 			settings: {
 				COLOR_PRIMARY: '#0dab44',
 				COLOR_PRIMARY_HOVER: '#09772f',
-				COLOR_PRIMARY_TEXT: '#ffffff'
+				COLOR_PRIMARY_TEXT: '#ffffff',
+				CHAT_HISTORY: 50
 			},
 			theme: theme ?? 'light'
 		};

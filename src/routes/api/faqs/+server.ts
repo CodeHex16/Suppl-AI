@@ -3,6 +3,7 @@ import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 
 const DATABASE_URL = env.PUBLIC_DATABASE_URL;
+const LLM_URL = env.PUBLIC_LLM_URL;
 
 export const POST: RequestHandler = async ({ request, cookies, fetch }) => {
 	try {
@@ -33,7 +34,7 @@ export const POST: RequestHandler = async ({ request, cookies, fetch }) => {
 			);
 		}
 		// Crea una nuova faq nel database
-		const response = await fetch(`http://${DATABASE_URL}/faqs`, {
+		const response = await fetch(`http://${LLM_URL}/faqs?token=${token}`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -47,8 +48,9 @@ export const POST: RequestHandler = async ({ request, cookies, fetch }) => {
 		});
 
 		if (!response.ok) {
+			const errorData = await response.json();
 			return json(
-				{ error: "Errore durante l'aggiunta della faq", details: response },
+				{ error: "Errore durante l'aggiunta della faq", details: errorData },
 				{ status: response.status }
 			);
 		}
@@ -93,8 +95,8 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 				{ status: 400 }
 			);
 		}
-		const response = await fetch(`http://${DATABASE_URL}/faqs/${req.id}`, {
-			method: 'PATCH',
+		const response = await fetch(`http://${LLM_URL}/faqs?token=${token}`, {
+			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`
@@ -102,13 +104,23 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 			body: JSON.stringify({
 				title: req.title,
 				question: req.question,
-				answer: req.answer
+				answer: req.answer,
+				id: req.id,
 			})
 		});
 
 		if (!response.ok) {
+			console.log('response', response);
+			let errorMessage = await response.json();
+			console.error('Error response:', errorMessage);
+			if (errorMessage.detail.includes('FAQ data is already up to date')) {
+				return json(
+					{ error: 'Nessuna modifica apportata', details: errorMessage },
+					{ status: response.status }
+				);
+			}
 			return json(
-				{ error: "Errore durante l'aggiornamento della faq", details: response },
+				{ error: "Errore durante l'aggiornamento della faq", details: errorMessage },
 				{ status: response.status }
 			);
 		}
@@ -145,33 +157,34 @@ export const DELETE: RequestHandler = async ({ request, cookies }) => {
 		}
 
 		console.log('req delete faq', req);
-		const response = await fetch(`http://${DATABASE_URL}/faqs/${req.id}`, {
+		const response = await fetch(`http://${LLM_URL}/faqs?token=${token}`, {
 			method: 'DELETE',
 			headers: {
 				Authorization: 'Bearer ' + token,
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				current_password: req.current_password
+				id: req.id,
+				admin_password: req.current_password
 			})
 		});
 
 		if (!response.ok) {
 			if (response.status === 401) {
-				return json({ error: 'Unauthorized', details: 'Unauthorized' }, { status: 401 });
+				return json({ error: 'Password errata', details: 'Password errata' }, { status: 401 });
 			}
 
 			return json(
-				{ error: "Errore durante l'eliminazione dell'utente", details: response },
+				{ error: "Errore durante l'eliminazione della faq", details: response },
 				{ status: response.status }
 			);
 		}
 		return json({
 			success: true,
-			message: 'User deleted successfully'
+			message: 'FAQ deleted successfully'
 		});
 	} catch (error) {
-		console.error("Errore durante l'eliminazione dell'utente:", error);
+		console.error("Errore durante l'eliminazione della faq:", error);
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };

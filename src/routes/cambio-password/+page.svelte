@@ -13,7 +13,7 @@
 			<h1 class="py-4 text-center text-2xl font-extrabold">Cambio password</h1>
 			<form method="POST" use:enhance>
 				{#if page.form?.success}
-					<p class="text-gray text-center">La password è stata cambiata con successo.</p>
+					<p class="text-gray text-center mb-4">La password è stata cambiata con successo.</p>
 					<a href="/">
 						<div class="item-primary rounded-full border-none p-3 text-center font-bold">
 							<p>Vai alla homepage</p>

@@ -7,6 +7,7 @@
 	import DeleteDocument from '$lib/components/DeleteDocumentModal.svelte';
 	import { type Document } from '$lib/types';
 	import { invalidateAll } from '$app/navigation';
+	import { error } from '@sveltejs/kit';
 
 	let { data } = $props();
 
@@ -16,6 +17,7 @@
 	let selectedDocument = $state<Document | null>(null);
 
 	let eliminateDocument = $state(false);
+	let deleteErrorMessage = $state<string | null>(null);
 
 	function toggleDocument(doc: Document) {
 		selectedDocument = selectedDocument?._id === doc._id ? null : doc;
@@ -40,13 +42,13 @@
 		console.log('ID documento da eliminare:', docToDeleteId);
 		if (docToDeleteId !== null) {
 			eliminateDocument = true;
+			deleteErrorMessage = null;
 		} else {
 			console.warn("Nessun documento selezionato per l'eliminazione");
 		}
 	}
 
 	async function confirmDeleteDocument(form: FormData) {
-		console.log('DELETE form', form);
 
 		const ris = await fetch('/api/documents', {
 			method: 'DELETE',
@@ -63,17 +65,31 @@
 		if (ris.status === 200) {
 			console.log('Documento eliminato con successo');
 			await invalidateAll();
+			eliminateDocument = false;
+			selectedDocument = null;
+			deleteErrorMessage = null;
 		} else {
-			console.error('Errore durante l\'eliminazione del documento');
+			const errorData = await ris.json();
+			console.error('Errore durante l\'eliminazione del documento:', errorData);
+			if (errorData.error === 'Unauthorized') {
+				deleteErrorMessage = 'Password errata. Riprova.';
+			} else if (errorData.error === 'Document not found') {
+				deleteErrorMessage = 'Documento non trovato. Riprova.';
+			} else if (errorData.error === 'Document already deleted') {
+				deleteErrorMessage = 'Documento già eliminato. Riprova.';
+			} else if (errorData.error === 'Invalid request') {
+				deleteErrorMessage = 'Richiesta non valida. Riprova.';
+			} else if (errorData.error === 'Internal server error') {
+				deleteErrorMessage = 'Errore interno del server. Riprova più tardi.';
+			}
 		}
 
-		eliminateDocument = false;
-		selectedDocument = null;
 	}
 
 	async function cancelDeleteDocument() {
 		await invalidateAll();
 		eliminateDocument = false;
+		deleteErrorMessage = null;
 	}
 </script>
 
@@ -88,6 +104,7 @@
 			document={selectedDocument}
 			onConfirmDelete={confirmDeleteDocument}
 			onCancel={cancelDeleteDocument}
+			errorMessage={deleteErrorMessage}
 		/>
 	{/if}
 

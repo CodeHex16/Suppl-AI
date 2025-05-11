@@ -22,7 +22,7 @@
 
 	marked.use({
 		gfm: true,
-		breaks: true,
+		// breaks: true,
 		pedantic: false
 	});
 
@@ -84,16 +84,16 @@
 	<div class="max-w-sm">
 		<div class="rounded-t-3xl rounded-br-3xl bg-white p-4 text-black shadow-md">
 			<!-- TODO: Scegliere che versione usare -->
-			<!-- <div class="font-bold item-primary px-2 rounded-full w-fit">Suppl-AI</div> -->
-			<div class="font-bold text-primary">Suppl-AI</div>
+			<div class="font-bold item-primary px-2 rounded-full w-fit">Suppl-AI</div>
+			<!-- <div class="font-bold text-primary">Suppl-AI</div> -->
 			{#if data.content == ''}
 				<div class="mt-4 animate-pulse">
-					<div class="mb-2 h-2 w-40 rounded bg-slate-200"></div>
-					<div class="mb-2 h-2 w-5/6 rounded bg-slate-200"></div>
+					<div class="mb-2 h-2 w-40 rounded bg-gray"></div>
+					<div class="mb-2 h-2 w-5/6 rounded bg-gray"></div>
 				</div>
 			{:else}
-				<div class="markdown-content prose dark:prose-invert">
-					<!-- {data.content} -->
+			<!-- prose dark:prose-invert -->
+				<div class="markdown-content"> 
 					{@html formatMessage(data.content)}
 				</div>
 			{/if}
