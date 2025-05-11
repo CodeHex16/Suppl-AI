@@ -2,7 +2,7 @@
 	// Import necessary icons
 	import { User, Mail, Tag } from 'lucide-svelte';
 
-	let { user, onSubmitUser, onCancel } = $props();
+	let { user, onSubmitUser, onCancel, errorMessage } = $props();
 
 	let name = $state(user.name);
 	let role = $state(user.role);
@@ -22,7 +22,9 @@
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
 	<div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
 		<h2 class="mb-4 text-center text-lg font-semibold">Modifica Utente</h2>
-
+		{#if errorMessage}
+			<p></p>
+		{/if}
 		<div class="relative mb-3">
 			<User class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
 			<input

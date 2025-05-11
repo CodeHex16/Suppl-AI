@@ -69,8 +69,9 @@
 			showModalUpdate = false;
 			editingUser = null;
 			selectedUser = null;
+			errorMessage = null;
 		} else {
-			errorMessage = await ris.text();
+			errorMessage = await ris.json();
 			console.error('Error updating user:', errorMessage);
 		}
 	}
@@ -114,6 +115,7 @@
 				editingUser = null;
 				errorMessage = null;
 			}}
+			{errorMessage}
 		/>
 	{/if}
 

@@ -102,16 +102,17 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 				Authorization: `Bearer ${token}`
 			},
 			body: JSON.stringify({
-				id: req.id,
 				title: req.title,
 				question: req.question,
-				answer: req.answer
+				answer: req.answer,
+				id: req.id,
 			})
 		});
 
 		if (!response.ok) {
+			let errorMessage = await response.json();
 			return json(
-				{ error: "Errore durante l'aggiornamento della faq", details: response },
+				{ error: "Errore durante l'aggiornamento della faq", details: errorMessage },
 				{ status: response.status }
 			);
 		}

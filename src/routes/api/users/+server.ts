@@ -112,7 +112,7 @@ export const PATCH: RequestHandler = async ({ request, cookies }) => {
 			})
 		});
 		if (response.status === 304) {
-			return json({ error: 'No content to update', details: 'No changes made' });
+			return json({ error: 'Nessuna modifica fatta', details: 'No changes made' });
 		}
 
 		if (!response.ok) {

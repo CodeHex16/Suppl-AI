@@ -28,14 +28,14 @@
 			<div class="my-4">
 				<div class="faq-item-grid mb-4 gap-4">
 					<HelpCircle class="text-gray my-1 h-5 w-5" />
-					<p class="text-gray font-semibold italic">
+					<p class="text-gray font-semibold italic break-words">
 						"{faq.question}"
 					</p>
 				</div>
 
 				<div class="faq-item-grid mb-4 gap-4">
 					<MessageSquareText class="text-gray my-1 h-5 w-5" />
-					<p class="text-gray">{faq.answer}</p>
+					<p class="text-gray overflow-auto break-words">{faq.answer}</p>
 				</div>
 			</div>
 

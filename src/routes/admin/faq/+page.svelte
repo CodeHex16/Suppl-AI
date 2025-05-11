@@ -75,7 +75,8 @@
 			faqs = faqs.map((f) => (f._id === faq.id ? { ...f, ...faq } : f));
 			showUpdateFAQ = false;
 		} else {
-			console.error('Error updating FAQ:', await ris.text());
+			console.error(ris);
+			console.error('Error updating FAQ:', await ris.json());
 		}
 	}
 
