@@ -43,17 +43,22 @@ async function updateChatNameIfNeeded(chat: any, token: string, chatId: string) 
 }
 
 export const load = async (data) => {
+	const parent = await data.parent();
+
 	if (!data.cookies.get('token')) {
 		redirect(303, '/login');
 	}
 
-	const chat = await fetch(`${API_URL}/chats/${data.params.id}/messages`, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${data.cookies.get('token')}`
+	const chat = await fetch(
+		`${API_URL}/chats/${data.params.id}/messages?limit=${parent.settings.CHAT_HISTORY}`,
+		{
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${data.cookies.get('token')}`
+			}
 		}
-	}).then((response) => response.json());
+	).then((response) => response.json());
 
 	if (chat.detail == 'Token is invalid or expired') {
 		data.cookies.delete('token', { path: '/' });

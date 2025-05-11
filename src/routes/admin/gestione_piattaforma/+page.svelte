@@ -11,8 +11,8 @@
 
 	let cssColor = '#ffffff';
 
-	let primaryColor = $state('#007BFF');
-	let chatRetention = $state('30');
+	let primaryColor = $state('#007BFF'); 
+	let chatRetention = $state(String(data.settings.CHAT_HISTORY));
 	let logoLightFile = $state<File | null>(null);
 	let logoLightName = $state('Nessun file selezionato');
 	let logoDarkFile = $state<File | null>(null);
@@ -68,28 +68,24 @@
 	}
 
 	async function handleSubmit() {
-		console.log('Colore primario:', primaryColor);
-		console.log('Durata chat:', chatRetention);
+		if (logoLightFile) await uploadFile(logoLightFile, 'logo_light.png'); 
+		if (logoDarkFile) await uploadFile(logoDarkFile, 'logo_dark.png'); 
+		if (faviconFile) await uploadFile(faviconFile, 'favicon.ico'); 
 
-		if (logoLightFile) await uploadFile(logoLightFile, 'logo_light.png');
-		if (logoDarkFile) await uploadFile(logoDarkFile, 'logo_dark.png');
-		if (faviconFile) await uploadFile(faviconFile, 'favicon.ico');
-
-		const resColor = await fetch('/api/update_colors', {
+		const resColor = await fetch('/api/update_settings', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				COLOR_PRIMARY: primaryColor,
-				COLOR_PRIMARY_TEXT: getContrastColor(primaryColor),
-				COLOR_PRIMARY_HOVER: darken(primaryColor, 10)
+				color_primary: primaryColor, 
+				color_primary_text: getContrastColor(primaryColor), 
+				color_primary_hover: darken(primaryColor, 10),
+				chat_history: chatRetention
 			})
 		});
 
-		if (resColor.ok) {
-			console.log('Colori salvati');
-		} else {
+		if (!resColor.ok) {
 			console.error('Errore nel salvataggio colori');
 		}
 		await goto('/');
@@ -177,17 +173,17 @@
 
 				<!-- Durata salvataggio chat -->
 				<div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">
-					<label for="chatRetention" class="mb-4 block font-semibold">Durata salvataggio chat</label
+					<label for="chatRetention" class="mb-4 block font-semibold">Numero massimo di messaggi nello storico delle chat</label
 					>
 					<select
 						bind:value={chatRetention}
 						id="chatRetention"
 						class="w-full rounded-full border border-gray-300 bg-white px-4 py-4 placeholder:opacity-50 dark:border-gray-500"
 					>
-						<option value="30">30 giorni</option>
-						<option value="60">60 giorni</option>
-						<option value="90">90 giorni</option>
-						<option value="365">1 anno</option>
+						<option value="50">50</option>
+						<option value="100">100</option>
+						<option value="200">200</option>
+						<option value="500">500</option>
 					</select>
 				</div>
 			</form>
