@@ -110,7 +110,15 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 		});
 
 		if (!response.ok) {
+			console.log('response', response);
 			let errorMessage = await response.json();
+			console.error('Error response:', errorMessage);
+			if (errorMessage.detail.includes('FAQ data is already up to date')) {
+				return json(
+					{ error: 'Nessuna modifica apportata', details: errorMessage },
+					{ status: response.status }
+				);
+			}
 			return json(
 				{ error: "Errore durante l'aggiornamento della faq", details: errorMessage },
 				{ status: response.status }
@@ -163,7 +171,7 @@ export const DELETE: RequestHandler = async ({ request, cookies }) => {
 
 		if (!response.ok) {
 			if (response.status === 401) {
-				return json({ error: 'Unauthorized', details: 'Unauthorized' }, { status: 401 });
+				return json({ error: 'Password errata', details: 'Password errata' }, { status: 401 });
 			}
 
 			return json(

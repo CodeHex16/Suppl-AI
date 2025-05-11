@@ -48,13 +48,12 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 				},
 				{ status: response.status }
 			);
-		}
-		else if (response.status === 422) {
+		} else if (response.status === 422) {
 			let errorMessage = await response.json();
 			console.log('Error message:', errorMessage);
 			return json(
 				{
-					error: "Dati inseriti non validi"
+					error: 'Dati inseriti non validi'
 				},
 				{ status: response.status }
 			);
@@ -111,11 +110,15 @@ export const PATCH: RequestHandler = async ({ request, cookies }) => {
 				admin_password: req.admin_password
 			})
 		});
-		if (response.status === 304) {
-			return json({ error: 'Nessuna modifica fatta', details: 'No changes made' });
-		}
+		console.log('Response status:', response);
 
 		if (!response.ok) {
+			if (response.status === 304) {
+				return json({ error: 'Nessuna modifica fatta', details: 'No changes made' });
+			}
+			if (response.status === 401) {
+				return json({ error: 'Password errata', details: 'Password errata' }, { status: 401 });
+			}
 			return json(
 				{ error: "Errore durante l'aggiunta dell'utente", details: response },
 				{ status: response.status }

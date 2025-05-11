@@ -28,6 +28,7 @@
 	let query = $state('');
 	let selectedFaqId = $state<string | null>(null);
 	let showDeleteFAQ = $state(false);
+	let errorMessage = $state<string | null>(null);
 
 	function toggleFaq(faq: FAQ) {
 		selectedFaqId = selectedFaqId === faq._id ? null : faq._id;
@@ -75,8 +76,9 @@
 			faqs = faqs.map((f) => (f._id === faq.id ? { ...f, ...faq } : f));
 			showUpdateFAQ = false;
 		} else {
-			console.error(ris);
-			console.error('Error updating FAQ:', await ris.json());
+			let risJson = await ris.json();
+			errorMessage = risJson.error;
+			console.error('Error updating FAQ:', errorMessage);
 		}
 	}
 
@@ -97,7 +99,10 @@
 			await invalidateAll();
 			showDeleteFAQ = false;
 			editingFAQ = null;
+			errorMessage = null;
 		} else {
+			let risJson = await ris.json();
+			errorMessage = risJson.error;
 			console.error('Error deleting FAQ:', await ris.text());
 		}
 	}
@@ -128,10 +133,10 @@
 	{/if}
 
 	{#if showUpdateFAQ}
-		<UpdateFaq faq={editingFAQ} onSubmitFaq={updateFAQ} onCancel={handleModalCancel} />
+		<UpdateFaq faq={editingFAQ} onSubmitFaq={updateFAQ} onCancel={handleModalCancel} {errorMessage}/>
 	{/if}
 	{#if showDeleteFAQ}
-		<DeleteFaq faq={editingFAQ} onSubmitFaq={deleteFAQ} onCancel={handleModalCancel} />
+		<DeleteFaq faq={editingFAQ} onSubmitFaq={deleteFAQ} onCancel={handleModalCancel} {errorMessage}/>
 	{/if}
 
 	<main class="flex flex-grow flex-col">

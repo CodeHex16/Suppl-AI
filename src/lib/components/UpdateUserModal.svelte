@@ -23,7 +23,7 @@
 	<div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
 		<h2 class="mb-4 text-center text-lg font-semibold">Modifica Utente</h2>
 		{#if errorMessage}
-			<p></p>
+			<p class="mb-4 text-center text-red-500">{errorMessage}</p>
 		{/if}
 		<div class="relative mb-3">
 			<User class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />

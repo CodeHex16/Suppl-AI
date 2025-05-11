@@ -71,7 +71,9 @@
 			selectedUser = null;
 			errorMessage = null;
 		} else {
-			errorMessage = await ris.json();
+			let risText = await ris.json();
+			errorMessage = risText.error;
+
 			console.error('Error updating user:', errorMessage);
 		}
 	}

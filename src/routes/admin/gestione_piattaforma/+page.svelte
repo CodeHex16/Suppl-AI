@@ -10,9 +10,10 @@
 	let { data } = $props();
 
 	let cssColor = '#ffffff';
+	let chatHistory = data.settings?.CHAT_HISTORY || 50;
 
-	let primaryColor = $state('#007BFF'); 
-	let chatRetention = $state(String(data.settings.CHAT_HISTORY));
+	let primaryColor = $state('#007BFF');
+	let chatRetention = $state(String(chatHistory));
 	let logoLightFile = $state<File | null>(null);
 	let logoLightName = $state('Nessun file selezionato');
 	let logoDarkFile = $state<File | null>(null);
@@ -72,6 +73,8 @@
 		if (logoDarkFile) await uploadFile(logoDarkFile, 'logo_dark.png'); 
 		if (faviconFile) await uploadFile(faviconFile, 'favicon.ico'); 
 
+		console.log('Salvataggio impostazioni...');
+
 		const resColor = await fetch('/api/update_settings', {
 			method: 'POST',
 			headers: {
@@ -85,8 +88,10 @@
 			})
 		});
 
+		console.log('Impostazioni salvate', resColor);
+
 		if (!resColor.ok) {
-			console.error('Errore nel salvataggio colori');
+			// console.error('Errore nel salvataggio colori');
 		}
 		await goto('/');
 	}
@@ -189,7 +194,7 @@
 			</form>
 		</div>
 		<div class="rounded-t-3xl bg-white p-4 shadow-md">
-			<button type="submit" class="item-primary mb-4 w-full rounded-full py-3">
+			<button type="submit" onclick={handleSubmit} class="item-primary mb-4 w-full rounded-full py-3">
 				Salva impostazioni
 			</button>
 		</div>
