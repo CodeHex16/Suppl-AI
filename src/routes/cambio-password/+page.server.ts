@@ -60,8 +60,6 @@ export const actions: Actions = {
 				current_password: currentPassword
 			});
 
-			console.log(payload);
-
 			// console.log('payload: ', payload);
 			const response = await fetch(`http://${DATABASE_URL}/users/password`, {
 				method: 'PATCH',
@@ -78,7 +76,7 @@ export const actions: Actions = {
 				if (errorResponse.error === 'Invalid password') {
 					return fail(400, { error: 'La password attuale non è corretta' });
 				} else {
-					return fail(500, { error: 'Errore di connessione al server' });
+					return fail(500, { error: 'Errore nel cambio password' });
 				}
 			}
 		} catch (error) {
