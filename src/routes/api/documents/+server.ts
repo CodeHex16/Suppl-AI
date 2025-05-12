@@ -55,7 +55,7 @@ export const POST: RequestHandler = async ({ request, cookies, fetch }) => {
 
 		if (!response.ok) {
 			if (response.status === 400) {
-				return json({ error: 'File già caricato!' }, { status: 400 });
+				return json({ error: 'File già caricato o formato errato!' }, { status: 400 });
 			} else {
 				return json(
 					{ error: "Errore durante l'aggiunta del documento", details: response },
