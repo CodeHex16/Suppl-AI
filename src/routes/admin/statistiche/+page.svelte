@@ -43,51 +43,56 @@
 
 		getStats();
 	});
-
 </script>
 
-<div class="grid-home mx-auto grid h-dvh max-w-xl">
+<div class="grid-home mx-auto grid h-dvh max-w-xl grid-rows-[auto_1fr_auto]">
 	<HeaderPages {data} title="Statistiche" />
 
-	<main class="flex flex-col pt-2 flex-grow">
-		<div class="scroll-snap-y-container flex max-h-[calc(100vh-19em)] flex-col gap-2 overflow-y-auto">
-			<div class="mx-4 mb-4 rounded-xl bg-white p-4 shadow-md">
-				<h3 class="text-lg font-semibold mb-2">Messaggi totali</h3>
-				<div class="flex flex-row items-end">
-					<p class="text-2xl font-bold">{stats.total_messages}</p>
-					<p class="text-l font-bold pl-4">({stats.total_chatbot_messages} chatbot - {stats.total_user_messages} utente)</p>
-				</div>	
+	<main class="flex flex-col overflow-hidden pt-2">
+		<div class="flex-grow overflow-y-auto p-4">
+			<div class="flex flex-col gap-4">
+				<div class="rounded-xl bg-white p-4 shadow-md">
+					<h3 class="mb-2 text-lg font-semibold">Messaggi totali</h3>
+					<div class="flex flex-row flex-wrap items-end">
+						<p class="text-2xl font-bold">{stats.total_messages || 0}</p>
+						<p class="text-l pl-0 pt-1 sm:pl-4 sm:pt-0">
+							({stats.total_chatbot_messages || 0} chatbot - {stats.total_user_messages || 0} utente)
+						</p>
+					</div>
+				</div>
+				<div class="rounded-xl bg-white p-4 shadow-md">
+					<h3 class="mb-2 text-lg font-semibold">Chat totali</h3>
+					<p class="text-2xl font-bold">{stats['total_chats'] || 0}</p>
+				</div>
+				<div class="rounded-xl bg-white p-4 shadow-md">
+					<h3 class="mb-2 text-lg font-semibold">Percentuale valutazioni positive</h3>
+					<div class="flex flex-row flex-wrap items-end">
+						<p class="text-2xl font-bold">{stats.positive_rating_percentage || 0}%</p>
+						<p class="text-l pl-0 pt-1 sm:pl-4 sm:pt-0">
+							(su {stats.total_rated_messages || 0} messaggi valutati)
+						</p>
+					</div>
+				</div>
+				<div class="rounded-xl bg-white p-4 shadow-md">
+					<h3 class="mb-2 text-lg font-semibold">Utenti attivi</h3>
+					<p class="text-2xl font-bold">{stats.active_users || 0}</p>
+				</div>
+				<div class="rounded-xl bg-white p-4 shadow-md">
+					<h3 class="mb-2 text-lg font-semibold">Media messaggi per chat</h3>
+					<p class="text-2xl font-bold">{stats.average_messages_per_chat || 0}</p>
+				</div>
+				<div class="rounded-xl bg-white p-4 shadow-md">
+					<h3 class="mb-2 text-lg font-semibold">Media messaggi per utente</h3>
+					<p class="text-2xl font-bold">{stats.average_messages_per_user || 0}</p>
+				</div>
 			</div>
-			<div class="mx-4 mb-4 rounded-xl bg-white p-4 shadow-md">
-				<h3 class="text-lg font-semibold mb-2">Chat totali</h3>
-				<p class="text-2xl font-bold">{stats['total_chats']}</p>
-			</div>
-			<div class="mx-4 mb-4 rounded-xl bg-white p-4 shadow-md">
-				<h3 class="text-lg font-semibold mb-2">Percentuale valutazioni positive</h3>
-				<div class="flex flex-row items-end">
-					<p class="text-2xl font-bold">{stats.positive_rating_percentage}%</p>
-					<p class="text-l font-bold pl-4">(su {stats.total_rated_messages} messaggi valutati)</p>
-				</div>				
-			</div>
-			<div class="mx-4 mb-4 rounded-xl bg-white p-4 shadow-md">
-				<h3 class="text-lg font-semibold mb-2">Utenti attivi</h3>
-				<p class="text-2xl font-bold">{stats.active_users}</p>
-			</div>
-			<div class="mx-4 mb-4 rounded-xl bg-white p-4 shadow-md">
-				<h3 class="text-lg font-semibold mb-2">Media messaggi per chat</h3>
-				<p class="text-2xl font-bold">{stats.average_messages_per_chat}</p>
-			</div>
-			<div class="mx-4 mb-4 rounded-xl bg-white p-4 shadow-md">
-				<h3 class="text-lg font-semibold mb-2">Media messaggi per utente</h3>
-				<p class="text-2xl font-bold">{stats.average_messages_per_user}</p>
-			</div>
-		</div>		
+		</div>
 
-		<div class="rounded-t-3xl bg-white p-4 pb-8 shadow-md">
+		<div class="mt-auto rounded-t-3xl bg-white p-4 pb-8 shadow-md">
 			<form>
-				<div class="flex items-center justify-between g-2">
-					<div class="relative mr-2 flex-grow">
-						<label class="p-2" for="startDate">Data inizio</label>
+				<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+					<div class="relative flex-grow">
+						<label class="block p-2" for="startDate">Data inizio</label>
 						<input
 							id="startDate"
 							name="startDate"
@@ -96,8 +101,8 @@
 							class="w-full rounded-full border border-gray-300 bg-white py-2 pl-4 pr-4"
 						/>
 					</div>
-					<div class="relative ml-2 flex-grow">
-						<label class="p-2" for="endDate">Data fine</label>
+					<div class="relative mt-2 flex-grow sm:mt-0">
+						<label class="block p-2" for="endDate">Data fine</label>
 						<input
 							id="endDate"
 							name="endDate"
@@ -111,5 +116,5 @@
 		</div>
 	</main>
 
-	<BottomNavBar {data}/>
+	<BottomNavBar {data} />
 </div>
