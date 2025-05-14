@@ -1,4 +1,4 @@
-import type { Actions, ActionFailure } from '@sveltejs/kit';
+import type { Actions } from '@sveltejs/kit';
 import { fail, redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 
@@ -6,7 +6,6 @@ const DATABASE_URL = env.PUBLIC_DATABASE_URL;
 
 export const load = async ({ cookies }) => {
 	const token = cookies.get('token');
-
 	if (token) {
 		return redirect(303, '/');
 	}
@@ -26,7 +25,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			const response = await fetch(`http://${DATABASE_URL}/auth/token?remember_me=${remember_me}`, {
+			const response = await fetch(`http://${DATABASE_URL}/auth/token`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded'
@@ -35,6 +34,7 @@ export const actions: Actions = {
 					grant_type: 'password',
 					username: username,
 					password: password,
+					remember_me: remember_me
 				})
 			});
 

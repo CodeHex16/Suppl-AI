@@ -1,9 +1,32 @@
 <script lang="ts">
 	import { type Document } from '$lib/types';
-	let { document, onConfirmDelete, onCancel } = $props();
-	import { enhance } from '$app/forms';
-
-
+	let {
+		document,
+		onConfirmDelete,
+		onCancel
+	}: {
+		document: Document;
+		onConfirmDelete: any;
+		onCancel: () => void;
+	} = $props();
+	const handleFormSubmit = async (event: Event) => {
+		event.preventDefault();
+		const formData = new FormData(event.target as HTMLFormElement);
+		onConfirmDelete(formData);
+		// TODO: cancel request?
+		// Use the fetch API to send the form data
+		// const response = await fetch('/api/users', {
+		// 	method: 'POST',
+		// 	body: formData
+		// });
+		// if (response.ok) {
+		// 	// Handle success
+		// 	console.log('Document deleted successfully');
+		// } else {
+		// 	// Handle error
+		// 	console.error('Error deleting document');
+		// }
+	};
 </script>
 
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -11,14 +34,7 @@
 		<div class="flex flex-col items-center justify-center">
 			<h2 class="text-lg font-semibold">Conferma Eliminazione</h2>
 			<p class="my-2 text-center">Sei sicuro di voler eliminare il documento "{document.title}"?</p>
-			<form
-				method="POST"
-				action="/api/users"
-				use:enhance={({ formData, cancel }) => {
-					onConfirmDelete(formData);
-					cancel();
-				}}
-			>
+			<form onsubmit={handleFormSubmit}>
 				<input type="hidden" name="id" value={document._id} />
 				<input type="hidden" name="title" value={document.title} />
 				<div class="text-center">
@@ -52,4 +68,3 @@
 		</div>
 	</div>
 </div>
-

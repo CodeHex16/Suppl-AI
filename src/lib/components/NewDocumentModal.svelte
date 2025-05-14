@@ -1,11 +1,42 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
 
-	let { onSubmitDocument, onCancel } = $props();
+	let {
+		onSubmitDocument,
+		onCancel
+	}: {
+		onSubmitDocument: () => Promise<void>;
+		onCancel: () => void;
+	} = $props();
 
 	let isLoading = $state(false);
 	let errorMessage = $state<string | null>(null); // Stato per messaggi di errore
+
+	async function handleFormSubmit(event: Event) {
+		event.preventDefault();
+		isLoading = true;
+		errorMessage = null;
+		const formData = new FormData(event.target as HTMLFormElement);
+
+		// Invia i dati del modulo al server
+		const response = await fetch('/api/documents', {
+			method: 'POST',
+			body: formData,
+			headers: {
+				Accept: 'multipart/form-data',
+				'Content-Type': 'multipart/form-data'
+			}
+		});
+		isLoading = false; // Imposta isLoading a false dopo la risposta
+		if (response.ok) {
+			await onSubmitDocument();
+		} else {
+			// Gestisci l'errore del server
+			errorMessage = 'Si è verificato un errore durante il caricamento del file.';
+			// Gestisci l'errore di rete
+			console.error('Network error:', response.statusText);
+		}
+	}
 </script>
 
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -38,30 +69,11 @@
 				</div>
 			</div>
 		{:else}
-			<form
-				action="/api/documents"
-				method="POST"
-				enctype="multipart/form-data"
-				use:enhance={() => {
-					isLoading = true;
-					errorMessage = null; 
-
-					return async ({ result, update }) => {
-						console.log('Enhance result:', result);
-						isLoading = false;
-
-						if (result.success) {
-							await onSubmitDocument();
-						} else if (result.error) {
-							console.error('Form submission error:', result.error);
-							errorMessage = result.error ?? 'Si è verificato un errore.';
-						}
-					};
-				}}
-			>
+			<form data-testid="upload-form" onsubmit={handleFormSubmit}>
 				<div class="mb-4">
 					<label for="files">Seleziona uno o più file</label>
 					<input
+						data-testid="file-input"
 						id="files"
 						name="files"
 						type="file"
@@ -71,7 +83,7 @@
 						class="text-gray file:bg-gray mt-2 block w-full cursor-pointer rounded-lg border border-gray-400 p-4
 					text-sm file:mr-4 file:rounded-full file:border-0 file:px-4 file:py-2
 					file:text-sm file:font-semibold focus:border-blue-500
-					focus:ring-2 focus:ring-blue-500 focus:outline-none dark:file:bg-[#4a4a4a] dark:file:text-white"
+					focus:outline-none focus:ring-2 focus:ring-blue-500 dark:file:bg-[#4a4a4a] dark:file:text-white"
 					/>
 				</div>
 

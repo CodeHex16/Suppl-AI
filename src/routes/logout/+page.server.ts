@@ -1,7 +1,4 @@
-import { fail, redirect } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private'
-
-const API_URL = env.DATABASE_API_URL;
+import { redirect } from '@sveltejs/kit';
 
 export const load = async ({ cookies }) => {
 	cookies.delete('token', {path : '/'});

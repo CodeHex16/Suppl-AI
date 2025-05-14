@@ -7,15 +7,8 @@
 	import DeleteFaq from '$lib/components/DeleteFAQModal.svelte';
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 	import { invalidateAll } from '$app/navigation';
+	import type {Faq as FAQ} from '$lib/types';
 
-	interface FAQ {
-		_id: string;
-		title: string;
-		question: string;
-		answer: string;
-		created_at: string;
-		updated_at: string;
-	}
 
 	let { data } = $props();
 	let faqs = $state<FAQ[]>(data.faqs ?? []);

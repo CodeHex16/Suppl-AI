@@ -62,6 +62,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 	try {
 		const token = cookies.get('token');
 		const req = await request.json();
+		console.log('token', !token);
 
 		if (!token) {
 			return json({ error: 'Unauthorized' }, { status: 401 });

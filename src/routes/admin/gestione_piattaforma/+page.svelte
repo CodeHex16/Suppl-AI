@@ -128,7 +128,7 @@
 	<HeaderPages {data} title="Impostazioni" />
 
 	<main class="flex flex-grow flex-col">
-		<form onsubmit={handleSubmit}>
+		<form data-testid="form" onsubmit={handleSubmit}>
 			<div class="max-h-[calc(100vh-17em)] overflow-y-auto px-4">
 				<!-- Colore primario -->
 				<div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">

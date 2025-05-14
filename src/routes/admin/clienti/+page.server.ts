@@ -47,7 +47,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 	}
 
 	const users: User[] = ris
-		.map((user: any): User | null => {
+		.map((user:User): User | null => {
 			if (
 				!user ||
 				typeof user._id !== 'string' ||

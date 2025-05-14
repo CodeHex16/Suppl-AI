@@ -1,9 +1,9 @@
 <script lang="ts">
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
-	import { enhance } from '$app/forms';
 	import { page } from '$app/state';
 
 	let { data } = $props();
+	console.log('recumeropassword', data);
 </script>
 
 <div class="mx-auto max-w-xl">
@@ -29,12 +29,12 @@
 			{:else}
 				<h1 class="py-4 text-center text-2xl font-extrabold">Recupero password</h1>
 				{#if page.form?.error}
-					<p class="text-center text-red-500 mb-4">{page.form.error}</p>
+					<p class="mb-4 text-center text-red-500">{page.form.error}</p>
 				{/if}
 				<p class="text-balance text-center text-sm opacity-80">
 					La password verrà resettata e riceverai una email con una nuova password temporanea.
 				</p>
-				<form method="POST" use:enhance>
+				<form method="POST">
 					<div class="flex flex-col p-4">
 						<label for="email">Email per il recupero password</label>
 						<input

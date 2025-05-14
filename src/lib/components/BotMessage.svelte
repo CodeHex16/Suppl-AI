@@ -1,23 +1,22 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { ThumbsUp, ThumbsDown } from 'lucide-svelte';
-	let { data } = $props();
+	import { type Message } from '$lib/types';
+	let {
+		data
+	}: {
+		data: Message;
+	} = $props();
 	import { marked } from 'marked';
 	import { page } from '$app/state';
-	import { on } from 'svelte/events';
+	import { formatData } from '$lib/utils/date';
 
 	// $inspect(data);
 	// $inspect(page.params);
 
 	onMount(() => {
-		if (data.rating) {
-			like = true;
-		} else if (data.rating === false) {
-			dislike = true;
-		} else {
-			like = false;
-			dislike = false;
-		}
+		like = data.rating == true;
+		dislike = data.rating == false;
 	});
 
 	marked.use({
@@ -30,16 +29,12 @@
 		return marked(text);
 	}
 
-	let like = $state(false);
-	let dislike = $state(false);
+	let like: boolean = $state(false);
+	let dislike: boolean = $state(false);
 
-	function rateMessage(chatId: string, messageId: string, rating: boolean | null) {
+	function rateMessage(chatId: string, messageId: string|undefined, rating: boolean | null) {
 		console.log('like: ', like, 'dislike: ', dislike);
-
-		if (!(like || dislike)) {
-			rating = null;
-		}
-
+		rating = like ? true : dislike ? false : null;
 		console.log('rating: ', rating);
 
 		fetch('/api/rate_message', {
@@ -65,18 +60,6 @@
 		like = false;
 
 		rateMessage(page.params.id, data._id, !dislike);
-	}
-
-	function formatData(stringDate: string) {
-		const date = new Date(stringDate);
-		return date.toLocaleString('it-IT', {
-			year: 'numeric',
-			month: '2-digit',
-			day: '2-digit',
-			hour: '2-digit',
-			minute: '2-digit',
-			timeZone: 'Europe/Rome'
-		});
 	}
 </script>
 

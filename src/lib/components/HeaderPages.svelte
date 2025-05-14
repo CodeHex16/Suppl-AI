@@ -2,7 +2,15 @@
 	import { ArrowLeft } from 'lucide-svelte';
 	import ThemeToggle from './ThemeToggle.svelte';
 
-	let { data, title = null } = $props();
+	let {
+		data,
+		title = null
+	}: {
+		data: {
+			theme: string;
+		};
+		title?: string | null;
+	} = $props();
 </script>
 
 <header class="mx-4">
@@ -18,12 +26,8 @@
 			>
 				<h1 class="text-center text-lg font-semibold">{title}</h1>
 			</div>
-		{:else}
-			<div>
-				
-			</div>
-		{/if}
-		
+			{/if}
+
 		<ThemeToggle {data} />
 	</nav>
 </header>

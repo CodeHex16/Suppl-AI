@@ -1,5 +1,10 @@
 <script lang="ts">
-	let { faq, onSubmitFaq, onCancel } = $props();
+	import { type Faq } from '$lib/types';
+	let { faq, onSubmitFaq, onCancel }:{
+		faq: Faq;
+		onSubmitFaq: (faq: Faq) => void;
+		onCancel: () => void;
+	} = $props();
 	import { User, HelpCircle, MessageSquareText, Tag } from 'lucide-svelte';
 
 	let id = $state(faq._id);

@@ -1,18 +1,10 @@
 <script lang="ts">
-	let { data } = $props();
+	import { type Message } from '$lib/types';
+	import { formatData } from '$lib/utils/date';
+	let { data }:{
+		data: Message;
+	} = $props();
 
-
-	function formatData(stringDate: string) {
-		const date = new Date(stringDate);
-		return date.toLocaleString('it-IT', {
-			year: 'numeric',
-			month: '2-digit',
-			day: '2-digit',
-			hour: '2-digit',
-			minute: '2-digit',
-			timeZone: 'Europe/Rome'
-		});
-	}
 </script>
 
 <div class="items-stretch">

@@ -1,9 +1,40 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import { goto,  invalidateAll } from '$app/navigation';
-	let { chatName, chatId, onCancel } = $props();
-	console.log('chatName', chatName);
-	console.log('chatId', chatId);
+	import { goto, invalidateAll } from '$app/navigation';
+	let {
+		chatName,
+		chatId,
+		onCancel
+	}: {
+		chatName: string;
+		chatId: string;
+		onCancel: () => void;
+	} = $props();
+
+	async function handleSubmit(event: Event) {
+		event.preventDefault();
+
+		const form = event.currentTarget as HTMLFormElement;
+		const formData = new FormData(form);
+
+		try {
+			const res = await fetch("/?/deleteChat", {
+				method: 'POST',
+				body: formData
+			});
+
+			if (res.ok) {
+				onCancel();
+				await invalidateAll();
+				goto('/');
+			} else {
+				console.error("Errore durante l'eliminazione della chat:", await res.text());
+				alert("Si è verificato un errore durante l'eliminazione della chat. Riprova.");
+			}
+		} catch (err) {
+			console.error("Errore di rete:", err);
+			alert("Errore di rete. Riprova più tardi.");
+		}
+	}
 </script>
 
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -20,22 +51,9 @@
 					onclick={onCancel}>Annulla</button
 				>
 				<form
+					data-testid="delete-chat-form"
 					method="POST"
-					action="/?/deleteChat"
-					use:enhance={() => {
-                        return async ({ result }) => {
-                            if (result.type === 'success' || result.type === 'redirect') {
-                                onCancel();
-								invalidateAll();
-								goto('/');
-							} else if (result.type === 'error') {
-								console.error('Errore durante l\'eliminazione della chat:', result.error);
-								alert('Si è verificato un errore durante l\'eliminazione della chat. Riprova.');
-							} else {
-								console.warn('Risultato non previsto:', result);
-                            } 
-                        };
-                    }}
+					onsubmit={handleSubmit}
 				>
 					<input type="hidden" name="chat_id" value={chatId} />
 					<button

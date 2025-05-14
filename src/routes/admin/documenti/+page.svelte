@@ -5,10 +5,16 @@
 	import Doc from '$lib/components/NewDocumentModal.svelte';
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 	import DeleteDocument from '$lib/components/DeleteDocumentModal.svelte';
-	import { type Document } from '$lib/types';
+	import { type Document, type User } from '$lib/types';
 	import { invalidateAll } from '$app/navigation';
 
-	let { data } = $props();
+	let { data }:{
+		data: {
+			documents: Document[],
+			user: User,
+			theme: string,
+		};
+	} = $props();
 
 	let showNewDocument = $state(false);
 

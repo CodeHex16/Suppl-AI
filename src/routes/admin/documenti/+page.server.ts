@@ -15,6 +15,7 @@ export const load = async (data) => {
 	});
 
 	if (!documents.ok) {
+		// TODO: double call?
 		const errorBody = await documents.json().catch(() => ({}));
 		console.error('Dettagli errore:', JSON.stringify(errorBody));
 		if (errorBody.detail.includes('Nessun documento trovato')) {

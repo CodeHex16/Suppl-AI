@@ -1,10 +1,11 @@
 <script lang="ts">
 	// Import necessary icons
 	import { User, Mail, Tag } from 'lucide-svelte';
+	import { type User as UserType } from '$lib/types';
 
 	let { user, onSubmitUser, onCancel } = $props<{
-		user: { id: any; name: string; email: string; role: string; creationDate: string };
-		onSubmitUser: (user: { name: string; email: string; role: string }) => void;
+		user: UserType;
+		onSubmitUser: (user: UserType) => void;
 		onCancel: () => void;
 	}>();
 
@@ -12,6 +13,7 @@
 	let email = $state(user.email);
 	let role = $state(user.role);
 
+	// TODO: not called
 	function submitForm() {
 		onSubmitUser({
 			name,

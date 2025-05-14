@@ -1,5 +1,4 @@
 import type { RequestHandler } from './$types';
-import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 
 const LLM_URL = env.PUBLIC_LLM_URL;

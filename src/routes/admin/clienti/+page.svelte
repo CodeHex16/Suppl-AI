@@ -7,8 +7,16 @@
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 	import DeleteUserConfirmModal from '$lib/components/DeleteUserConfirmModal.svelte';
 
-	let { data } = $props();
-	let users = $state(data.users ?? []);
+	import type { User } from '$lib/types';
+	let { data }:{
+		data: {
+			users: User[];
+			title: string;
+			subtitle: string;
+			theme: string;
+		}
+	} = $props();
+	let users = $state(data?.users ?? []);
 	let showModalNew = $state(false);
 	let showModalDeleteUserConfirm = $state(false);
 
@@ -108,7 +116,7 @@
 		<div
 			class="scroll-snap-y-container flex max-h-[calc(100vh-17em)] flex-col gap-2 overflow-y-auto"
 		>
-			{#if users.length === 0}
+			{#if users?.length === 0}
 				<p class="mt-10 text-center text-gray-500">Nessun utente trovato.</p>
 			{/if}
 

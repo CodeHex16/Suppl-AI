@@ -1,46 +1,56 @@
 <script lang="ts">
-	import { enhance, applyAction } from '$app/forms'; // Importa applyAction
 	import { invalidateAll } from '$app/navigation'; // Importa invalidateAll per aggiornare i dati dopo l'eliminazione
+	import { type User } from '$lib/types'; // Importa il tipo User
 
-	let { user, onCancel, onSubmitUser } = $props();
+	let {
+		user,
+		onCancel,
+		onSubmitUser
+	}: {
+		user: User;
+		onCancel: () => void;
+		onSubmitUser: () => void;
+	} = $props();
 
 	// Funzione per gestire l'invio manuale
-	async function handleDeleteSubmit(formData: FormData, action: URL) {
+	async function handleDeleteSubmit(event: Event) {
+		event.preventDefault(); // Previene il comportamento predefinito del form
+		const formData = new FormData(event.target as HTMLFormElement); // Crea un oggetto FormData dal form
 		const userId = formData.get('userId');
 		const currentPassword = formData.get('current_password');
 
-		try {
-			const response = await fetch(action, {
-				method: 'DELETE', 
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					// Invia i dati come JSON
-					userId: userId,
-					current_password: currentPassword
-				})
-			});
+		// TODO: Inviare i dati al server per eliminare l'utente
+		// try {
+		// 	const response = await fetch("/api/users", {
+		// 		method: 'DELETE',
+		// 		headers: {
+		// 			'Content-Type': 'application/json'
+		// 		},
+		// 		body: JSON.stringify({
+		// 			// Invia i dati come JSON
+		// 			userId: userId,
+		// 			current_password: currentPassword
+		// 		})
+		// 	});
 
-			if (response.ok) {
-				invalidateAll(); 
-				onSubmitUser(); 
-			} else {
-				// Errore dal server (es. password errata)
-				const errorData = await response.json();
-				console.error("Errore durante l'eliminazione dell'utente:", errorData);
-				if(errorData.error === 'Unauthorized') {
-					alert('Password errata. Riprova.');
-				} else {
-					alert('Si è verificato un errore durante l\'eliminazione dell\'utente. Riprova.');
-				}
-			}
-		} catch (error) {
-			// Errore di rete o altro errore imprevisto
-			console.error('Errore di rete o imprevisto:', error);
-			await applyAction({ type: 'error', error });
-			alert('Si è verificato un errore di rete. Riprova.');
-		}
+		// 	if (response.ok) {
+		// 		invalidateAll();
+		// 		onSubmitUser();
+		// 	} else {
+		// 		// Errore dal server (es. password errata)
+		// 		const errorData = await response.json();
+		// 		console.error("Errore durante l'eliminazione dell'utente:", errorData);
+		// 		if(errorData.error === 'Unauthorized') {
+		// 			alert('Password errata. Riprova.');
+		// 		} else {
+		// 			alert('Si è verificato un errore durante l\'eliminazione dell\'utente. Riprova.');
+		// 		}
+		// 	}
+		// } catch (error) {
+		// 	// Errore di rete o altro errore imprevisto
+		// 	console.error('Errore di rete o imprevisto:', error);
+		// 	alert('Si è verificato un errore di rete. Riprova.');
+		// }
 	}
 </script>
 
@@ -49,14 +59,7 @@
 		<div class="flex flex-col items-center justify-center">
 			<h2 class="text-lg font-semibold">Conferma Eliminazione</h2>
 			<p class="my-2">Sei sicuro di voler eliminare l'utente "{user.name}"?</p>
-			<form
-				method="POST"
-				action="/api/users"
-				use:enhance={({ formData, action, cancel }) => {
-					cancel();
-					handleDeleteSubmit(formData, action);
-				}}
-			>
+			<form method="POST" onsubmit={handleDeleteSubmit}>
 				<input type="hidden" name="userId" value={user.email} />
 				<div class="text-center">
 					<label for="password">Inserisci la tua password per confermare</label>

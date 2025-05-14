@@ -1,0 +1,1 @@
+import * as color from '$lib/config/colors';

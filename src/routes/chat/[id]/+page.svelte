@@ -3,11 +3,17 @@
 	import SendMessage from '$lib/components/SendMessage.svelte';
 	import Messages from '$lib/components/Messages.svelte';
 	import DeleteChatModal from '$lib/components/DeleteChatModal.svelte';
-	import { enhance } from '$app/forms';
 	import { invalidate, invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
-
-	let { data } = $props();
+	import type { Chat } from '$lib/types';
+	let {
+		data
+	}: {
+		data: {
+			chat: Chat;
+			chat_id: string;
+		};
+	} = $props();
 
 	let waitingForResponse = $state(false);
 	let scrollToDiv: HTMLDivElement;
@@ -20,7 +26,7 @@
 
 	function scrollToBottom() {
 		setTimeout(function () {
-			scrollToDiv.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+			scrollToDiv?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
 		}, 100);
 	}
 
@@ -28,7 +34,7 @@
 		if (abortController) {
 			abortController.abort();
 		}
-		
+
 		abortController = new AbortController();
 		answer = '';
 
@@ -71,7 +77,6 @@
 				}
 			}
 
-			
 			waitingForResponse = false;
 			let request = await fetch(`/api/save_bot_message`, {
 				method: 'POST',
@@ -89,13 +94,14 @@
 			}
 			const request_json = await request.json();
 			console.log('Risposta salvata:', request_json);
-			const messageRes = request_json.data
+			const messageRes = request_json.data;
 			console.log('Messaggio salvato:', messageRes);
-			
-			// Quando la risposta è completa
-			messages = [...messages, { '_id': messageRes._id, sender: messageRes.sender, content: messageRes.content }];
 
-		
+			// Quando la risposta è completa
+			messages = [
+				...messages,
+				{ _id: messageRes._id, sender: messageRes.sender, content: messageRes.content }
+			];
 
 			if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
 				await updateChatName();
@@ -140,19 +146,42 @@
 	function openDeleteModal() {
 		showModalDelete = true;
 	}
+
+	/**
+	 *
+	 */
+	async function submitMessageHandler(event: Event) {
+		event.preventDefault();
+		waitingForResponse = true;
+		const form = event.target as HTMLFormElement;
+		const messageInput = form.elements.namedItem('message') as HTMLInputElement;
+		const messageValue = messageInput.value;
+
+		if (messageValue) {
+			messages = [
+				...messages,
+				{
+					sender: 'user',
+					content: messageValue
+				}
+			];
+			messageInput.value = '';
+			scrollToBottom();
+			await streamResponse(messageValue);
+			// reset form
+			form.reset();
+			await invalidate('app:messages');
+		}
+	}
 </script>
 
 <div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">
 	<!--Delete Chat Modal-->
 	{#if showModalDelete}
-		<DeleteChatModal
-			chatName={chatName}
-			chatId={data.chat_id}
-			onCancel={() => showModalDelete = false}
-		/>
+		<DeleteChatModal {chatName} chatId={data.chat_id} onCancel={() => (showModalDelete = false)} />
 	{/if}
 
-	<ChatNavBar data={data} deleteChat={openDeleteModal} />
+	<ChatNavBar {data} deleteChat={openDeleteModal} />
 	<div class="flex-grow overflow-y-auto">
 		<Messages
 			data={waitingForResponse
@@ -161,31 +190,7 @@
 		/>
 		<div bind:this={scrollToDiv}></div>
 	</div>
-	<form
-		method="POST"
-		use:enhance={({ formData, formElement }) => {
-			waitingForResponse = true;
-			let messageInput = formData.get('message')?.toString() || '';
-
-			if (messageInput) {
-				messages = [
-					...messages,
-					{
-						sender: 'user',
-						content: messageInput
-					}
-				];
-			}
-			scrollToBottom();
-
-			streamResponse(messageInput);
-
-			return async () => {
-				formElement.reset();
-				await invalidate('app:messages');
-			};
-		}}
-	>
+	<form data-testid="input_form" method="POST" onsubmit={submitMessageHandler}>
 		<SendMessage sending={waitingForResponse} />
 	</form>
 </div>

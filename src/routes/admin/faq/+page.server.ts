@@ -1,5 +1,3 @@
-
-import type { User } from '$lib/types';
 import { env } from '$env/dynamic/public';
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit'; // Import error helper
@@ -18,12 +16,12 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 		}
 	});
 	if (!faqsResponse.ok) {
-		if(faqsResponse.status === 404) {
+		if (faqsResponse.status === 404) {
 			return {
 				faqs: []
 			};
 		}
-		if(faqsResponse.status === 403) {
+		if (faqsResponse.status === 403) {
 			console.error('Accesso negato:', faqsResponse.status, await faqsResponse.text());
 			throw error(403, 'Accesso negato');
 		}
@@ -36,11 +34,8 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 		console.error('La risposta API per le FAQ non è un array:', ris);
 		throw error(500, 'Formato dati FAQ non valido');
 	}
-	
 
-    return {
-        faqs: ris
-    };
+	return {
+		faqs: ris
+	};
 };
-
-

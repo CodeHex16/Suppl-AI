@@ -6,14 +6,8 @@
 
 	if (typeof document !== 'undefined') {
 		document.documentElement.style.setProperty('--color-primary', data.colors.COLOR_PRIMARY);
-		document.documentElement.style.setProperty(
-			'--color-primary-hover',
-			data.colors.COLOR_PRIMARY_HOVER
-		);
-		document.documentElement.style.setProperty(
-			'--color-primary-text',
-			data.colors.COLOR_PRIMARY_TEXT
-		);
+		document.documentElement.style.setProperty('--color-primary-hover', data.colors.COLOR_PRIMARY_HOVER);
+		document.documentElement.style.setProperty('--color-primary-text', data.colors.COLOR_PRIMARY_TEXT);
 	}
 
 	$effect(() => {

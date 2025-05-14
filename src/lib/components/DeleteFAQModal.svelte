@@ -1,9 +1,35 @@
 <script lang="ts">
 	import { enhance, applyAction } from '$app/forms'; // Importa applyAction
 	import { invalidateAll } from '$app/navigation'; // Importa invalidateAll per aggiornare i dati dopo l'eliminazione
+	import { type Faq } from '$lib/types'; // Importa il tipo FAQ
+	let {
+		faq,
+		onCancel,
+		onSubmitFaq
+	}: {
+		faq: Faq;
+		onCancel: () => void;
+		onSubmitFaq: (formData: FormData) => Promise<void>;
+	} = $props();
+	const handleFormSubmit = async (event: Event) => {
+		event.preventDefault();
 
-	let { faq, onCancel, onSubmitFaq } = $props();
+		const formData = new FormData(event.target as HTMLFormElement);
 
+		onSubmitFaq(formData);
+
+		// TODO: cancel request?
+		// Use the fetch API to send the form data
+		// const response = await fetch('/api/users', {
+		// 	method: 'POST',
+		// 	body: formData
+		// });
+		// if (response.ok) {
+		// 	console.log('FAQ deleted successfully');
+		// } else {
+		// 	console.error('Error deleting FAQ');
+		// }
+	};
 </script>
 
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -11,14 +37,7 @@
 		<div class="flex flex-col items-center justify-center">
 			<h2 class="text-lg font-semibold">Conferma Eliminazione</h2>
 			<p class="my-2">Sei sicuro di voler eliminare la FAQ "{faq.title}"?</p>
-			<form
-				method="POST"
-				action="/api/users"
-				use:enhance={({ formData, cancel }) => {
-					onSubmitFaq(formData);
-					cancel();
-				}}
-			>
+			<form onsubmit={handleFormSubmit}>
 				<input type="hidden" name="id" value={faq._id} />
 				<div class="text-center">
 					<label for="password">Inserisci la tua password per confermare</label>
@@ -51,4 +70,3 @@
 		</div>
 	</div>
 </div>
-

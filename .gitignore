@@ -24,3 +24,7 @@ vite.config.ts.timestamp-*
 
 .idea
 .vscode/settings.json
+
+# Test
+coverage
+html
