@@ -125,10 +125,6 @@
 		<div
 			class="scroll-snap-y-container flex max-h-[calc(100vh-17em)] flex-col gap-2 overflow-y-auto"
 		>
-			{#if users.length === 0}
-				<p class="mt-10 text-center text-gray-500">Nessun utente trovato.</p>
-			{/if}
-
 			{#if utentiFiltrati.length > 0}
 				{#each utentiFiltrati as user (user.email)}
 					<UserItem
