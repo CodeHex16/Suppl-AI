@@ -59,7 +59,7 @@
 	<div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
 		<div class="flex flex-col items-center justify-center">
 			<h2 class="text-lg font-semibold">Conferma Eliminazione</h2>
-			<p class="my-2">Sei sicuro di voler eliminare l'utente "{user.name}"?</p>
+			<p class="my-2 max-w-56 overflow-hidden text-ellipsis break-words text-center">Sei sicuro di voler eliminare l'utente "{user.name}"?</p>
 			<form method="POST" onsubmit={handleDeleteSubmit}>
 				<div class="text-center">
 					<label for="password">Inserisci la tua password per confermare</label>

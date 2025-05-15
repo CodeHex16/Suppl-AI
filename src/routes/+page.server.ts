@@ -39,7 +39,7 @@ export const load: PageServerLoad = async ({cookies}) => {
 
 	userScopes = verifyData.scopes;
 
-	const chats : Promise<Chat> = fetch(`http://${DATABASE_URL}/chats`, {
+	const chats : Promise<Chat[]> = fetch(`http://${DATABASE_URL}/chats`, {
 		headers: { Authorization: `Bearer ${token}` }
 	}).then((res) => res.json());
 

@@ -22,7 +22,8 @@ export default defineConfig(({ mode }) => ({
 				'static/**',
 				'html/**',
 				'node_modules/**',
-				'src/lib/index.ts'
+				'src/lib/index.ts',
+				'src/lib/utils/logger.ts',
 			],
     },
 	},

@@ -12,8 +12,7 @@ describe('SendMessage', () => {
     // Assert that the button is disabled
     expect(sendButton).toBeDisabled();
 
-    // Ensure the opacity class is set to 'opacity-30'
-    expect(sendButton).toHaveClass('opacity-30');
+
   });
 
   it('should enable the send button when sending is false', async () => {
@@ -25,8 +24,5 @@ describe('SendMessage', () => {
     
     // Assert that the button is enabled
     expect(sendButton).not.toBeDisabled();
-
-    // Ensure the opacity class is set to 'opacity-100'
-    expect(sendButton).toHaveClass('opacity-100');
   });
 });

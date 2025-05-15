@@ -4,21 +4,22 @@
 	import { type User as UserType } from '$lib/types';
 	import { logger } from '$lib/utils/logger';
 
-	let { user, onSubmitUser, onCancel } = $props<{
+	let { user, onSubmitUser, onCancel, errorMessage } = $props<{
 		user: UserType;
 		onSubmitUser: (user: UserType, password: string) => void;
 		onCancel: () => void;
+		errorMessage: string | null;
 	}>();
 
+
 	let name = $state(user.name);
-	let email = $state(user.email);
 	let role = $state(user.role);
 	let password = $state('');
-
 	logger.log('Editing user:', user);
+	let email = $state(user.email);
 
 	function submitForm() {
-		if (!name || !email || !role || !password) {
+		if (!name  || !role || !password) {
 			logger.error('All fields are required');
 			return;
 		}
@@ -28,6 +29,7 @@
 			role
 		};
 		onSubmitUser(userAfterEdit, password);
+
 	}
 </script>
 
@@ -35,7 +37,10 @@
 	<div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
 		<h2 class="mb-4 text-center text-lg font-semibold">Modifica Utente</h2>
 
-		<!-- Name Input with Icon -->
+		{#if errorMessage}
+			<p class="mb-4 text-center text-red-500">{errorMessage}</p>
+		{/if}
+
 		<div class="relative mb-3">
 			<User class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
 			<input
@@ -47,19 +52,6 @@
 			/>
 		</div>
 
-		<!-- Email Input with Icon -->
-		<div class="relative mb-3">
-			<Mail class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-			<input
-				type="email"
-				bind:value={email}
-				placeholder="Email"
-				required
-				class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 placeholder:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-			/>
-		</div>
-
-		<!-- Role Select with Icon -->
 		<div class="relative mb-4">
 			<Tag class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
 			<select
@@ -74,8 +66,10 @@
 		</div>
 		<!-- Password Input with Icon -->
 		<div class="relative mb-3">
+		
 			<LockKeyhole class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
 			<input
+				id="password"
 				type="password"
 				bind:value={password}
 				placeholder="Admin Password"

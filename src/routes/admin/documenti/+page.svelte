@@ -8,6 +8,7 @@
 	import { type Document, type User } from '$lib/types';
 	import { invalidateAll } from '$app/navigation';
 	import { logger } from '$lib/utils/logger';
+	import { error } from '@sveltejs/kit';
 
 	let { data }:{
 		data: {
@@ -23,6 +24,7 @@
 	let selectedDocument = $state<Document | null>(null);
 
 	let eliminateDocument = $state(false);
+	let deleteErrorMessage = $state<string | null>(null);
 
 	function toggleDocument(doc: Document) {
 		selectedDocument = selectedDocument?._id === doc._id ? null : doc;
@@ -43,6 +45,7 @@
 		logger.log('ID documento da eliminare:', docToDeleteId);
 		if (docToDeleteId !== null) {
 			eliminateDocument = true;
+			deleteErrorMessage = null;
 		} else {
 			logger.warn("Nessun documento selezionato per l'eliminazione");
 		}
@@ -66,17 +69,33 @@
 		if (ris.status === 200) {
 			logger.log('Documento eliminato con successo');
 			await invalidateAll();
+			eliminateDocument = false;
+			selectedDocument = null;
+			deleteErrorMessage = null;
 		} else {
-			logger.error('Errore durante l\'eliminazione del documento');
+
+
+			const errorData = await ris.json();
+			logger.error('Errore durante l\'eliminazione del documento', errorData);
+			if (errorData.error === 'Unauthorized') {
+				deleteErrorMessage = 'Password errata. Riprova.';
+			} else if (errorData.error === 'Document not found') {
+				deleteErrorMessage = 'Documento non trovato. Riprova.';
+			} else if (errorData.error === 'Document already deleted') {
+				deleteErrorMessage = 'Documento già eliminato. Riprova.';
+			} else if (errorData.error === 'Invalid request') {
+				deleteErrorMessage = 'Richiesta non valida. Riprova.';
+			} else if (errorData.error === 'Internal server error') {
+				deleteErrorMessage = 'Errore interno del server. Riprova più tardi.';
+			}
 		}
 
-		eliminateDocument = false;
-		selectedDocument = null;
 	}
 
 	async function cancelDeleteDocument() {
 		await invalidateAll();
 		eliminateDocument = false;
+		deleteErrorMessage = null;
 	}
 </script>
 
@@ -92,6 +111,7 @@
 			document={selectedDocument}
 			onConfirmDelete={confirmDeleteDocument}
 			onCancel={cancelDeleteDocument}
+			errorMessage={deleteErrorMessage}
 		/>
 	{/if}
 

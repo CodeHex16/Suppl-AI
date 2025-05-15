@@ -2,13 +2,32 @@
 	import '../app.css';
 	import { browser } from '$app/environment';
 	import { logger } from '$lib/utils/logger';
-	let { children, data } = $props();
+	let {
+		children,
+		data
+	}: {
+		children: () => any;
+		data: {
+			theme: string;
+			settings: {
+				COLOR_PRIMARY: string;
+				COLOR_PRIMARY_HOVER: string;
+				COLOR_PRIMARY_TEXT: string;
+			};
+		};
+	} = $props();
 	let theme = $derived(data.theme);
 
 	if (typeof document !== 'undefined') {
-		document.documentElement.style.setProperty('--color-primary', data.colors.COLOR_PRIMARY);
-		document.documentElement.style.setProperty('--color-primary-hover', data.colors.COLOR_PRIMARY_HOVER);
-		document.documentElement.style.setProperty('--color-primary-text', data.colors.COLOR_PRIMARY_TEXT);
+		document.documentElement.style.setProperty('--color-primary', data.settings.COLOR_PRIMARY);
+		document.documentElement.style.setProperty(
+			'--color-primary-hover',
+			data.settings.COLOR_PRIMARY_HOVER
+		);
+		document.documentElement.style.setProperty(
+			'--color-primary-text',
+			data.settings.COLOR_PRIMARY_TEXT
+		);
 	}
 
 	$effect(() => {

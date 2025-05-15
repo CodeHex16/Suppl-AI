@@ -7,7 +7,7 @@
 		data,
 		onDelete
 	}: {
-		data: Array<Chat>;
+		data: Chat[];
 		onDelete: (chat: Chat) => void;
 	} = $props();
 </script>

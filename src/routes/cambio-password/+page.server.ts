@@ -96,6 +96,8 @@ export const actions: Actions = {
 				return fail(500, { error: 'Errore di connessione al server' });
 			}
 		}	
+		const result = await response.json();
+		logger.debug('Response data:', result);
 		logger.info('Password changed successfully');
 		return { success: true };
 	}

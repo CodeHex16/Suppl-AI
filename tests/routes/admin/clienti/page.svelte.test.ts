@@ -33,6 +33,6 @@ describe('AdminClientiPage', () => {
 
   it('should render the component', () => {
     const { getByText } = render(AdminClientiPage);
-    expect(getByText('Nessun utente trovato.')).toBeInTheDocument();
+    expect(getByText('Ancora nessun cliente')).toBeInTheDocument();
   });
 });

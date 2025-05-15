@@ -13,35 +13,6 @@ const mockFaq = {
 };
 
 describe('FaqItem', () => {
-  it('displays abbreviated title when closed and full title when open', () => {
-    const { getByText, queryByText } = render(FaqItem, {
-      props: {
-        faq: mockFaq,
-        open: false,
-        onToggle: vi.fn(),
-        onEdit: vi.fn(),
-        onDelete: vi.fn()
-      }
-    });
-
-    // Title is abbreviated when closed
-    expect(getByText(abbrWithEllipsis(mockFaq.question,30))).toBeTruthy();
-    expect(queryByText(mockFaq.title)).toBeNull();
-
-    // Now, test when open
-    const { getByText: getByTextOpen } = render(FaqItem, {
-      props: {
-        faq: mockFaq,
-        open: true,
-        onToggle: vi.fn(),
-        onEdit: vi.fn(),
-        onDelete: vi.fn()
-      }
-    });
-
-    // Title is full when open
-    expect(getByTextOpen(mockFaq.title)).toBeTruthy();
-  });
 
   it('toggles FAQ open/close when toggle button is clicked', async () => {
     const onToggle = vi.fn();

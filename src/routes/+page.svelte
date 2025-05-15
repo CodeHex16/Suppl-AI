@@ -7,7 +7,13 @@
 	import { Settings } from 'lucide-svelte';
 	import type { Chat } from '$lib/types';
 
-	let { data } = $props();
+	let { data }:{
+		data: {
+			chats: Chat[];
+			userScopes: string[];
+			theme: string;
+		}
+	} = $props();
 	let isAdmin: boolean = $derived(data.userScopes.includes('admin') === true);
 	let showModalDelete: boolean = $state(false);
 	let selectedChat: Chat | undefined = $state();
@@ -31,11 +37,15 @@
 		</div>
 		<div class="mx-auto my-auto mb-4 mt-4 flex h-full w-4/6 items-center justify-center">
 			<img
-				src="./img/logo_light.png?v={Date.now()}"
+				src="./img/logo_light.png"
 				class="logo light-mode w-full"
 				alt="Logo Light"
 			/>
-			<img src="./img/logo_dark.png?v={Date.now()}" class="logo dark-mode w-full" alt="Logo Dark" />
+			<img
+				src="./img/logo_dark.png"
+				class="logo dark-mode w-full"
+				alt="Logo Dark"
+			/>
 		</div>
 	</header>
 

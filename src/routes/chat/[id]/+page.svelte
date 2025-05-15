@@ -4,8 +4,9 @@
 	import Messages from '$lib/components/Messages.svelte';
 	import DeleteChatModal from '$lib/components/DeleteChatModal.svelte';
 	import { invalidate, invalidateAll } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import type { Chat } from '$lib/types';
+
+	import { onMount, tick } from 'svelte';
+	import type { Chat, Faq } from '$lib/types';
 	import { logger } from '$lib/utils/logger';
 	let {
 		data
@@ -13,6 +14,7 @@
 		data: {
 			chat: Chat;
 			chat_id: string;
+			faqs: Faq[];
 		};
 	} = $props();
 
@@ -21,15 +23,19 @@
 	let answer = $state('');
 	let abortController: AbortController | null = null;
 	let showModalDelete = $state(false);
+	let showModalFaq = $state(false);
 
 	let messages = $state(data.chat.messages);
 
 	let chatName = $state(data.chat.name);
 
-	function scrollToBottom() {
+	let inputValue = $state('');
+
+	async function scrollToBottom() {
+		await tick();
 		setTimeout(function () {
 			scrollToDiv?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
-		}, 100);
+		}, 0);
 	}
 
 	/**
@@ -41,7 +47,7 @@
 			logger.info('Abortando richiesta di streaming in corso...');
 			abortController.abort();
 		}
-		
+
 		abortController = new AbortController();
 		answer = '';
 
@@ -68,13 +74,19 @@
 				const { done, value } = await reader.read();
 				if (done) break;
 
-				const chunk = decoder.decode(value, { stream: true });
+				let chunk = decoder.decode(value, { stream: true });
+				chunk = chunk.replace('\n\n\n\n', '[n]\n\n');
 				const lines = chunk.split('\n\n');
 
-				for (const line of lines) {
+				for (let line of lines) {
+					if (line.startsWith('\n')) {
+						answer += '\n';
+						line = line.substring(1);
+					}
 					if (line.startsWith('data: ')) {
 						try {
-							const data = line.substring(6);
+							let data = line.substring(6);
+							data = data.replace('[n]', '\n');
 							if (data !== '[DONE]') {
 								answer += data;
 								scrollToBottom();
@@ -82,12 +94,13 @@
 						} catch (err) {
 							logger.error('Errore parsing SSE:', err);
 						}
+					} else if (line == '[n]' || line == '\n') {
+						answer += '\n';
 					}
 				}
 			}
 			logger.log('Risposta completa:', answer);
 
-			waitingForResponse = false;
 			let request = await fetch(`/api/save_bot_message`, {
 				method: 'POST',
 				headers: {
@@ -104,7 +117,9 @@
 				throw new Error(`HTTP error: ${request.status}`);
 			}
 			const request_json = await request.json();
+
 			logger.log('Risposta salvata:', request_json);
+
 			const messageRes = request_json.data;
 
 			// Quando la risposta è completa
@@ -113,13 +128,13 @@
 				{ _id: messageRes._id, sender: messageRes.sender, content: messageRes.content }
 			];
 
-			
+			waitingForResponse = false;
+
+			await scrollToBottom();
+
 			if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
-				logger.info('Aggiornamento nome chat...');
 				await updateChatName();
 			}
-
-			answer = '';
 		} catch (err: any) {
 			if (err instanceof Error && err.name !== 'AbortError') {
 				logger.error('Errore stream:', err);
@@ -197,17 +212,53 @@
 
 			await streamResponse(messageValue);
 			// reset form
-			form.reset();
+			//form.reset();
 			await invalidate('app:messages');
 		}
 	}
 
-	onMount(() => {
-		scrollToBottom();
+	onMount(async () => {
+		await scrollToBottom();
 	});
+	scrollToBottom();
+	
+
+	function sendFaq(faq: any) {
+		inputValue = faq.question;
+		showModalFaq = false;
+	}
 </script>
 
 <div class="grid-chat mx-auto grid h-dvh max-w-xl py-4">
+	{#if showModalFaq}
+		<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+			<div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
+				<div class="flex flex-col items-center justify-center">
+					<h2 class="mb-2 text-lg font-semibold">Scegli una FAQ</h2>
+					<p class="my-2 text-center">Seleziona una delle FAQ per inviarla come messaggio.</p>
+					<div class="max-h-56 overflow-auto">
+						{#each data.faqs as faq}
+							<button
+								onclick={() => sendFaq(faq)}
+								class="bg-gray mb-2 w-full rounded-full px-4 py-2 text-left font-semibold transition ease-in"
+								>{faq.title}</button
+							>
+						{/each}
+					</div>
+
+					<div class="mt-2 flex flex-row gap-4 justify-self-center">
+						<button
+							class="bg-gray rounded-full px-4 py-2 transition ease-in"
+							type="button"
+							aria-label="Cancel"
+							title="Annulla"
+							onclick={() => (showModalFaq = false)}>Annulla</button
+						>
+					</div>
+				</div>
+			</div>
+		</div>
+	{/if}
 	<!--Delete Chat Modal-->
 	{#if showModalDelete}
 		<DeleteChatModal {chatName} chatId={data.chat_id} onCancel={() => (showModalDelete = false)} />
@@ -224,6 +275,6 @@
 	</div>
 
 	<form data-testid="input_form" method="POST" onsubmit={submitMessageHandler}>
-		<SendMessage sending={waitingForResponse} />
+		<SendMessage sending={waitingForResponse} onClickFaq={()=>(showModalFaq = true)} {inputValue}  />
 	</form>
 </div>

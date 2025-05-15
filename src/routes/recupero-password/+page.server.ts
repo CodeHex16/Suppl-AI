@@ -41,7 +41,8 @@ export const actions: Actions = {
 				return fail(500, { error: 'Errore di connessione al server' });
 			}
 			logger.info('Reset password email sent to:', email);
-			logger.info('Reset response:', response);
+			const data = await response.json();
+			logger.debug('Response data:', data);
 		} catch (error) {
 			logger.error('Server error: ', error);
 			return fail(500, { error: 'Errore di connessione al server' });

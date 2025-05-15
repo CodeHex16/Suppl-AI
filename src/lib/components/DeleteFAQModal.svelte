@@ -5,26 +5,31 @@
 	let {
 		faq,
 		onCancel,
-		onSubmitFaq
+		onSubmitFaq,
+		errorMessage
 	}: {
 		faq: Faq;
 		onCancel: () => void;
 		onSubmitFaq: (formData: FormData) => Promise<void>;
+		errorMessage: string | null;
 	} = $props();
 	const handleFormSubmit = async (event: Event) => {
 		event.preventDefault();
-
 		const formData = new FormData(event.target as HTMLFormElement);
-
 		onSubmitFaq(formData);
 	};
+
 </script>
 
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
 	<div class="w-[90%] max-w-md rounded-xl bg-white p-6 shadow-xl">
 		<div class="flex flex-col items-center justify-center">
 			<h2 class="text-lg font-semibold">Conferma Eliminazione</h2>
-			<p class="my-2">Sei sicuro di voler eliminare la FAQ "{faq.title}"?</p>
+
+			{#if errorMessage}
+			<p class="text-center text-red-500">{errorMessage}</p>
+			{/if}
+			<p class="my-2 break-words text-center overflow-hidden max-w-56">Sei sicuro di voler eliminare la FAQ "{faq.title}"?</p>
 			<form onsubmit={handleFormSubmit}>
 				<input type="hidden" name="id" value={faq._id} />
 				<div class="text-center">

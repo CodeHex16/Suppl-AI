@@ -54,15 +54,44 @@ async function updateChatNameIfNeeded(chat: Chat, token: string, chatId: string)
 	return { chat };
 }
 
-export const load = async ({ cookies, params }) => {
+export const load = async ({ cookies, params, parent }) => {
 	logger.info('Loading chat page', params.id);
+	const parentData = await parent() as unknown as Promise<{
+		settings: {
+			CHAT_HISTORY: number;
+		};
+	}>;
+	logger.info('Parent data:', parentData);
 
 	if (!cookies.get('token')) {
 		logger.error('Token non trovato, reindirizzando a /login');
 		throw redirect(303, '/login');
 	}
 
-	const chat = await fetch(`${API_URL}/chats/${params.id}/messages`, {
+	const chat = await fetch(
+		`${API_URL}/chats/${params.id}/messages?limit=${parentData.settings.CHAT_HISTORY}`,
+		{
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${cookies.get('token')}`
+			}
+		}
+	).then((response) => response.json());
+
+	if (!chat || chat.detail == 'Chat not found') {
+		logger.error('Chat non trovata, reindirizzando a /');
+		throw redirect(303, '/');
+	}
+
+	if (chat.detail == 'Token is invalid or expired') {
+		// 401 token scaduto
+		logger.error('Token scaduto, reindirizzando a /login');
+		cookies.delete('token', { path: '/' });
+		throw redirect(303, '/login');
+	}
+
+	const faqs = await fetch(`${API_URL}/faqs`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
@@ -70,31 +99,21 @@ export const load = async ({ cookies, params }) => {
 		}
 	}).then((response) => response.json());
 
-	if (!chat || chat.detail == 'Chat not found') {
-		logger.error('Chat non trovata, reindirizzando a /');
-		throw redirect(303, '/');
-	}
-
-	if (chat.detail == 'Token is invalid or expired') { // 401 token scaduto
-		logger.error('Token scaduto, reindirizzando a /login');
-		cookies.delete('token', { path: '/' });
-		throw redirect(303, '/login');
-	}
-
 	const result = await updateChatNameIfNeeded(chat, cookies.get('token') ?? '', params.id);
 	if (result.error) {
 		logger.error('Errore durante la generazione del nome della chat:', result.error);
 		return fail(result.error, { error: 'Failed to generate chat name' });
 	}
 
-	logger.info('Chat caricata con successo:', chat);
+	logger.info('Chat caricata con successo');
+	
 
 	return {
 		chat: chat,
-		chat_id: params.id
+		chat_id: params.id,
+		faqs: faqs
 	};
 };
-
 
 export const actions = {
 	default: async ({ request, params, cookies }) => {
@@ -103,7 +122,7 @@ export const actions = {
 		const req = await request.formData();
 		const content = req.get('message')?.toString();
 		logger.debug('Invio messaggio:', content);
-		if (!req.get('message')){
+		if (!req.get('message')) {
 			logger.error('messaggio inviato vuoto');
 			return;
 		}
@@ -120,10 +139,10 @@ export const actions = {
 				})
 			});
 
-			if (!response.ok){
-				logger.error('Errore durante l\'invio del messaggio:', response.status);
+			if (!response.ok) {
+				logger.error("Errore durante l'invio del messaggio:", response.status);
 				return fail(response.status, { error: 'Failed to send message' });
-			} 
+			}
 			logger.info('Messaggio inviato con successo:', content);
 			return {
 				success: true

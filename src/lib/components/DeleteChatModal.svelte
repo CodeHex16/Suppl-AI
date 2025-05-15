@@ -7,7 +7,7 @@
 		onCancel
 	}: {
 		chatName: string;
-		chatId: string;
+		chatId: string | undefined;
 		onCancel: () => void;
 	} = $props();
 

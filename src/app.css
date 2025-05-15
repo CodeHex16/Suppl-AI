@@ -106,9 +106,7 @@ html {
 .grid-chat {
 	grid-template-rows: auto 1fr auto;
 }
-.grid-chat-bottom-bar {
-	grid-template-columns: 1fr auto;
-}
+
 
 /* Background puntinato */
 .bg-dotted {

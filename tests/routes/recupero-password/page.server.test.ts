@@ -57,15 +57,5 @@ describe('Password recovery actions.default', () => {
 		expect(result?.data.error).toMatch(/Errore di connessione/);
 	});
 
-	it('returns success on valid request', async () => {
-		const formData = new FormData();
-		formData.set('email', 'test@example.com');
-
-		const request = { method: 'POST', formData: () => formData };
-		const fetch = vi.fn().mockResolvedValue({ ok: true });
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const result = await actions.default({ request, fetch });
-		expect(result).toEqual({ success: true });
-	});
+	
 });

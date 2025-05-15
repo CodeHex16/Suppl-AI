@@ -17,7 +17,6 @@ describe('Admin Platform Management Page', () => {
 
     expect(screen.getByText('Impostazioni')).toBeInTheDocument();
     expect(screen.getByLabelText('Seleziona colore primario')).toBeInTheDocument();
-    expect(screen.getByText('Durata salvataggio chat')).toBeInTheDocument();
     expect(screen.getByText('Salva impostazioni')).toBeInTheDocument();
   });
 
@@ -41,6 +40,6 @@ describe('Admin Platform Management Page', () => {
     const submitButton = screen.getByTestId('form');
     await fireEvent.submit(submitButton);
 
-    expect(mockFetch).toHaveBeenCalledWith('/api/update_colors', expect.any(Object));
+    expect(mockFetch).toHaveBeenCalledWith('/api/update_settings', expect.any(Object));
   });
 });

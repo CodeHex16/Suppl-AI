@@ -20,12 +20,17 @@
 
 	
 	const abbrQuestion = abbrWithEllipsis(faq.question, 30);
+
 </script>
 
 <div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">
 	<div class="flex items-center justify-between">
-		<div>
-			<h3 class="text-lg font-semibold">{open ? faq.title : abbrQuestion}</h3>
+		<div class="min-w-0">
+			<h3
+				class="max-w-56 overflow-hidden text-ellipsis whitespace-nowrap text-lg font-semibold"
+			>
+				{faq.title}
+			</h3>
 		</div>
 		<button
 			class="text-gray rounded-full p-2 transition hover:bg-gray-200 dark:hover:text-black"
@@ -43,14 +48,14 @@
 			<div class="my-4">
 				<div class="faq-item-grid mb-4 gap-4">
 					<HelpCircle class="text-gray my-1 h-5 w-5" />
-					<p class="text-gray font-semibold italic">
+					<p class="text-gray break-words overflow-hidden font-semibold italic">
 						"{faq.question}"
 					</p>
 				</div>
 
 				<div class="faq-item-grid mb-4 gap-4">
 					<MessageSquareText class="text-gray my-1 h-5 w-5" />
-					<p class="text-gray">{faq.answer}</p>
+					<p class="text-gray overflow-hidden break-words">{faq.answer}</p>
 				</div>
 			</div>
 

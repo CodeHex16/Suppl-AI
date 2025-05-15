@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ request, cookies, fetch }) => {
 			const errorData = await response.json();
 			logger.error('Errore durante l\'upload del file:', errorData);
 			if (response.status === 400) {
-				return json({ error: 'File già caricato!' }, { status: 400 });
+				return json({ error: 'File già caricato o formato errato!' }, { status: 400 });
 			} else {
 				return json(
 					{ error: "Errore durante l'aggiunta del documento", details: response },
@@ -110,6 +110,7 @@ export const DELETE: RequestHandler = async ({ request, cookies }) => {
 
 		logger.log('req delete document', req);
 		const response = await fetch(`http://${LLM_URL}/documents`, {
+
 			method: 'DELETE',
 			headers: {
 				Authorization: 'Bearer ' + token,

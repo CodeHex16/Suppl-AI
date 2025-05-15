@@ -30,7 +30,7 @@ describe('NewFAQModal Component', () => {
       question: 'What is Svelte?',
       answer: 'Svelte is a JavaScript framework.',
       creationDate: expect.any(String), // We expect a valid date string
-    });
+    }, expect.anything()); // The second argument is the event, which we can ignore
   });
 
   it('should call onCancel when cancel button is clicked', async () => {

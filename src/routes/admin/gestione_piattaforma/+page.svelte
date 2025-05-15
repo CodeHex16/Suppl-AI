@@ -8,12 +8,24 @@
 	import { onMount } from 'svelte';
 	import { logger } from '$lib/utils/logger.js';
 
-	let { data } = $props();
+	let { data }:{
+		data: {
+			settings: {
+				COLOR_PRIMARY: string;
+				COLOR_PRIMARY_HOVER: string;
+				COLOR_PRIMARY_TEXT: string;
+				CHAT_HISTORY: number;
+			};
+			theme: string;
+		};
+	} = $props();
 
 	let cssColor = '#007bff'; 
+	let chatHistory = data.settings?.CHAT_HISTORY || 50;
 
-	let primaryColor = $state('#007BFF'); 
-	let chatRetention = $state('30');
+
+	let primaryColor = $state('#007BFF');
+	let chatRetention = $state(String(chatHistory));
 	let logoLightFile = $state<File | null>(null);
 	let logoLightName = $state('Nessun file selezionato');
 	let logoDarkFile = $state<File | null>(null);
@@ -31,11 +43,12 @@
 				//cssColor = currentPrimary; 
 				primaryColor = currentPrimary; 
 			}
+
 		}
 	
 
 	function resetPrimaryColor() {
-		primaryColor = cssColor; 
+		primaryColor = cssColor;
 	}
 
 	$effect(() => {
@@ -45,7 +58,7 @@
 	function setColors() {
 		if (typeof document === 'undefined') return;
 
-		const color = primaryColor; 
+		const color = primaryColor;
 		const textColor = getContrastColor(color);
 		const hoverColor = darken(color, 10);
 
@@ -75,19 +88,23 @@
 		logger.log('Colore primario:', primaryColor); 
 		logger.log('Durata chat:', chatRetention);
 
+
 		if (logoLightFile) await uploadFile(logoLightFile, 'logo_light.png'); 
 		if (logoDarkFile) await uploadFile(logoDarkFile, 'logo_dark.png'); 
 		if (faviconFile) await uploadFile(faviconFile, 'favicon.ico'); 
 
-		const resColor = await fetch('/api/update_colors', {
+		logger.log('Salvataggio impostazioni...');
+
+		const resColor = await fetch('/api/update_settings', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				COLOR_PRIMARY: primaryColor, 
-				COLOR_PRIMARY_TEXT: getContrastColor(primaryColor), 
-				COLOR_PRIMARY_HOVER: darken(primaryColor, 10) 
+				color_primary: primaryColor, 
+				color_primary_text: getContrastColor(primaryColor), 
+				color_primary_hover: darken(primaryColor, 10),
+				chat_history: chatRetention
 			})
 		});
 
@@ -126,14 +143,15 @@
 		const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 		return luminance > 0.5 ? 'black' : 'white';
 	}
+
 </script>
 
-<div class="grid-home mx-auto grid h-dvh max-w-xl">
+<div class="grid-home mx-auto grid h-dvh max-w-xl overflow-x-hidden">
 	<HeaderPages {data} title="Impostazioni" />
 
-	<main class="flex flex-grow flex-col">
+	<main class="flex flex-col overflow-hidden pt-2">
+		<div class="scroll-snap-y-container max-h-[calc(100vh-17em)] overflow-y-auto px-4">
 		<form data-testid="form" onsubmit={handleSubmit}>
-			<div class="max-h-[calc(100vh-17em)] overflow-y-auto px-4">
 				<!-- Colore primario -->
 				<div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">
 					<label for="color" class="mb-4 block font-semibold"> Colore primario </label>
@@ -141,7 +159,7 @@
 						<div class="flex items-center gap-4">
 							<div class="relative h-12 w-12">
 								<div
-									class="absolute inset-0 rounded-full border border-gray-300 dark:border-gray-600 bg-[var(--color-primary)]"
+									class="absolute inset-0 rounded-full border border-gray-300 bg-[var(--color-primary)] dark:border-gray-600"
 								></div>
 								<input
 									id="color"
@@ -181,28 +199,26 @@
 
 				<!-- Durata salvataggio chat -->
 				<div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">
-					<label for="chatRetention" class="mb-4 block font-semibold">Durata salvataggio chat</label
+					<label for="chatRetention" class="mb-4 block font-semibold">Numero massimo di messaggi nello storico delle chat</label
 					>
 					<select
 						bind:value={chatRetention}
 						id="chatRetention"
 						class="w-full rounded-full border border-gray-300 bg-white px-4 py-4 placeholder:opacity-50 dark:border-gray-500"
 					>
-						<option value="30">30 giorni</option>
-						<option value="60">60 giorni</option>
-						<option value="90">90 giorni</option>
-						<option value="365">1 anno</option>
+						<option value="50">50</option>
+						<option value="100">100</option>
+						<option value="200">200</option>
+						<option value="500">500</option>
 					</select>
 				</div>
-			</div>
-
-			<!-- Pulsante Salva -->
-			<div class="rounded-t-3xl bg-white p-4 shadow-md">
-				<button type="submit" class="item-primary mb-4 w-full rounded-full py-3">
-					Salva impostazioni
-				</button>
-			</div>
-		</form>
+			</form>
+		</div>
+		<div class="rounded-t-3xl bg-white p-4 shadow-md">
+			<button type="submit" onclick={handleSubmit} class="item-primary mb-4 w-full rounded-full py-3">
+				Salva impostazioni
+			</button>
+		</div>
 	</main>
 
 	<BottomNavBar {data} />

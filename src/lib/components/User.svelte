@@ -14,11 +14,11 @@
 <div class="mx-4 mb-4 rounded-xl bg-white p-4 shadow-md transition">
 	<div class="flex items-center justify-between">
 		<div>
-			<h3 class="text-lg font-semibold">{user.name}</h3>
+			<h3 class="text-lg font-semibold max-w-56 overflow-hidden text-ellipsis whitespace-nowrap">{user.name}</h3>
 			<div class="mt-2 text-sm">
 				<div class="mb-2 flex items-center">
 					<Mail class="text-gray mr-2 h-4 w-4 opacity-50" />
-					<p class="text-gray">{user.email}</p>
+					<p class="text-gray max-w-56 overflow-hidden text-ellipsis whitespace-nowrap">{user.email}</p>
 				</div>
 				<div class="flex items-center">
 					<Tag class="text-gray mr-2 h-4 w-4 opacity-50" />

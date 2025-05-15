@@ -6,6 +6,7 @@
 	import UpdateModal from '$lib/components/UpdateUserModal.svelte';
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 	import DeleteUserConfirmModal from '$lib/components/DeleteUserConfirmModal.svelte';
+	import { error } from '@sveltejs/kit';
 
 	import type { User } from '$lib/types';
 	import { logger } from '$lib/utils/logger';
@@ -24,6 +25,7 @@
 
 	let showModalUpdate = $state(false);
 	let editingUser = $state<any>(null);
+	let errorMessage = $state<string | null>(null);
 
 	let query = $state('');
 	let selectedUser = $state<string | null>(null);
@@ -62,10 +64,13 @@
 			const newUser = await ris.json();
 			logger.log('Nuovo utente aggiunto:', newUser);
 			users = [...users, newUser.user];
+			showModalNew = false;
+			errorMessage = null;
 		} else {
-			logger.error('Error adding user:', await ris.text());
+			let risText = await ris.json();
+			errorMessage = risText.error;
+			logger.error('Error adding user:',risText);
 		}
-		showModalNew = false;
 	}
 
 	/**
@@ -79,6 +84,7 @@
 		//users = users.map((u) => (u.id === user.id ? { ...u, ...user } : u));
 
 		user.admin_password = admin_password;
+
 		const ris = await fetch(`/api/users`, {
 			method: 'PUT',
 			headers: {
@@ -98,13 +104,15 @@
 				userToUpdate.role = updatedUser.role ?? user.role;
 				userToUpdate.email = updatedUser.email ?? user.email;
 			}
-			
+			showModalUpdate = false;
+			editingUser = null;
+			selectedUser = null;
+			errorMessage = null;
 		} else {
-			logger.error('Error updating user:', await ris.text());
+			let risText = await ris.json();
+			errorMessage = risText.error;
+			logger.error('Error updating user:', risText);
 		}
-		showModalUpdate = false;
-		editingUser = null;
-		selectedUser = null;
 	}
 
 	function openDeleteUserConfirm() {
@@ -127,7 +135,14 @@
 	{/if}
 
 	{#if showModalNew}
-		<Modal onSubmitUser={(user) => newUser(user)} onCancel={() => (showModalNew = false)} />
+		<Modal
+			onSubmitUser={(user) => newUser(user)}
+			onCancel={() => {
+				showModalNew = false;
+				errorMessage = null;
+			}}
+			{errorMessage}
+		/>
 	{/if}
 
 	{#if showModalUpdate}
@@ -137,7 +152,9 @@
 			onCancel={() => {
 				showModalUpdate = false;
 				editingUser = null;
+				errorMessage = null;
 			}}
+			{errorMessage}
 		/>
 	{/if}
 
@@ -145,10 +162,6 @@
 		<div
 			class="scroll-snap-y-container flex max-h-[calc(100vh-17em)] flex-col gap-2 overflow-y-auto"
 		>
-			{#if users?.length === 0}
-				<p class="mt-10 text-center text-gray-500">Nessun utente trovato.</p>
-			{/if}
-
 			{#if utentiFiltrati.length > 0}
 				{#each utentiFiltrati as user (user.email)}
 					<UserItem
@@ -170,7 +183,7 @@
 			{/if}
 		</div>
 
-		<div class="rounded-t-3xl bg-white p-4 shadow-md">
+		<div class="shaadow-md rounded-t-3xl bg-white p-4">
 			<div class="mb-4 flex items-center justify-between">
 				<div class="relative mr-4 flex-grow">
 					<input

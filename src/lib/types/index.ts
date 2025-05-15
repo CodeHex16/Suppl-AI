@@ -13,13 +13,13 @@ export type UserRole = string | 'admin' | 'user';
 export interface User {
 	id?: string; // TODO: router/admin/clienti need
 	_id?: string;
-	email: string,
-	name: string,
-	role: UserRole,
-	scopes?: string[],
+	email: string;
+	name: string;
+	role: UserRole;
+	scopes?: string[];
 
-	admin_password?: string, // For UpdateUser\
-	email_old?: string, // For UpdateUser
+	admin_password?: string; // For UpdateUser\
+	email_old?: string; // For UpdateUser
 }
 
 export type Document = {

@@ -4,6 +4,7 @@ import { env } from '$env/dynamic/public';
 import { logger } from '$lib/utils/logger';
 
 const DATABASE_URL = env.PUBLIC_DATABASE_URL;
+const LLM_URL = env.PUBLIC_LLM_URL;
 
 export const POST: RequestHandler = async ({ request, cookies, fetch }) => {
 	logger.info('POST /api/faqs');
@@ -39,7 +40,7 @@ export const POST: RequestHandler = async ({ request, cookies, fetch }) => {
 			);
 		}
 		// Crea una nuova faq nel database
-		const response = await fetch(`http://${DATABASE_URL}/faqs`, {
+		const response = await fetch(`http://${LLM_URL}/faqs?token=${token}`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -53,9 +54,13 @@ export const POST: RequestHandler = async ({ request, cookies, fetch }) => {
 		});
 
 		if (!response.ok) {
-			logger.error('Errore durante l\'aggiunta della faq', response);
+
+			const errorData = await response.json();
+			
+			logger.error('Errore durante l\'aggiunta della faq', errorData);
+
 			return json(
-				{ error: "Errore durante l'aggiunta della faq", details: response },
+				{ error: "Errore durante l'aggiunta della faq", details: errorData },
 				{ status: response.status }
 			);
 		}
@@ -63,7 +68,7 @@ export const POST: RequestHandler = async ({ request, cookies, fetch }) => {
 		logger.info('FAQ aggiunta con successo', data);
 		return json({
 			success: true,
-			faq: { _id: data.id, title: req.title, question: req.question, answer: req.answer },
+			faq: { id: data.faq.id, title: req.title, question: req.question, answer: req.answer },
 			message: 'FAQ added successfully'
 		});
 	} catch (error) {
@@ -104,6 +109,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 		}
 		const response = await fetch(`http://${DATABASE_URL}/faqs/${req.id}`, {
 			method: 'PATCH',
+
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`
@@ -111,15 +117,28 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 			body: JSON.stringify({
 				title: req.title,
 				question: req.question,
-				answer: req.answer
+				answer: req.answer,
+				id: req.id,
+				current_password: req.current_password
 			})
 		});
 		logger.log('response update faq', response);
 
 		if (!response.ok) {
+
 			logger.error('Errore durante l\'aggiornamento della faq', response);
+
+			logger.log('response', response);
+			const errorMessage = await response.json();
+			logger.error('Error response:', errorMessage);
+			if (errorMessage.detail.includes('FAQ data is already up to date')) {
+				return json(
+					{ error: 'Nessuna modifica apportata', details: errorMessage },
+					{ status: response.status }
+				);
+			}
 			return json(
-				{ error: "Errore durante l'aggiornamento della faq", details: response },
+				{ error: "Errore durante l'aggiornamento della faq", details: errorMessage },
 				{ status: response.status }
 			);
 		}
@@ -158,14 +177,17 @@ export const DELETE: RequestHandler = async ({ request, cookies }) => {
 			);
 		}
 
+
 		logger.log('req delete faq', req);
 		const response = await fetch(`http://${DATABASE_URL}/faqs/${req.id}`, {
+
 			method: 'DELETE',
 			headers: {
 				Authorization: 'Bearer ' + token,
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
+				id: req.id,
 				current_password: req.current_password
 			})
 		});
@@ -173,21 +195,22 @@ export const DELETE: RequestHandler = async ({ request, cookies }) => {
 		if (!response.ok) {
 			logger.error('Errore durante l\'eliminazione della faq', response);
 			if (response.status === 401) {
-				return json({ error: 'Unauthorized', details: 'Unauthorized' }, { status: 401 });
+				return json({ error: 'Password errata', details: 'Password errata' }, { status: 401 });
 			}
 
 			return json(
-				{ error: "Errore durante l'eliminazione dell'utente", details: response },
+				{ error: "Errore durante l'eliminazione della faq", details: response },
 				{ status: response.status }
 			);
 		}
 		logger.log('data delete faq success');
 		return json({
 			success: true,
-			message: 'User deleted successfully'
+			message: 'FAQ deleted successfully'
 		});
 	} catch (error) {
-		logger.error("Errore durante l'eliminazione dell'utente:", error);
+
+		logger.error("Errore durante l'eliminazione della faq:", error);
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };

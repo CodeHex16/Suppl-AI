@@ -20,7 +20,7 @@
 <div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">
 	<div class="flex items-center justify-between">
 		<div class="flex-1 pr-4">
-			<h3 class="text-gray truncate text-lg font-semibold">{document.title}</h3>
+			<h3 class="max-w-56 overflow-hidden text-ellipsis whitespace-nowrap text-gray truncate text-lg font-semibold">{document.title}</h3>
 			{#if !open}
 				<p class="text-gray truncate text-sm opacity-50">{parseDate(document.uploaded_at)}</p>
 			{/if}
