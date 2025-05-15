@@ -21,15 +21,13 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Run tests
+      - name: Run tests and generate coverage
         run: npm run test:coverage
 
       - name: Upload coverage to Coveralls
-        if: success()
-        run: |
-          npx coveralls < ./coverage/lcov.info
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_TOKEN: ${{ secrets.COVERALLS_SUPPLAI_TOKEN }}
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage/lcov.info
