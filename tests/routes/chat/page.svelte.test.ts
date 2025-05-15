@@ -5,6 +5,15 @@ import { render, fireEvent, getByTestId } from '@testing-library/svelte';
 import type { Chat, Message } from '$lib/types';
 
 
+globalThis.fetch = vi.fn(() =>
+	new Promise((resolve) => {
+		resolve({
+			ok: true,
+			json: () => Promise.resolve({ detail: 'ok' })
+		});
+	}
+));
+
 describe('ChatPage', () => {
 	it('adds a message and calls streamResponse on submit', async () => {
 		const {getByTestId } = render(ChatPage, {

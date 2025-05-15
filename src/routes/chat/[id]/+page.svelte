@@ -180,7 +180,7 @@
 			scrollToBottom();
 
 			logger.info('Salvataggio messaggio utente...');
-			let request_save = await fetch(window.location.href, {
+			let request_save = await fetch('/chat/'+data.chat_id,{
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded'
