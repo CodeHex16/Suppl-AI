@@ -6,7 +6,7 @@ type LogLevel = 'log' | 'info' | 'warn' | 'error' | 'debug';
 
 const emojis: Record<LogLevel, string> = {
   log:   '📗',
-  info:  'ℹ️',
+  info:  'ℹ️ ',
   warn: '⚠️',
   error: '❌',
   debug: '🐛',

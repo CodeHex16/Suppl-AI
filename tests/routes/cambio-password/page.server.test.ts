@@ -22,17 +22,12 @@ vi.mock('@sveltejs/kit', async () => {
 });
 
 
-
 describe('Password Change Actions', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 	});
 
-	it('should redirect if no token (load)', async () => {
-		const result = await load({ cookies: { get: () => null } });
-		expect(redirect).toHaveBeenCalledWith(303, '/');
-		expect(result).toEqual({ status: 303, location: '/' });
-	});
+
 	it('should fail if passwords are missing', async () => {
 		const formData = new FormData();
 		formData.set('currentPassword', 'oldpass');

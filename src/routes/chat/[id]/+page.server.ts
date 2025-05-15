@@ -29,7 +29,7 @@ async function updateChatNameIfNeeded(chat: Chat, token: string, chatId: string)
 			return { error: response.status };
 		}
 
-		const title = await response.json().catch(() => ({}));
+		const title = await response.json();
 
 		logger.info('Nome generato:', title);
 

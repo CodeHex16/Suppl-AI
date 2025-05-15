@@ -36,7 +36,7 @@ describe('load function', () => {
     mockCookies.get.mockReturnValue('mock-token');
     mockFetch.mockResolvedValueOnce({
       ok: false,
-      json: async () => ({ detail: 'Nessun documento trovato' }),
+      json: async () => ([]),
     });
 
     const result = await load(mockData);

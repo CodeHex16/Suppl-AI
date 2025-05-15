@@ -1,9 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { load } from '../../../../src/routes/admin/clienti/+page.server';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 vi.mock('@sveltejs/kit', () => ({
-  error: vi.fn((status, message) => ({ status, message }))
+  error: vi.fn((status, message) => ({ status, message })),
+  redirect: vi.fn((status, location) => ({ status, location }))
 }));
 
 describe('PageServerLoad', () => {
@@ -23,7 +24,7 @@ describe('PageServerLoad', () => {
 
     await expect(
       load({ fetch: mockFetch, cookies: mockCookies })
-    ).rejects.toEqual(error(401, 'Autenticazione richiesta'));
+    ).rejects.toEqual(redirect(303, '/login'));
 
     expect(mockCookies.get).toHaveBeenCalledWith('token');
   });

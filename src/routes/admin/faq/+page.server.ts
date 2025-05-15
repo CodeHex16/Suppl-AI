@@ -20,7 +20,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 	});
 	logger.debug('Risposta API FAQ:', faqsResponse);
 	if (!faqsResponse.ok) {
-		logger.error('Errore API FAQ:', faqsResponse.status, await faqsResponse.text());
+		logger.error('Errore API FAQ:', faqsResponse.status,  faqsResponse);
 		if (faqsResponse.status === 404) {
 			return {
 				faqs: []

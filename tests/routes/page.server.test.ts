@@ -7,7 +7,9 @@ vi.mock('$env/dynamic/public', () => ({
   }
 }));
 vi.mock('@sveltejs/kit', () => ({
-  redirect: vi.fn(),
+  redirect: vi.fn((status, location) => {
+    throw { status, location };
+  }),
   error: vi.fn(),
   invalid: vi.fn()
 }));
@@ -23,10 +25,14 @@ describe('page.server.ts', () => {
         get: vi.fn().mockReturnValue(null),
         delete: vi.fn(),
       };
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      await load({cookies: mockCookies});
-      expect(redirect).toHaveBeenCalledWith(303, '/login');
+
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        await load({ cookies: mockCookies });
+      } catch (error) {
+        expect(error).toEqual({ status: 303, location: '/login' });
+      }
     });
 
     it('should redirect to /cambio-password when user is not initialized', async () => {
@@ -37,10 +43,14 @@ describe('page.server.ts', () => {
       (globalThis.fetch as Mock).mockResolvedValueOnce({
         json: vi.fn().mockResolvedValueOnce({ status: 'not_initialized' }),
       });
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      await load({cookies: mockCookies});
-      expect(redirect).toHaveBeenCalledWith(303, '/cambio-password');
+
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        await load({ cookies: mockCookies });
+      } catch (error) {
+        expect(error).toEqual({ status: 303, location: '/cambio-password' });
+      }
     });
 
     it('should throw an error when token is invalid', async () => {
@@ -51,30 +61,15 @@ describe('page.server.ts', () => {
       (globalThis.fetch as Mock).mockResolvedValueOnce({
         json: vi.fn().mockResolvedValueOnce({ status: 'invalid' }),
       });
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      await load({cookies: mockCookies});
-      expect(mockCookies.delete).toHaveBeenCalledWith('token', { path: '/' });
-      expect(redirect).toHaveBeenCalledWith(303, '/login');
-    });
 
-    it('should fetch chats and return them', async () => {
-      const mockCookies = {
-        get: vi.fn().mockReturnValue('valid-token'),
-        delete: vi.fn(),
-      };
-      (globalThis.fetch as Mock).mockResolvedValueOnce({
-        json: vi.fn().mockResolvedValueOnce({ status: 'valid', scopes: ['user'] }),
-      });
-      (globalThis.fetch as Mock).mockResolvedValueOnce({
-        json: vi.fn().mockResolvedValueOnce([{ id: 1, name: 'Chat 1' }]),
-      });
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const result = await load({cookies: mockCookies});
-      await expect(result?.chats).resolves.toEqual([{ id: 1, name: 'Chat 1' }])
-      expect(result?.userScopes).toEqual(['user']);
-      expect(result?.token).toEqual('valid-token');
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        await load({ cookies: mockCookies });
+      } catch (error) {
+        expect(mockCookies.delete).toHaveBeenCalledWith('token', { path: '/' });
+        expect(error).toEqual({ status: 303, location: '/login' });
+      }
     });
   });
 

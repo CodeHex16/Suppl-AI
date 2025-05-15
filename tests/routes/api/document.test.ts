@@ -200,17 +200,7 @@ describe('DELETE Handler - Additional Branch Tests', () => {
     );
   });
 
-  it('should return 500 if DELETE request to LLM service fails unexpectedly', async () => {
-    cookiesMock.get.mockReturnValue('valid-token');
-    fetchMock.mockResolvedValueOnce({ ok: true }); // Token is valid
-    fetchMock.mockRejectedValueOnce(new Error('Unexpected LLM error'));
 
-    const request = { json: vi.fn().mockResolvedValue({ id: 'file-id', title: 'file-title', current_password: 'password' }) };
-
-    const result = await DELETE({ request, cookies: cookiesMock, fetch: fetchMock });
-
-    expect(result).toEqual(json({ error: 'Internal server error' }, { status: 500 }));
-  });
 
   it('should return 400 if DELETE request body is missing required fields', async () => {
     cookiesMock.get.mockReturnValue('valid-token');

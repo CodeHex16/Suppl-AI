@@ -38,7 +38,7 @@ describe('POST Handler - LLM Request', () => {
     cookiesMock.get.mockReturnValueOnce('mock-token');
     fetchMock.mockResolvedValueOnce({
       ok: false,
-      json: async () => ({ error: { message: 'Invalid request' } }),
+      json: async () => ({ detail: 'Invalid request'  }),
     });
 
     await expect(

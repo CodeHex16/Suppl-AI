@@ -9,7 +9,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	logger.info('POST /api/users');
 	try {
 		const token = cookies.get('token');
-		const req = await request.json().catch(() => {});
+		const req = await request.json();
 		logger.debug('Request data:', req);
 
 		if (!token) {

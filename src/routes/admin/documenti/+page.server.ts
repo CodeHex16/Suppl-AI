@@ -24,7 +24,7 @@ export const load = async (data) => {
 	if (!documents.ok) {
 		const errorBody = await documents.json().catch(() => ({}));
 		logger.error('Error fetching documents:', errorBody);
-		if (errorBody.detail.includes('Token non valido')) {
+		if (errorBody?.detail?.includes('Token non valido')) {
 			logger.error('Invalid token');
 			data.cookies.delete('token', { path: '/' });
 			throw new Error('Token non valido');

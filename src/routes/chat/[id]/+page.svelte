@@ -180,7 +180,7 @@
 			scrollToBottom();
 
 			logger.info('Salvataggio messaggio utente...');
-			let request_save = await fetch(``, {
+			let request_save = await fetch(window.location.href, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded'

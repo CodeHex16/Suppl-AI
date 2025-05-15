@@ -8,7 +8,6 @@ import type { Chat, Message } from '$lib/types';
 describe('ChatPage', () => {
 	it('adds a message and calls streamResponse on submit', async () => {
 		const {getByTestId } = render(ChatPage, {
-			// 可以模拟 props
 			props: {
 				data: {
 					chat: {
