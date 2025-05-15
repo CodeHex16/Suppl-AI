@@ -18,6 +18,7 @@
 		onDelete: (faq: Faq) => void;
 	} = $props();
 
+	
 	const abbrQuestion = abbrWithEllipsis(faq.question, 30);
 </script>
 

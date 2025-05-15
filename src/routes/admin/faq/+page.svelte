@@ -8,6 +8,7 @@
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import type {Faq as FAQ} from '$lib/types';
+	import { logger } from '$lib/utils/logger.js';
 
 
 	let { data } = $props();
@@ -23,7 +24,7 @@
 	let showDeleteFAQ = $state(false);
 
 	function toggleFaq(faq: FAQ) {
-		selectedFaqId = selectedFaqId === faq._id ? null : faq._id;
+		selectedFaqId = selectedFaqId === String(faq._id) ? null : String(faq._id);
 	}
 
 	const filteredFaq = $derived(
@@ -35,8 +36,12 @@
 		)
 	);
 
-	async function newFAQ(faq: { question: string; answer: string; title: string }) {
-		console.log('Nuova FAQ aggiunta:', faq);
+	/**
+	 * Aggiungi una nuova FAQ
+	 * @param faq
+	 */
+	async function newFAQ(faq: FAQ) {
+		logger.log('Nuova FAQ aggiunta:', faq);
 		const ris = await fetch('/api/faqs', {
 			method: 'POST',
 			headers: {
@@ -46,15 +51,16 @@
 		});
 		if (ris.ok) {
 			const faq = await ris.json();
-
 			faqs = [...faqs, faq.faq];
 			showNewFAQ = false;
+			logger.log('FAQ aggiunta:', faq);
 		} else {
-			console.error('Error adding FAQ:', await ris.text());
+			logger.error('Error adding FAQ:', await ris.text());
 		}
 	}
 
-	async function updateFAQ(faq: { id: string; question: string; answer: string; title: string }) {
+	async function updateFAQ(faq:FAQ) {
+		logger.log('FAQ aggiornata:', faq);
 		const ris = await fetch(`/api/faqs`, {
 			method: 'PUT',
 			headers: {
@@ -63,16 +69,22 @@
 			body: JSON.stringify(faq)
 		});
 		if (ris.ok) {
+			logger.log('FAQ aggiornata');
 			await invalidateAll();
-			faqs = faqs.map((f) => (f._id === faq.id ? { ...f, ...faq } : f));
+			const foundFaq = faqs.find((f) => String(f._id) === String(faq.id));
+			if (foundFaq) {
+				foundFaq.question = faq.question;
+				foundFaq.answer = faq.answer;
+				foundFaq.title = faq.title;
+			}
 			showUpdateFAQ = false;
 		} else {
-			console.error('Error updating FAQ:', await ris.text());
+			logger.error('Error updating FAQ:', await ris.text());
 		}
 	}
 
 	async function deleteFAQ(form: any) {
-		console.log('FAQ eliminata', form.get('id'));
+		logger.log('FAQ eliminata', form.get('id'));
 		const ris = await fetch(`/api/faqs`, {
 			method: 'DELETE',
 			headers: {
@@ -88,8 +100,9 @@
 			await invalidateAll();
 			showDeleteFAQ = false;
 			editingFAQ = null;
+			logger.log('FAQ eliminata');
 		} else {
-			console.error('Error deleting FAQ:', await ris.text());
+			logger.error('Error deleting FAQ:', await ris.text());
 		}
 	}
 

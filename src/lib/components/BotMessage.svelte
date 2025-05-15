@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { ThumbsUp, ThumbsDown } from 'lucide-svelte';
 	import { type Message } from '$lib/types';
 	let {
@@ -10,14 +9,10 @@
 	import { marked } from 'marked';
 	import { page } from '$app/state';
 	import { formatData } from '$lib/utils/date';
+	import { logger } from '$lib/utils/logger';
+	//lodash
+	import debounce from 'lodash-es/debounce';
 
-	// $inspect(data);
-	// $inspect(page.params);
-
-	onMount(() => {
-		like = data.rating == true;
-		dislike = data.rating == false;
-	});
 
 	marked.use({
 		gfm: true,
@@ -29,23 +24,40 @@
 		return marked(text);
 	}
 
-	let like: boolean = $state(false);
-	let dislike: boolean = $state(false);
+	let like: boolean = $state(data.rating == true);
+	let dislike: boolean = $state(data.rating == false);
 
-	function rateMessage(chatId: string, messageId: string|undefined, rating: boolean | null) {
-		console.log('like: ', like, 'dislike: ', dislike);
+	/**
+	 * @description Funzione per feedback dell'utente
+	 */
+	function rateMessage(chatId: string, messageId: string | undefined, rating: boolean | null) {
+		logger.info('like: ', like, 'dislike: ', dislike);
 		rating = like ? true : dislike ? false : null;
-		console.log('rating: ', rating);
+		logger.debug('rating: ', rating);
 
-		fetch('/api/rate_message', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				chat_id: chatId,
-				message_id: messageId,
-				rating: rating
+		const updateRequest = () => {
+			fetch('/api/rate_message', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					chat_id: chatId,
+					message_id: messageId,
+					rating: rating
+				})
 			})
-		});
+				.then((response) => {
+					if (response.ok) {
+						logger.info('Rating updated successfully');
+					} else {
+						logger.error('Error updating rating:', response.statusText);
+					}
+				})
+				.catch((error) => {
+					logger.error('Error:', error);
+				});
+		};
+		const debounced = debounce(updateRequest, 300);
+		debounced(); // to prevent multiple calls
 	}
 
 	function toggleThumbsUp() {

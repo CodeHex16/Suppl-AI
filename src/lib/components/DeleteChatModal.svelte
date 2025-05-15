@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
+	import { logger } from '$lib/utils/logger';
 	let {
 		chatName,
 		chatId,
@@ -12,9 +13,11 @@
 
 	async function handleSubmit(event: Event) {
 		event.preventDefault();
+		logger.info('Eliminazione chat in corso...');
 
 		const form = event.currentTarget as HTMLFormElement;
 		const formData = new FormData(form);
+		logger.info('FormData:', formData);
 
 		try {
 			const res = await fetch("/?/deleteChat", {
@@ -23,15 +26,16 @@
 			});
 
 			if (res.ok) {
+				logger.info('Chat eliminata con successo');
 				onCancel();
 				await invalidateAll();
 				goto('/');
 			} else {
-				console.error("Errore durante l'eliminazione della chat:", await res.text());
+				logger.error("Errore durante l'eliminazione della chat:", await res.text());
 				alert("Si è verificato un errore durante l'eliminazione della chat. Riprova.");
 			}
 		} catch (err) {
-			console.error("Errore di rete:", err);
+			logger.error("Errore di rete:", err);
 			alert("Errore di rete. Riprova più tardi.");
 		}
 	}

@@ -5,6 +5,7 @@
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 	
 	let { data } = $props();
+	
 </script>
 
 

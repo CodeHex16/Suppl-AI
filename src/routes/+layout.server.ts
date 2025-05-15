@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import type { LayoutServerLoad } from './$types';
+import { logger } from '$lib/utils/logger';
 
 /**
  * Load function for the layout server.
@@ -11,14 +12,16 @@ import type { LayoutServerLoad } from './$types';
  * Last reviewed by: Yi Hao Zhuo
  */
 export const load: LayoutServerLoad = async ({ cookies }) => {
+	logger.info('Loading layout server');
 	const theme = cookies.get('theme') as 'light' | 'dark' | undefined;
-
+	logger.debug('Current theme:', theme);
 	try {
 		const file = await fs.readFile('static/settings/colors.json', 'utf-8');
 		const colors = JSON.parse(file);
+		logger.debug('Colors loaded:', colors);
 		return { colors, theme: theme ?? 'light' };
 	} catch {
-		// fallback
+		logger.error('Error loading colors.json, using default colors');
 		return {
 			colors: {
 				COLOR_PRIMARY: '#0dab44',

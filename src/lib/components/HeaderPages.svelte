@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { ArrowLeft } from 'lucide-svelte';
 	import ThemeToggle from './ThemeToggle.svelte';
-
 	let {
 		data,
 		title = null

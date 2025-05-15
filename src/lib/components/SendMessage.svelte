@@ -22,7 +22,6 @@
 		class="hover:bg-gray mr-1 grid h-10 w-10 justify-center rounded-full transition duration-150 ease-in"
 	>
 		<button type="submit" disabled={sending} class={sending ? 'opacity-30' : 'opacity-100'}
-			><SendHorizontal /></button
-		>
+			><SendHorizontal /></button>
 	</div>
 </div>

@@ -2,6 +2,7 @@
 	import UserMessage from './UserMessage.svelte';
 	import BotMessage from './BotMessage.svelte';
 	import { type Message } from '$lib/types';
+	
 	let {
 		data
 	}: {

@@ -17,18 +17,6 @@
 		const formData = new FormData(event.target as HTMLFormElement);
 
 		onSubmitFaq(formData);
-
-		// TODO: cancel request?
-		// Use the fetch API to send the form data
-		// const response = await fetch('/api/users', {
-		// 	method: 'POST',
-		// 	body: formData
-		// });
-		// if (response.ok) {
-		// 	console.log('FAQ deleted successfully');
-		// } else {
-		// 	console.error('Error deleting FAQ');
-		// }
 	};
 </script>
 

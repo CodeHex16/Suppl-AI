@@ -3,7 +3,6 @@
 	import { page } from '$app/state';
 
 	let { data } : {data:any} = $props();
-	console.log('data',  page.form);
 </script>
 
 <div class="mx-auto max-w-xl">

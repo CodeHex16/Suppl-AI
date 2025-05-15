@@ -1,6 +1,5 @@
 <script lang="ts">
 	let { data } = $props();
-	// navigate
 	import { goto } from '$app/navigation';
 
 	const gotoHandler = (event: Event) => {

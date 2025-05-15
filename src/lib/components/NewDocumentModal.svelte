@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { logger } from '$lib/utils/logger';
 
 	let {
 		onSubmitDocument,
@@ -17,25 +17,32 @@
 		isLoading = true;
 		errorMessage = null;
 		const formData = new FormData(event.target as HTMLFormElement);
+		const files = formData.getAll('files') as File[];
+		if (files.length === 0) {
+			errorMessage = 'Seleziona almeno un file.';
+			isLoading = false; // Imposta isLoading a false in caso di errore
+			return;
+		}
+		logger.info('Files selected:', files);
 
 		// Invia i dati del modulo al server
 		const response = await fetch('/api/documents', {
 			method: 'POST',
 			body: formData,
-			headers: {
-				Accept: 'multipart/form-data',
-				'Content-Type': 'multipart/form-data'
-			}
 		});
-		isLoading = false; // Imposta isLoading a false dopo la risposta
+
+		
 		if (response.ok) {
+			logger.info('Files uploaded successfully');
 			await onSubmitDocument();
+			onCancel();
 		} else {
 			// Gestisci l'errore del server
 			errorMessage = 'Si è verificato un errore durante il caricamento del file.';
 			// Gestisci l'errore di rete
-			console.error('Network error:', response.statusText);
+			logger.error('Network error:', response.statusText);
 		}
+		isLoading = false; // Imposta isLoading a false dopo la risposta
 	}
 </script>
 

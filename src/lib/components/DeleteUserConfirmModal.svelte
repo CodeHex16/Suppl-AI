@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation'; // Importa invalidateAll per aggiornare i dati dopo l'eliminazione
 	import { type User } from '$lib/types'; // Importa il tipo User
-
+	import { logger } from '$lib/utils/logger';
 	let {
 		user,
 		onCancel,
@@ -16,41 +16,42 @@
 	async function handleDeleteSubmit(event: Event) {
 		event.preventDefault(); // Previene il comportamento predefinito del form
 		const formData = new FormData(event.target as HTMLFormElement); // Crea un oggetto FormData dal form
-		const userId = formData.get('userId');
 		const currentPassword = formData.get('current_password');
 
-		// TODO: Inviare i dati al server per eliminare l'utente
-		// try {
-		// 	const response = await fetch("/api/users", {
-		// 		method: 'DELETE',
-		// 		headers: {
-		// 			'Content-Type': 'application/json'
-		// 		},
-		// 		body: JSON.stringify({
-		// 			// Invia i dati come JSON
-		// 			userId: userId,
-		// 			current_password: currentPassword
-		// 		})
-		// 	});
+		try {
+			const response = await fetch("/api/users", {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					// Invia i dati come JSON
+					userId: user.email,
+					current_password: currentPassword
+				})
+			});
 
-		// 	if (response.ok) {
-		// 		invalidateAll();
-		// 		onSubmitUser();
-		// 	} else {
-		// 		// Errore dal server (es. password errata)
-		// 		const errorData = await response.json();
-		// 		console.error("Errore durante l'eliminazione dell'utente:", errorData);
-		// 		if(errorData.error === 'Unauthorized') {
-		// 			alert('Password errata. Riprova.');
-		// 		} else {
-		// 			alert('Si è verificato un errore durante l\'eliminazione dell\'utente. Riprova.');
-		// 		}
-		// 	}
-		// } catch (error) {
-		// 	// Errore di rete o altro errore imprevisto
-		// 	console.error('Errore di rete o imprevisto:', error);
-		// 	alert('Si è verificato un errore di rete. Riprova.');
-		// }
+			logger.log('Risposta:', response);
+
+			if (response.ok) {
+				logger.log('Utente eliminato con successo:', user.email);
+				invalidateAll();
+				onSubmitUser();
+			} else {
+				// Errore dal server (es. password errata)
+				const errorData = await response.json();
+				logger.error("Errore durante l'eliminazione dell'utente:", errorData);
+				if(errorData.error === 'Unauthorized') {
+					alert('Password errata. Riprova.');
+				} else {
+					alert('Si è verificato un errore durante l\'eliminazione dell\'utente. Riprova.');
+				}
+			}
+		} catch (error) {
+			// Errore di rete o altro errore imprevisto
+			logger.error('Errore di rete o imprevisto:', error);
+			alert('Si è verificato un errore di rete. Riprova.');
+		}
 	}
 </script>
 
@@ -60,7 +61,6 @@
 			<h2 class="text-lg font-semibold">Conferma Eliminazione</h2>
 			<p class="my-2">Sei sicuro di voler eliminare l'utente "{user.name}"?</p>
 			<form method="POST" onsubmit={handleDeleteSubmit}>
-				<input type="hidden" name="userId" value={user.email} />
 				<div class="text-center">
 					<label for="password">Inserisci la tua password per confermare</label>
 					<input

@@ -13,19 +13,6 @@
 		event.preventDefault();
 		const formData = new FormData(event.target as HTMLFormElement);
 		onConfirmDelete(formData);
-		// TODO: cancel request?
-		// Use the fetch API to send the form data
-		// const response = await fetch('/api/users', {
-		// 	method: 'POST',
-		// 	body: formData
-		// });
-		// if (response.ok) {
-		// 	// Handle success
-		// 	console.log('Document deleted successfully');
-		// } else {
-		// 	// Handle error
-		// 	console.error('Error deleting document');
-		// }
 	};
 </script>
 

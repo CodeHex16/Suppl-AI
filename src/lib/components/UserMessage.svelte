@@ -21,6 +21,5 @@
 				<p class="my-2">Adesso</p>
 			{/if}
 		</div>
-
 	</div>
 </div>

@@ -3,7 +3,6 @@
 	import { page } from '$app/state';
 
 	let { data } = $props();
-	console.log('recumeropassword', data);
 </script>
 
 <div class="mx-auto max-w-xl">

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { browser } from '$app/environment';
+	import { logger } from '$lib/utils/logger';
 	let { children, data } = $props();
 	let theme = $derived(data.theme);
 
@@ -16,7 +17,7 @@
 			try {
 				localStorage.setItem('theme', theme ?? 'light');
 			} catch (e) {
-				console.warn('Could not save theme to localStorage', e);
+				logger.warn('Could not save theme to localStorage', e);
 			}
 		}
 	});

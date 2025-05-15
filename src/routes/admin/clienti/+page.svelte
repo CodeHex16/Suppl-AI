@@ -8,6 +8,8 @@
 	import DeleteUserConfirmModal from '$lib/components/DeleteUserConfirmModal.svelte';
 
 	import type { User } from '$lib/types';
+	import { logger } from '$lib/utils/logger';
+
 	let { data }:{
 		data: {
 			users: User[];
@@ -30,17 +32,24 @@
 		selectedUser = selectedUser === email ? null : email;
 	}
 
+	/**
+	 * Filtra gli utenti in base alla query di ricerca
+	 */
 	const utentiFiltrati = $derived(
 		users.filter(
-			(doc) =>
-				doc.name.toLowerCase().trim().includes(query.toLowerCase().trim()) ||
-				doc.role.toLowerCase().trim().includes(query.toLowerCase().trim()) ||
-				doc.email.toLowerCase().trim().includes(query.toLowerCase().trim())
+			(user) =>
+				user.name.toLowerCase().trim().includes(query.toLowerCase().trim()) ||
+				user.role.toLowerCase().trim().includes(query.toLowerCase().trim()) ||
+				user.email.toLowerCase().trim().includes(query.toLowerCase().trim())
 		)
 	);
 
-	async function newUser(user: any) {
-		console.log('Nuovo utente aggiunto:', user);
+	/**
+	 * Aggiungi un nuovo utente
+	 * @param user
+	 */
+	async function newUser(user: User) {
+		logger.log('Nuovo utente:', user);
 		const ris = await fetch('/api/users', {
 			method: 'POST',
 			headers: {
@@ -48,18 +57,28 @@
 			},
 			body: JSON.stringify(user)
 		});
+		logger.log('Risposta:', ris);
 		if (ris.ok) {
 			const newUser = await ris.json();
+			logger.log('Nuovo utente aggiunto:', newUser);
 			users = [...users, newUser.user];
 		} else {
-			console.error('Error adding user:', await ris.text());
+			logger.error('Error adding user:', await ris.text());
 		}
 		showModalNew = false;
 	}
 
-	async function updateUser(user: any) {
-		users = users.map((u) => (u.id === user.id ? { ...u, ...user } : u));
+	/**
+	 * Aggiorna un utente
+	 * @param user
+	 */
+	async function updateUser(user: User, admin_password: string) {
+		logger.log('Aggiorna utente:', user);
 
+		// Aggiorna l'array degli utenti con i nuovi dati
+		//users = users.map((u) => (u.id === user.id ? { ...u, ...user } : u));
+
+		user.admin_password = admin_password;
 		const ris = await fetch(`/api/users`, {
 			method: 'PUT',
 			headers: {
@@ -67,11 +86,21 @@
 			},
 			body: JSON.stringify(user)
 		});
+		logger.log('Risposta:', ris);
 		if (ris.ok) {
-			const updatedUser = await ris.json();
-			users = users.map((u) => (u.id === updatedUser.user.id ? updatedUser.user : u));
+			const updatedUser = await ris.json().catch(() => {});
+			logger.log('Utente aggiornato:', updatedUser);
+			// Aggiorna l'array degli utenti con i nuovi dati
+	
+			const userToUpdate = users.find((u) => u.email === user.email);
+			if (userToUpdate) {
+				userToUpdate.name = updatedUser.name ?? user.name;
+				userToUpdate.role = updatedUser.role ?? user.role;
+				userToUpdate.email = updatedUser.email ?? user.email;
+			}
+			
 		} else {
-			console.error('Error updating user:', await ris.text());
+			logger.error('Error updating user:', await ris.text());
 		}
 		showModalUpdate = false;
 		editingUser = null;
@@ -104,7 +133,7 @@
 	{#if showModalUpdate}
 		<UpdateModal
 			user={editingUser}
-			onSubmitUser={(user) => updateUser(user)}
+			onSubmitUser={(user, password) => updateUser(user,password)}
 			onCancel={() => {
 				showModalUpdate = false;
 				editingUser = null;

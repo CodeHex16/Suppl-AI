@@ -1,3 +1,6 @@
+import { logger } from '$lib/utils/logger';
+
+
 import type { Actions } from '@sveltejs/kit';
 import { fail, redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
@@ -5,6 +8,8 @@ import { env } from '$env/dynamic/public';
 const DATABASE_URL = env.PUBLIC_DATABASE_URL;
 
 export const load = async ({ cookies }) => {
+	logger.info('Loading login page');
+	
 	const token = cookies.get('token');
 	if (token) {
 		return redirect(303, '/');
@@ -14,13 +19,16 @@ export const load = async ({ cookies }) => {
 export const actions: Actions = {
 	default: async ({ request, cookies }) => {
 		const data = await request.formData();
+		const body = new URLSearchParams({
+			grant_type: 'password',
+			username: 	 data.get('username')?.toString() || '',
+			password: 	 data.get('password')?.toString() || '',
+			remember_me: data.get('remember_me')?.toString() === 'on' ? 'true' : 'false'
+		});
+		logger.debug('Login Post data:', body.toString());
 
-		const username = data.get('username')?.toString();
-		const password = data.get('password')?.toString();
-		const remember_me = data.get('remember_me')?.toString() === 'on' ? 'true' : 'false';
-		console.log("login data", data);
-
-		if (!username || !password) {
+		if (!body.get('username') || !body.get('password')) {
+			logger.error('Username or password are missing');
 			return fail(400, { error: 'Username e password sono richiesti' });
 		}
 
@@ -30,21 +38,16 @@ export const actions: Actions = {
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded'
 				},
-				body: new URLSearchParams({
-					grant_type: 'password',
-					username: username,
-					password: password,
-					remember_me: remember_me
-				})
+				body
 			});
 
 			if (!response.ok) {
 				const errorBody = await response.json().catch(() => ({}));
-				console.error('Dettagli errore:', JSON.stringify(errorBody));
+				logger.error('Error detail:', JSON.stringify(errorBody));
 				return fail(403, { error: 'Credenziali non valide', dettagli: JSON.stringify(errorBody) });
 			}
-
 			const {access_token, expires_in} = await response.json();
+			logger.info('Login response:', { access_token, expires_in });
 
 			cookies.set('token', access_token, {
 				path: '/',
@@ -54,8 +57,9 @@ export const actions: Actions = {
 				maxAge: expires_in ? expires_in : undefined,
 				sameSite: 'strict'
 			});
+			logger.info('Login successful, token set:', access_token);
 		} catch (error) {
-			console.error("Errore durante l'autenticazione:", error);
+			logger.error("Server error:", error);
 			return fail(500, { error: 'Errore di connessione al server' });
 		}
 		return redirect(303, '/');

@@ -11,7 +11,6 @@
 	let question = $state(faq.question);
 	let title = $state(faq.title);
 	let answer = $state(faq.answer);
-
 	function submitForm() {
 		onSubmitFaq({
 			id,

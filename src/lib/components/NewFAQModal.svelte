@@ -9,7 +9,6 @@
 	} = $props();
 
 	import { User, HelpCircle, MessageSquareText, Tag } from 'lucide-svelte';
-
 	let question = $state('');
 	let title = $state('');
 	let answer = $state('');

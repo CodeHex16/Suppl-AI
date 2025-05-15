@@ -11,7 +11,6 @@
 		onDelete: (chat: Chat) => void;
 	} = $props();
 </script>
-
 {#if data.length === 0}
 	<p class="my-auto text-center">Ancora nessuna chat</p>
 {/if}

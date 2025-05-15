@@ -7,6 +7,7 @@
 	import DeleteDocument from '$lib/components/DeleteDocumentModal.svelte';
 	import { type Document, type User } from '$lib/types';
 	import { invalidateAll } from '$app/navigation';
+	import { logger } from '$lib/utils/logger';
 
 	let { data }:{
 		data: {
@@ -25,7 +26,7 @@
 
 	function toggleDocument(doc: Document) {
 		selectedDocument = selectedDocument?._id === doc._id ? null : doc;
-		console.log('selectedDocument', selectedDocument);
+		logger.log('selectedDocument', selectedDocument);
 	}
 
 	const filteredDocument = $derived(
@@ -36,23 +37,19 @@
 		)
 	);
 
-	async function onSubmitDocument() {
-		showNewDocument = false;
-		await invalidateAll();
-	}
 
 	function deleteDocumentRequest() {
 		const docToDeleteId = selectedDocument;
-		console.log('ID documento da eliminare:', docToDeleteId);
+		logger.log('ID documento da eliminare:', docToDeleteId);
 		if (docToDeleteId !== null) {
 			eliminateDocument = true;
 		} else {
-			console.warn("Nessun documento selezionato per l'eliminazione");
+			logger.warn("Nessun documento selezionato per l'eliminazione");
 		}
-	}
+	}	
 
 	async function confirmDeleteDocument(form: FormData) {
-		console.log('DELETE form', form);
+		logger.log('DELETE form', form);
 
 		const ris = await fetch('/api/documents', {
 			method: 'DELETE',
@@ -67,10 +64,10 @@
 		});
 
 		if (ris.status === 200) {
-			console.log('Documento eliminato con successo');
+			logger.log('Documento eliminato con successo');
 			await invalidateAll();
 		} else {
-			console.error('Errore durante l\'eliminazione del documento');
+			logger.error('Errore durante l\'eliminazione del documento');
 		}
 
 		eliminateDocument = false;
@@ -87,8 +84,9 @@
 	<HeaderPages {data} title="Gestione documenti" />
 
 	{#if showNewDocument}
-		<Doc {onSubmitDocument} onCancel={() => (showNewDocument = false)} />
+		<Doc onSubmitDocument={async()=> {await invalidateAll()}} onCancel={() => (showNewDocument = false)} />
 	{/if}
+	
 	{#if eliminateDocument && selectedDocument !== null}
 		<DeleteDocument
 			document={selectedDocument}

@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	let { data } = $props();
 	import { page } from '$app/state';
+	import { logger } from '$lib/utils/logger';
 
 	async function newChat() {
 		let response = await fetch('/api/new_chat', {
@@ -13,11 +14,12 @@
 		});
 		if (response.ok) {
 			let data = await response.json();
+			logger.info('New chat data:', data);
 			if (data && data.chat_id) {
 				goto('/chat/' + data.chat_id);
 			}
 		} else {
-			console.error('Error creating new chat:', response.statusText);
+			logger.error('Error creating new chat:', response.statusText);
 		}
 	}
 

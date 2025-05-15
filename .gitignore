@@ -28,3 +28,4 @@ vite.config.ts.timestamp-*
 # Test
 coverage
 html
+static/.well-known/appspecific/com.chrome.devtools.json

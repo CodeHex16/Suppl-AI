@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { ChevronDown, Trash2 } from 'lucide-svelte';
 	import { type Document } from '$lib/types';
-
 	import { slide } from 'svelte/transition';
 	import { parseDate } from '$lib/utils/date';
 
@@ -16,8 +15,6 @@
 		onToggle: () => void;
 		onDelete: () => void;
 	} = $props();
-
-	$inspect('docu open', open);
 </script>
 
 <div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">

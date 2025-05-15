@@ -6,10 +6,11 @@
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import { logger } from '$lib/utils/logger.js';
 
 	let { data } = $props();
 
-	let cssColor = '#ffffff'; 
+	let cssColor = '#007bff'; 
 
 	let primaryColor = $state('#007BFF'); 
 	let chatRetention = $state('30');
@@ -20,15 +21,18 @@
 	let faviconFile = $state<File | null>(null);
 	let faviconName = $state('Nessun file selezionato');
 
-	onMount(() => {
-		const currentPrimary = getComputedStyle(document.documentElement)
-			.getPropertyValue('--color-primary')
-			.trim();
-		if (currentPrimary) {
-			cssColor = currentPrimary; 
-			primaryColor = currentPrimary; 
+
+		if (typeof window !== 'undefined') {
+			const currentPrimary = getComputedStyle(document.documentElement)
+				.getPropertyValue('--color-primary')
+				.trim();
+			logger.log('Colore primario attuale:', currentPrimary);
+			if (currentPrimary) {
+				//cssColor = currentPrimary; 
+				primaryColor = currentPrimary; 
+			}
 		}
-	});
+	
 
 	function resetPrimaryColor() {
 		primaryColor = cssColor; 
@@ -61,15 +65,15 @@
 		});
 
 		if (!res.ok) {
-			console.error(`Errore salvataggio file "${name}"`);
+			logger.error(`Errore salvataggio file "${name}"`);
 		} else {
-			console.log(`File salvato come "${name}"`);
+			logger.log(`File salvato come "${name}"`);
 		}
 	}
 
 	async function handleSubmit() {
-		console.log('Colore primario:', primaryColor); 
-		console.log('Durata chat:', chatRetention);
+		logger.log('Colore primario:', primaryColor); 
+		logger.log('Durata chat:', chatRetention);
 
 		if (logoLightFile) await uploadFile(logoLightFile, 'logo_light.png'); 
 		if (logoDarkFile) await uploadFile(logoDarkFile, 'logo_dark.png'); 
@@ -88,9 +92,9 @@
 		});
 
 		if (resColor.ok) {
-			console.log('Colori salvati');
+			logger.log('Colori salvati');
 		} else {
-			console.error('Errore nel salvataggio colori');
+			logger.error('Errore nel salvataggio colori');
 		}
 		await goto('/');
 	}

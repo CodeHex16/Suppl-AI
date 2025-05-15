@@ -12,7 +12,6 @@
 		accept?: string;
 		contextLabel?: string;
 	} = $props();
-
 	function handleChange(event: Event) {
 		const input = event.target as HTMLInputElement;
 		if (input?.files?.length) {

@@ -2,7 +2,6 @@
 	import { ChevronDown, Trash2, PenIcon, Mail, Tag } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 	import { type User } from '$lib/types';	
-
 	let { user, open, onEdit, onToggle, onDelete }:{
 		user: User;
 		open: boolean;

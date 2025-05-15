@@ -8,7 +8,6 @@
     } = $props();
 
     let isDark = $derived(data.theme === 'dark');
-
 </script>
 
 <form method="POST" action="/?/toggleTheme">
