@@ -52,18 +52,6 @@
 				aria-orientation="vertical"
 				transition:fly={{ duration: 200 }}
 			>
-			  <button
-					type="button"
-					class="flex items-center justify-center rounded-full bg-white px-4 py-3 text-gray-700 shadow-md transition-all duration-300 ease-in-out hover:bg-gray-100 mb-2"
-					role="menuitem"
-					onclick={() => {
-						logger.info('Chat namoe edit clicked');
-					}}
-					aria-label="Modifica nome chat"
-				>
-					<span class="mr-2 whitespace-nowrap"> Modifica nome chat </span>
-					<Pen class="h-6 w-6" />
-				</button>
 				<button
 					type="button"
 					class="flex items-center justify-center rounded-full bg-red-500 px-4 py-3 text-white shadow-md transition-all duration-300 ease-in-out hover:bg-red-600"

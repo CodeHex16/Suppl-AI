@@ -33,7 +33,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			const response = await fetch(`http://${DATABASE_URL}/auth/token`, {
+			const response = await fetch(`http://${DATABASE_URL}/auth/token?remember_me=${body.get('remember_me')}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded'
