@@ -1,24 +1,18 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { ThumbsUp, ThumbsDown } from 'lucide-svelte';
-	let { data } = $props();
+	import { type Message } from '$lib/types';
+	let {
+		data
+	}: {
+		data: Message;
+	} = $props();
 	import { marked } from 'marked';
 	import { page } from '$app/state';
-	import { on } from 'svelte/events';
+	import { formatData } from '$lib/utils/date';
+	import { logger } from '$lib/utils/logger';
+	//lodash
+	import debounce from 'lodash/debounce';
 
-	// $inspect(data);
-	// $inspect(page.params);
-
-	onMount(() => {
-		if (data.rating) {
-			like = true;
-		} else if (data.rating === false) {
-			dislike = true;
-		} else {
-			like = false;
-			dislike = false;
-		}
-	});
 
 	marked.use({
 		gfm: true,
@@ -30,27 +24,40 @@
 		return marked(text);
 	}
 
-	let like = $state(false);
-	let dislike = $state(false);
+	let like: boolean = $state(data.rating == true);
+	let dislike: boolean = $state(data.rating == false);
 
-	function rateMessage(chatId: string, messageId: string, rating: boolean | null) {
-		console.log('like: ', like, 'dislike: ', dislike);
+	/**
+	 * @description Funzione per feedback dell'utente
+	 */
+	function rateMessage(chatId: string, messageId: string | undefined, rating: boolean | null) {
+		logger.info('like: ', like, 'dislike: ', dislike);
+		rating = like ? true : dislike ? false : null;
+		logger.debug('rating: ', rating);
 
-		if (!(like || dislike)) {
-			rating = null;
-		}
-
-		console.log('rating: ', rating);
-
-		fetch('/api/rate_message', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				chat_id: chatId,
-				message_id: messageId,
-				rating: rating
+		const updateRequest = () => {
+			fetch('/api/rate_message', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					chat_id: chatId,
+					message_id: messageId,
+					rating: rating
+				})
 			})
-		});
+				.then((response) => {
+					if (response.ok) {
+						logger.info('Rating updated successfully');
+					} else {
+						logger.error('Error updating rating:', response.statusText);
+					}
+				})
+				.catch((error) => {
+					logger.error('Error:', error);
+				});
+		};
+		const debounced = debounce(updateRequest, 300);
+		debounced(); // to prevent multiple calls
 	}
 
 	function toggleThumbsUp() {
@@ -65,18 +72,6 @@
 		like = false;
 
 		rateMessage(page.params.id, data._id, !dislike);
-	}
-
-	function formatData(stringDate: string) {
-		const date = new Date(stringDate);
-		return date.toLocaleString('it-IT', {
-			year: 'numeric',
-			month: '2-digit',
-			day: '2-digit',
-			hour: '2-digit',
-			minute: '2-digit',
-			timeZone: 'Europe/Rome'
-		});
 	}
 </script>
 

@@ -1,23 +1,32 @@
 <script lang="ts">
-	let { onSubmitFaq, onCancel } = $props();
+	import { type Faq } from '$lib/types';
+	let {
+		onSubmitFaq,
+		onCancel
+	}: {
+		onSubmitFaq: (faq: Faq, callback: () => void) => void;
+		onCancel: () => void;
+	} = $props();
 
 	import { User, HelpCircle, MessageSquareText, Tag } from 'lucide-svelte';
-
 	let question = $state('');
 	let title = $state('');
 	let answer = $state('');
+
+	let isAdding = $state(false);
 
 	function submitForm() {
 		if (!title || !question || !answer) {
 			alert('Compila tutti i campi');
 			return;
 		}
+		isAdding = true;
 		onSubmitFaq({
 			title,
 			question,
 			answer,
 			creationDate: new Date().toISOString()
-		});
+		},()=>{isAdding = false});
 	}
 </script>
 
@@ -65,6 +74,7 @@
 			>
 			<button
 				class="item-primary rounded-lg px-4 py-2 transition duration-150 ease-in"
+				disabled={isAdding}
 				onclick={submitForm}>Aggiungi</button
 			>
 		</div>

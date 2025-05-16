@@ -5,15 +5,22 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import DeleteChatModal from '$lib/components/DeleteChatModal.svelte';
 	import { Settings } from 'lucide-svelte';
+	import type { Chat } from '$lib/types';
 
-	let { data } = $props();
-	let isAdmin = $derived(data.userScopes.includes('admin') === true);
-	let showModalDelete = $state(false);
-	let selectedChat = $state('');
+	let { data }:{
+		data: {
+			chats: Chat[];
+			userScopes: string[];
+			theme: string;
+		}
+	} = $props();
+	let isAdmin: boolean = $derived(data.userScopes.includes('admin') === true);
+	let showModalDelete: boolean = $state(false);
+	let selectedChat: Chat | undefined = $state();
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl overflow-x-hidden">
-	<header class="relative py-4 ">
+	<header class="relative py-4">
 		{#if isAdmin}
 			<div class="absolute left-4 top-4 z-50">
 				<a
@@ -28,7 +35,7 @@
 			<!-- Toggle in alto a destra -->
 			<ThemeToggle {data} />
 		</div>
-		<div class="mx-auto my-auto h-full w-4/6 flex items-center justify-center mt-4 mb-4">
+		<div class="mx-auto my-auto mb-4 mt-4 flex h-full w-4/6 items-center justify-center">
 			<img
 				src="./img/logo_light.png"
 				class="logo light-mode w-full"
@@ -42,7 +49,7 @@
 		</div>
 	</header>
 
-	{#if showModalDelete}
+	{#if showModalDelete && selectedChat}
 		<DeleteChatModal
 			chatName={selectedChat.name}
 			chatId={selectedChat.id}
@@ -80,7 +87,7 @@
 				{:then chatData}
 					<ChatHistory
 						data={chatData}
-						onDelete={(chat) => {
+						onDelete={(chat: Chat) => {
 							selectedChat = chat;
 							showModalDelete = true;
 						}}

@@ -7,15 +7,9 @@
 	import DeleteFaq from '$lib/components/DeleteFAQModal.svelte';
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 	import { invalidateAll } from '$app/navigation';
-
-	interface FAQ {
-		_id: string;
-		title: string;
-		question: string;
-		answer: string;
-		created_at: string;
-		updated_at: string;
-	}
+	import type { Faq as FAQ } from '$lib/types';
+	import { logger } from '$lib/utils/logger.js';
+	import { find } from 'lodash/debounce';
 
 	let { data } = $props();
 	let faqs = $state<FAQ[]>(data.faqs ?? []);
@@ -23,7 +17,7 @@
 
 	let showUpdateFAQ = $state(false);
 
-	let editingFAQ = $state<FAQ | null>(null);
+	let editingFAQ = $state<FAQ>();
 
 	let query = $state('');
 	let selectedFaqId = $state<string | null>(null);
@@ -31,7 +25,7 @@
 	let errorMessage = $state<string | null>(null);
 
 	function toggleFaq(faq: FAQ) {
-		selectedFaqId = selectedFaqId === faq._id ? null : faq._id;
+		selectedFaqId = selectedFaqId === String(faq._id) ? null : String(faq._id);
 	}
 
 	const filteredFaq = $derived(
@@ -43,8 +37,12 @@
 		)
 	);
 
-	async function newFAQ(faq: { question: string; answer: string; title: string }) {
-		console.log('Nuova FAQ aggiunta:', faq);
+	/**
+	 * Aggiungi una nuova FAQ
+	 * @param faq
+	 */
+	async function newFAQ(faq: FAQ, callback: () => void) {
+		logger.log('Nuova FAQ aggiunta:', faq);
 		const ris = await fetch('/api/faqs', {
 			method: 'POST',
 			headers: {
@@ -54,16 +52,18 @@
 		});
 		if (ris.ok) {
 			const faq = await ris.json();
-
-			faqs = [...faqs, faq.faq];
 			showNewFAQ = false;
-			await invalidateAll();
+
+			logger.log('FAQ aggiunta:',  faq.faq);
+			faqs.push(faq.faq);
 		} else {
-			console.error('Error adding FAQ:', await ris.text());
+			logger.error('Error adding FAQ:', await ris.text());
 		}
+		callback();
 	}
 
-	async function updateFAQ(faq: { id: string; question: string; answer: string; title: string }) {
+	async function updateFAQ(faq: FAQ) {
+		logger.log('FAQ aggiornata:', faq);
 		const ris = await fetch(`/api/faqs`, {
 			method: 'PUT',
 			headers: {
@@ -72,18 +72,24 @@
 			body: JSON.stringify(faq)
 		});
 		if (ris.ok) {
+			logger.log('FAQ aggiornata');
 			await invalidateAll();
-			faqs = faqs.map((f) => (f._id === faq.id ? { ...f, ...faq } : f));
+			const foundFaq = faqs.find((f) => String(f._id) === String(faq.id));
+			if (foundFaq) {
+				foundFaq.question = faq.question;
+				foundFaq.answer = faq.answer;
+				foundFaq.title = faq.title;
+			}
 			showUpdateFAQ = false;
 		} else {
 			let risJson = await ris.json();
 			errorMessage = risJson.error;
-			console.error('Error updating FAQ:', errorMessage);
+			logger.error('Error updating FAQ:', errorMessage);
 		}
 	}
 
 	async function deleteFAQ(form: any) {
-		console.log('FAQ eliminata', form.get('id'));
+		logger.log('FAQ eliminata', form.get('id'));
 		const ris = await fetch(`/api/faqs`, {
 			method: 'DELETE',
 			headers: {
@@ -98,12 +104,14 @@
 			faqs = faqs.filter((f) => f._id !== form.get('id'));
 			await invalidateAll();
 			showDeleteFAQ = false;
-			editingFAQ = null;
+			editingFAQ = undefined;
+
+			logger.log('FAQ eliminata');
 			errorMessage = null;
 		} else {
 			let risJson = await ris.json();
 			errorMessage = risJson.error;
-			console.error('Error deleting FAQ:', await ris.text());
+			logger.error('Error deleting FAQ:', errorMessage);
 		}
 	}
 
@@ -111,7 +119,7 @@
 		showNewFAQ = false;
 		showUpdateFAQ = false;
 		showDeleteFAQ = false;
-		editingFAQ = null;
+		editingFAQ = undefined;
 	}
 
 	function handleEditFaq(faq: any) {
@@ -133,10 +141,20 @@
 	{/if}
 
 	{#if showUpdateFAQ}
-		<UpdateFaq faq={editingFAQ} onSubmitFaq={updateFAQ} onCancel={handleModalCancel} {errorMessage}/>
+		<UpdateFaq
+			faq={editingFAQ}
+			onSubmitFaq={updateFAQ}
+			onCancel={handleModalCancel}
+			{errorMessage}
+		/>
 	{/if}
 	{#if showDeleteFAQ}
-		<DeleteFaq faq={editingFAQ} onSubmitFaq={deleteFAQ} onCancel={handleModalCancel} {errorMessage}/>
+		<DeleteFaq
+			faq={editingFAQ}
+			onSubmitFaq={deleteFAQ}
+			onCancel={handleModalCancel}
+			{errorMessage}
+		/>
 	{/if}
 
 	<main class="flex flex-grow flex-col">

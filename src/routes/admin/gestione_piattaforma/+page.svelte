@@ -6,11 +6,23 @@
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import { logger } from '$lib/utils/logger.js';
 
-	let { data } = $props();
+	let { data }:{
+		data: {
+			settings: {
+				COLOR_PRIMARY: string;
+				COLOR_PRIMARY_HOVER: string;
+				COLOR_PRIMARY_TEXT: string;
+				CHAT_HISTORY: number;
+			};
+			theme: string;
+		};
+	} = $props();
 
-	let cssColor = '#ffffff';
+	let cssColor = '#007bff'; 
 	let chatHistory = data.settings?.CHAT_HISTORY || 50;
+
 
 	let primaryColor = $state('#007BFF');
 	let chatRetention = $state(String(chatHistory));
@@ -21,15 +33,19 @@
 	let faviconFile = $state<File | null>(null);
 	let faviconName = $state('Nessun file selezionato');
 
-	onMount(() => {
-		const currentPrimary = getComputedStyle(document.documentElement)
-			.getPropertyValue('--color-primary')
-			.trim();
-		if (currentPrimary) {
-			cssColor = currentPrimary;
-			primaryColor = currentPrimary;
+
+		if (typeof window !== 'undefined') {
+			const currentPrimary = getComputedStyle(document.documentElement)
+				.getPropertyValue('--color-primary')
+				.trim();
+			logger.log('Colore primario attuale:', currentPrimary);
+			if (currentPrimary) {
+				//cssColor = currentPrimary; 
+				primaryColor = currentPrimary; 
+			}
+
 		}
-	});
+	
 
 	function resetPrimaryColor() {
 		primaryColor = cssColor;
@@ -62,18 +78,22 @@
 		});
 
 		if (!res.ok) {
-			console.error(`Errore salvataggio file "${name}"`);
+			logger.error(`Errore salvataggio file "${name}"`);
 		} else {
-			console.log(`File salvato come "${name}"`);
+			logger.log(`File salvato come "${name}"`);
 		}
 	}
 
 	async function handleSubmit() {
+		logger.log('Colore primario:', primaryColor); 
+		logger.log('Durata chat:', chatRetention);
+
+
 		if (logoLightFile) await uploadFile(logoLightFile, 'logo_light.png'); 
 		if (logoDarkFile) await uploadFile(logoDarkFile, 'logo_dark.png'); 
 		if (faviconFile) await uploadFile(faviconFile, 'favicon.ico'); 
 
-		console.log('Salvataggio impostazioni...');
+		logger.log('Salvataggio impostazioni...');
 
 		const resColor = await fetch('/api/update_settings', {
 			method: 'POST',
@@ -88,10 +108,10 @@
 			})
 		});
 
-		console.log('Impostazioni salvate', resColor);
-
-		if (!resColor.ok) {
-			// console.error('Errore nel salvataggio colori');
+		if (resColor.ok) {
+			logger.log('Colori salvati');
+		} else {
+			logger.error('Errore nel salvataggio colori');
 		}
 		await goto('/');
 	}
@@ -123,6 +143,7 @@
 		const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 		return luminance > 0.5 ? 'black' : 'white';
 	}
+
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl overflow-x-hidden">
@@ -130,7 +151,7 @@
 
 	<main class="flex flex-col overflow-hidden pt-2">
 		<div class="scroll-snap-y-container max-h-[calc(100vh-17em)] overflow-y-auto px-4">
-			<form onsubmit={handleSubmit}>
+		<form data-testid="form" onsubmit={handleSubmit}>
 				<!-- Colore primario -->
 				<div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">
 					<label for="color" class="mb-4 block font-semibold"> Colore primario </label>

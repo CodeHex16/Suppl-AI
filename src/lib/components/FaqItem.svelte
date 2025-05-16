@@ -1,8 +1,26 @@
 <script lang="ts">
 	import { ChevronDown, Trash2, PenIcon, HelpCircle, MessageSquareText } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
+	import { type Faq } from '$lib/types';
+	import { abbrWithEllipsis } from '$lib/utils/string';
 
-	let { faq, open, onToggle, onEdit, onDelete } = $props();
+	let {
+		faq,
+		open,
+		onToggle,
+		onEdit,
+		onDelete
+	}: {
+		faq: Faq;
+		open: boolean;
+		onToggle: () => void;
+		onEdit: (faq: Faq) => void;
+		onDelete: (faq: Faq) => void;
+	} = $props();
+
+	
+	const abbrQuestion = abbrWithEllipsis(faq.question, 30);
+
 </script>
 
 <div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">

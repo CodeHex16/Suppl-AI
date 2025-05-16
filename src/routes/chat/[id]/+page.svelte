@@ -3,11 +3,20 @@
 	import SendMessage from '$lib/components/SendMessage.svelte';
 	import Messages from '$lib/components/Messages.svelte';
 	import DeleteChatModal from '$lib/components/DeleteChatModal.svelte';
-	import { enhance } from '$app/forms';
 	import { invalidate, invalidateAll } from '$app/navigation';
-	import { onMount, tick } from 'svelte';
 
-	let { data } = $props();
+	import { onMount, tick } from 'svelte';
+	import type { Chat, Faq } from '$lib/types';
+	import { logger } from '$lib/utils/logger';
+	let {
+		data
+	}: {
+		data: {
+			chat: Chat;
+			chat_id: string;
+			faqs: Faq[];
+		};
+	} = $props();
 
 	let waitingForResponse = $state(false);
 	let scrollToDiv: HTMLDivElement;
@@ -17,6 +26,7 @@
 	let showModalFaq = $state(false);
 
 	let messages = $state(data.chat.messages);
+
 	let chatName = $state(data.chat.name);
 
 	let inputValue = $state('');
@@ -24,17 +34,24 @@
 	async function scrollToBottom() {
 		await tick();
 		setTimeout(function () {
-			scrollToDiv.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+			scrollToDiv?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
 		}, 0);
 	}
 
+	/**
+	 * @description Funzione per lo streaming della risposta
+	 * @param {string} messageData - Il messaggio da inviare
+	 */
 	async function streamResponse(messageData: string) {
 		if (abortController) {
+			logger.info('Abortando richiesta di streaming in corso...');
 			abortController.abort();
 		}
 
 		abortController = new AbortController();
 		answer = '';
+
+		logger.info('Inizio streaming risposta...');
 
 		try {
 			const response = await fetch('/api/stream_chat', {
@@ -75,13 +92,14 @@
 								scrollToBottom();
 							}
 						} catch (err) {
-							console.error('Errore parsing SSE:', err);
+							logger.error('Errore parsing SSE:', err);
 						}
 					} else if (line == '[n]' || line == '\n') {
 						answer += '\n';
 					}
 				}
 			}
+			logger.log('Risposta completa:', answer);
 
 			let request = await fetch(`/api/save_bot_message`, {
 				method: 'POST',
@@ -95,9 +113,13 @@
 			});
 
 			if (!request.ok) {
+				logger.error('Errore salvataggio messaggio bot:', request.statusText);
 				throw new Error(`HTTP error: ${request.status}`);
 			}
 			const request_json = await request.json();
+
+			logger.log('Risposta salvata:', request_json);
+
 			const messageRes = request_json.data;
 
 			// Quando la risposta è completa
@@ -105,8 +127,9 @@
 				...messages,
 				{ _id: messageRes._id, sender: messageRes.sender, content: messageRes.content }
 			];
+
 			waitingForResponse = false;
-			answer = '';
+
 			await scrollToBottom();
 
 			if (data.chat.name === 'Chat senza nome' && messages.length > 2) {
@@ -114,12 +137,15 @@
 			}
 		} catch (err: any) {
 			if (err instanceof Error && err.name !== 'AbortError') {
-				console.error('Errore stream:', err);
+				logger.error('Errore stream:', err);
 				waitingForResponse = false;
 			}
 		}
 	}
 
+	/**
+	 * @description Aggiorna il nome della chat
+	 */
 	async function updateChatName() {
 		const res = await fetch('/api/update_chat_name', {
 			method: 'POST',
@@ -131,26 +157,71 @@
 		});
 
 		const data_json = await res.json();
+		logger.log('Risposta aggiornamento nome chat:', data_json);
 		if (!data_json.error) {
+			logger.log('Nome chat aggiornato:', data_json.title);
 			chatName = data_json.title;
 			data.chat.name = data_json.title;
 			await invalidateAll();
 		} else {
-			console.error('Errore aggiornamento nome chat:', data_json.error);
+			logger.error('Errore aggiornamento nome chat:', data_json.error);
+		}
+	}
+
+
+
+	/**
+	 * @description Gestisce l'invio del messaggio
+	 * @param {Event} event - L'evento di invio del modulo
+	 */
+	async function submitMessageHandler(event: Event) {
+		event.preventDefault();
+		waitingForResponse = true;
+		const form = event.target as HTMLFormElement;
+		const messageInput = form.elements.namedItem('message') as HTMLInputElement;
+		const messageValue = messageInput.value || '';
+
+		logger.info('Invio messaggio:', messageValue);
+
+		if (messageValue) {
+			messages = [
+				...messages,
+				{
+					sender: 'user',
+					content: messageValue
+				}
+			];
+			messageInput.value = '';
+			scrollToBottom();
+
+			logger.info('Salvataggio messaggio utente...');
+			let request_save = await fetch('/chat/'+data.chat_id,{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: new URLSearchParams({
+					message: messageValue
+				})
+			});
+			if (!request_save.ok) {
+				logger.error('Errore salvataggio messaggio:', request_save.statusText);
+				throw new Error(`HTTP error: ${request_save.status}`);
+			}
+			logger.log('Messaggio utente salvato:', messageValue);
+
+			await streamResponse(messageValue);
+			// reset form
+			//form.reset();
+			await invalidate('app:messages');
 		}
 	}
 
 	onMount(async () => {
 		await scrollToBottom();
 	});
-
-	function openDeleteModal() {
-		showModalDelete = true;
-	}
-	function openFaq() {
-		showModalFaq = true;
-	}
-	$inspect('faqs', data.faqs);
+	scrollToBottom();
+	
 
 	function sendFaq(faq: any) {
 		inputValue = faq.question;
@@ -193,7 +264,7 @@
 		<DeleteChatModal {chatName} chatId={data.chat_id} onCancel={() => (showModalDelete = false)} />
 	{/if}
 
-	<ChatNavBar {data} deleteChat={openDeleteModal} />
+	<ChatNavBar {data} deleteChat={()=>(showModalDelete = true)} />
 	<div class="flex-grow overflow-y-auto">
 		<Messages
 			data={waitingForResponse
@@ -202,31 +273,8 @@
 		/>
 		<div bind:this={scrollToDiv}></div>
 	</div>
-	<form
-		method="POST"
-		use:enhance={({ formData, formElement }) => {
-			waitingForResponse = true;
-			let messageInput = formData.get('message')?.toString() || '';
 
-			if (messageInput) {
-				messages = [
-					...messages,
-					{
-						sender: 'user',
-						content: messageInput
-					}
-				];
-			}
-			scrollToBottom();
-
-			streamResponse(messageInput);
-
-			return async () => {
-				formElement.reset();
-				await invalidate('app:messages');
-			};
-		}}
-	>
-		<SendMessage sending={waitingForResponse} onClickFaq={openFaq} {inputValue} />
+	<form data-testid="input_form" method="POST" onsubmit={submitMessageHandler}>
+		<SendMessage sending={waitingForResponse} onClickFaq={()=>(showModalFaq = true)} {inputValue}  />
 	</form>
 </div>

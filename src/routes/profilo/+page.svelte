@@ -1,9 +1,15 @@
-<script>
+<script lang="ts">
 	import { User, Mail } from 'lucide-svelte';
 	import BottomNavBar from '$lib/components/BottomNavBar.svelte';
 	import ProfileSettings from '$lib/components/ProfileSettings.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-	let { data } = $props();
+	import { type User as UserType } from '$lib/types';
+	let { data }:{
+		data: {
+			theme: string;
+			creds: UserType;
+		}
+	} = $props();
 </script>
 
 <div class="grid-home mx-auto grid h-dvh max-w-xl">

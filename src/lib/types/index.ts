@@ -1,13 +1,25 @@
 export interface Message {
-	id: string;
+	id?: string;
+	_id?: string; // TODO: BotMessage NEED
 	content: string;
-	authorId: string;
+	authorId?: string;
+	sender: string;
+	isLoading?: boolean;
+	timestamp?: string;
+	rating?: boolean | null;
 }
 
+export type UserRole = string | 'admin' | 'user';
 export interface User {
-	email: string,
-	name: string,
-	role: string,
+	id?: string; // TODO: router/admin/clienti need
+	_id?: string;
+	email: string;
+	name: string;
+	role: UserRole;
+	scopes?: string[];
+
+	admin_password?: string; // For UpdateUser\
+	email_old?: string; // For UpdateUser
 }
 
 export type Document = {
@@ -19,9 +31,10 @@ export type Document = {
 }
 
 export interface Faq {
-	id: number;
-	author: string;
-	creationDate: string;
+	id?: number;
+	_id?: number; // TODO: DELETEFAQMODEL NEED
+	author?: string;
+	creationDate?: string;
 	question: string;
 	title: string;
 	answer: string;
@@ -46,3 +59,10 @@ export interface ImportMetaEnv {
 export interface ImportMeta {
 	readonly env: ImportMetaEnv;
   }
+
+export interface Chat {
+  id?: string;
+  name: string;
+  created_at?: string;
+	messages: Message[];
+};

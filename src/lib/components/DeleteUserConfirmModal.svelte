@@ -1,34 +1,46 @@
 <script lang="ts">
-	import { enhance, applyAction } from '$app/forms'; // Importa applyAction
 	import { invalidateAll } from '$app/navigation'; // Importa invalidateAll per aggiornare i dati dopo l'eliminazione
-
-	let { user, onCancel, onSubmitUser } = $props();
+	import { type User } from '$lib/types'; // Importa il tipo User
+	import { logger } from '$lib/utils/logger';
+	let {
+		user,
+		onCancel,
+		onSubmitUser
+	}: {
+		user: User;
+		onCancel: () => void;
+		onSubmitUser: () => void;
+	} = $props();
 
 	// Funzione per gestire l'invio manuale
-	async function handleDeleteSubmit(formData: FormData, action: URL) {
-		const userId = formData.get('userId');
+	async function handleDeleteSubmit(event: Event) {
+		event.preventDefault(); // Previene il comportamento predefinito del form
+		const formData = new FormData(event.target as HTMLFormElement); // Crea un oggetto FormData dal form
 		const currentPassword = formData.get('current_password');
 
 		try {
-			const response = await fetch(action, {
-				method: 'DELETE', 
+			const response = await fetch("/api/users", {
+				method: 'DELETE',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
 					// Invia i dati come JSON
-					userId: userId,
+					userId: user.email,
 					current_password: currentPassword
 				})
 			});
 
+			logger.log('Risposta:', response);
+
 			if (response.ok) {
-				invalidateAll(); 
-				onSubmitUser(); 
+				logger.log('Utente eliminato con successo:', user.email);
+				invalidateAll();
+				onSubmitUser();
 			} else {
 				// Errore dal server (es. password errata)
 				const errorData = await response.json();
-				console.error("Errore durante l'eliminazione dell'utente:", errorData);
+				logger.error("Errore durante l'eliminazione dell'utente:", errorData);
 				if(errorData.error === 'Unauthorized') {
 					alert('Password errata. Riprova.');
 				} else {
@@ -37,8 +49,7 @@
 			}
 		} catch (error) {
 			// Errore di rete o altro errore imprevisto
-			console.error('Errore di rete o imprevisto:', error);
-			await applyAction({ type: 'error', error });
+			logger.error('Errore di rete o imprevisto:', error);
 			alert('Si è verificato un errore di rete. Riprova.');
 		}
 	}
@@ -49,15 +60,7 @@
 		<div class="flex flex-col items-center justify-center">
 			<h2 class="text-lg font-semibold">Conferma Eliminazione</h2>
 			<p class="my-2 max-w-56 overflow-hidden text-ellipsis break-words text-center">Sei sicuro di voler eliminare l'utente "{user.name}"?</p>
-			<form
-				method="POST"
-				action="/api/users"
-				use:enhance={({ formData, action, cancel }) => {
-					cancel();
-					handleDeleteSubmit(formData, action);
-				}}
-			>
-				<input type="hidden" name="userId" value={user.email} />
+			<form method="POST" onsubmit={handleDeleteSubmit}>
 				<div class="text-center">
 					<label for="password">Inserisci la tua password per confermare</label>
 					<input

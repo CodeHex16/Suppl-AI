@@ -8,8 +8,18 @@
 	import DeleteUserConfirmModal from '$lib/components/DeleteUserConfirmModal.svelte';
 	import { error } from '@sveltejs/kit';
 
-	let { data } = $props();
-	let users = $state(data.users ?? []);
+	import type { User } from '$lib/types';
+	import { logger } from '$lib/utils/logger';
+
+	let { data }:{
+		data: {
+			users: User[];
+			title: string;
+			subtitle: string;
+			theme: string;
+		}
+	} = $props();
+	let users = $state(data?.users ?? []);
 	let showModalNew = $state(false);
 	let showModalDeleteUserConfirm = $state(false);
 
@@ -24,17 +34,24 @@
 		selectedUser = selectedUser === email ? null : email;
 	}
 
+	/**
+	 * Filtra gli utenti in base alla query di ricerca
+	 */
 	const utentiFiltrati = $derived(
 		users.filter(
-			(doc) =>
-				doc.name.toLowerCase().trim().includes(query.toLowerCase().trim()) ||
-				doc.role.toLowerCase().trim().includes(query.toLowerCase().trim()) ||
-				doc.email.toLowerCase().trim().includes(query.toLowerCase().trim())
+			(user) =>
+				user.name.toLowerCase().trim().includes(query.toLowerCase().trim()) ||
+				user.role.toLowerCase().trim().includes(query.toLowerCase().trim()) ||
+				user.email.toLowerCase().trim().includes(query.toLowerCase().trim())
 		)
 	);
 
-	async function newUser(user: any) {
-		console.log('Nuovo utente aggiunto:', user);
+	/**
+	 * Aggiungi un nuovo utente
+	 * @param user
+	 */
+	async function newUser(user: User) {
+		logger.log('Nuovo utente:', user);
 		const ris = await fetch('/api/users', {
 			method: 'POST',
 			headers: {
@@ -42,30 +59,51 @@
 			},
 			body: JSON.stringify(user)
 		});
+		logger.log('Risposta:', ris);
 		if (ris.ok) {
-			users = [...users, user];
+			const newUser = await ris.json();
+			logger.log('Nuovo utente aggiunto:', newUser);
+			users = [...users, newUser.user];
 			showModalNew = false;
 			errorMessage = null;
 		} else {
 			let risText = await ris.json();
 			errorMessage = risText.error;
-			console.error('Error adding user:', errorMessage);
+			logger.error('Error adding user:',risText);
 		}
 	}
 
-	async function updateUser(user: any) {
-		users = users.map((u) => (u.email === user.email ? { ...u, ...user } : u));
-		console.log('Updating user:', user);
+	/**
+	 * Aggiorna un utente
+	 * @param user
+	 */
+	async function updateUser(user: User, admin_password: string) {
+		logger.log('Aggiorna utente:', user);
+
+		// Aggiorna l'array degli utenti con i nuovi dati
+		//users = users.map((u) => (u.id === user.id ? { ...u, ...user } : u));
+
+		user.admin_password = admin_password;
+
 		const ris = await fetch(`/api/users`, {
-			method: 'PATCH',
+			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify(user)
 		});
+		logger.log('Risposta:', ris);
 		if (ris.ok) {
-			const updatedUser = await ris.json();
-			users = users.map((u) => (u.email === updatedUser.email ? updatedUser : u));
+			const updatedUser = await ris.json().catch(() => {});
+			logger.log('Utente aggiornato:', updatedUser);
+			// Aggiorna l'array degli utenti con i nuovi dati
+	
+			const userToUpdate = users.find((u) => u.email === user.email);
+			if (userToUpdate) {
+				userToUpdate.name = updatedUser.name ?? user.name;
+				userToUpdate.role = updatedUser.role ?? user.role;
+				userToUpdate.email = updatedUser.email ?? user.email;
+			}
 			showModalUpdate = false;
 			editingUser = null;
 			selectedUser = null;
@@ -73,8 +111,7 @@
 		} else {
 			let risText = await ris.json();
 			errorMessage = risText.error;
-
-			console.error('Error updating user:', errorMessage);
+			logger.error('Error updating user:', risText);
 		}
 	}
 
@@ -111,7 +148,7 @@
 	{#if showModalUpdate}
 		<UpdateModal
 			user={editingUser}
-			onSubmitUser={(user) => updateUser(user)}
+			onSubmitUser={(user, password) => updateUser(user,password)}
 			onCancel={() => {
 				showModalUpdate = false;
 				editingUser = null;

@@ -1,7 +1,22 @@
 <script lang="ts">
 	import { type Document } from '$lib/types';
-	let { document, onConfirmDelete, onCancel, errorMessage } = $props();
-	import { enhance } from '$app/forms';
+	let {
+		document,
+		onConfirmDelete,
+		onCancel,
+		errorMessage
+	}: {
+		document: Document;
+		onConfirmDelete: (formData: FormData) => void;
+		onCancel: () => void;
+		errorMessage: string | null;
+	} = $props();
+	const handleFormSubmit = async (event: Event) => {
+		event.preventDefault();
+		const formData = new FormData(event.target as HTMLFormElement);
+		onConfirmDelete(formData);
+	};
+
 </script>
 
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -12,15 +27,8 @@
 				<p class="mt-2 text-red-500">{errorMessage}</p>
 			{/if}
 			<p class="my-2 text-center">Sei sicuro di voler eliminare il documento "{document.title}"?</p>
+			<form onsubmit={handleFormSubmit}>
 
-			<form
-				method="POST"
-				action="/api/users"
-				use:enhance={({ formData, cancel }) => {
-					onConfirmDelete(formData);
-					cancel();
-				}}
-			>
 				<input type="hidden" name="id" value={document._id} />
 				<input type="hidden" name="title" value={document.title} />
 				<div class="text-center">

@@ -1,13 +1,16 @@
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/public';
 import { json } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 const DATABASE_URL = env.PUBLIC_DATABASE_URL;
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
-    const requestData = await request.json();
+	logger.info('POST /api/get_stats');
+	const requestData = await request.json();
 
 	if (!requestData) {
+		logger.error('No request data');
 		throw new Error('No request data');
 	}
 
@@ -24,14 +27,17 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			'Content-Type': 'application/json'
 		}
 	});
+	logger.info('Response from database:', response);
 
-    if (!response.ok) {
+	if (!response.ok) {
+		const err = await response.json().catch(() => ({}));
+		logger.error('Error from database:', err);
 		return json({ error: response.status }, { status: response.status });
 	}
 
-    const stats = await response.json();
+	const stats = await response.json();
 
-    console.log("stats", stats);
+	logger.log('stats', stats);
 
-    return json({ stats });
+	return json({ stats });
 };

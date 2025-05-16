@@ -1,14 +1,16 @@
 <script lang="ts">
     import { Sun, Moon } from 'lucide-svelte';
-    import { enhance } from '$app/forms'; // Importa enhance
 
-    let { data } = $props();
+    let { data }:{
+        data: {
+            theme: string;
+        };
+    } = $props();
 
     let isDark = $derived(data.theme === 'dark');
-
 </script>
 
-<form method="POST" action="/?/toggleTheme" use:enhance>
+<form method="POST" action="/?/toggleTheme">
 	<input type="hidden" name="theme" value={isDark ? 'light' : 'dark'} />
     <button
         type="submit"

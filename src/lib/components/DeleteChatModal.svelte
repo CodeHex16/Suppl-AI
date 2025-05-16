@@ -1,9 +1,44 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import { goto,  invalidateAll } from '$app/navigation';
-	let { chatName, chatId, onCancel } = $props();
-	console.log('chatName', chatName);
-	console.log('chatId', chatId);
+	import { goto, invalidateAll } from '$app/navigation';
+	import { logger } from '$lib/utils/logger';
+	let {
+		chatName,
+		chatId,
+		onCancel
+	}: {
+		chatName: string;
+		chatId: string | undefined;
+		onCancel: () => void;
+	} = $props();
+
+	async function handleSubmit(event: Event) {
+		event.preventDefault();
+		logger.info('Eliminazione chat in corso...');
+
+		const form = event.currentTarget as HTMLFormElement;
+		const formData = new FormData(form);
+		logger.info('FormData:', formData);
+
+		try {
+			const res = await fetch("/?/deleteChat", {
+				method: 'POST',
+				body: formData
+			});
+
+			if (res.ok) {
+				logger.info('Chat eliminata con successo');
+				onCancel();
+				await invalidateAll();
+				goto('/');
+			} else {
+				logger.error("Errore durante l'eliminazione della chat:", await res.text());
+				alert("Si è verificato un errore durante l'eliminazione della chat. Riprova.");
+			}
+		} catch (err) {
+			logger.error("Errore di rete:", err);
+			alert("Errore di rete. Riprova più tardi.");
+		}
+	}
 </script>
 
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -20,22 +55,9 @@
 					onclick={onCancel}>Annulla</button
 				>
 				<form
+					data-testid="delete-chat-form"
 					method="POST"
-					action="/?/deleteChat"
-					use:enhance={() => {
-                        return async ({ result }) => {
-                            if (result.type === 'success' || result.type === 'redirect') {
-                                onCancel();
-								invalidateAll();
-								goto('/');
-							} else if (result.type === 'error') {
-								console.error('Errore durante l\'eliminazione della chat:', result.error);
-								alert('Si è verificato un errore durante l\'eliminazione della chat. Riprova.');
-							} else {
-								console.warn('Risultato non previsto:', result);
-                            } 
-                        };
-                    }}
+					onsubmit={handleSubmit}
 				>
 					<input type="hidden" name="chat_id" value={chatId} />
 					<button

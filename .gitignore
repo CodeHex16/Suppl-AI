@@ -24,3 +24,8 @@ vite.config.ts.timestamp-*
 
 .idea
 .vscode/settings.json
+
+# Test
+coverage
+html
+static/.well-known/appspecific/com.chrome.devtools.json

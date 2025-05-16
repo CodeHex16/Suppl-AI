@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { User, FileText, BarChart, MessageCircleQuestion, Settings } from 'lucide-svelte';
+	
 </script>
 
 <div class="grid grid-cols-2 gap-4 px-4 mb-4">

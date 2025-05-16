@@ -1,8 +1,9 @@
+<!-- svelte-ignore a11y_autofocus -->
 <script>
 	import { SendHorizontal, MessageCircleQuestion } from 'lucide-svelte';
 	import FaqItem from './FaqItem.svelte';
 	import { fly } from 'svelte/transition';
-	let { sending, onClickFaq, inputValue = $bindable() } = $props();
+	let { sending, onClickFaq, inputValue = $bindable()} = $props();
 </script>
 
 <div class="grid-chat-bottom-bar grid mx-4 mt-4">

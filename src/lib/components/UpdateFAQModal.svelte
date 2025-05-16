@@ -1,12 +1,18 @@
 <script lang="ts">
-	let { faq, onSubmitFaq, onCancel, errorMessage } = $props();
+	import { type Faq } from '$lib/types';
+	let { faq, onSubmitFaq, onCancel, errorMessage }:{
+		faq: Faq;
+		onSubmitFaq: (faq: Faq) => void;
+		onCancel: () => void;
+		errorMessage: string | null;
+	} = $props();
+
 	import { User, HelpCircle, MessageSquareText, Tag } from 'lucide-svelte';
 
 	let id = $state(faq._id);
 	let question = $state(faq.question);
 	let title = $state(faq.title);
 	let answer = $state(faq.answer);
-
 	function submitForm() {
 		onSubmitFaq({
 			id,

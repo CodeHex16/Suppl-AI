@@ -1,25 +1,20 @@
 <script lang="ts">
 	import { ChevronDown, Trash2 } from 'lucide-svelte';
 	import { type Document } from '$lib/types';
-
 	import { slide } from 'svelte/transition';
+	import { parseDate } from '$lib/utils/date';
 
 	let {
 		document,
 		open,
 		onToggle,
 		onDelete
-	}: { document: Document; open: boolean; onToggle: () => void; onDelete: () => void } = $props();
-
-	function formatDate(dateString: string): string {
-		const options: Intl.DateTimeFormatOptions = {
-			year: 'numeric',
-			month: '2-digit',
-			day: '2-digit'
-		};
-		const date = new Date(dateString);
-		return date.toLocaleDateString('it-IT', options);
-	}
+	}: {
+		document: Document;
+		open: boolean;
+		onToggle: () => void;
+		onDelete: () => void;
+	} = $props();
 </script>
 
 <div class="mb-4 rounded-xl bg-white p-4 shadow-md transition">
@@ -27,7 +22,7 @@
 		<div class="flex-1 pr-4">
 			<h3 class="max-w-56 overflow-hidden text-ellipsis whitespace-nowrap text-gray truncate text-lg font-semibold">{document.title}</h3>
 			{#if !open}
-				<p class="text-gray truncate text-sm opacity-50">{formatDate(document.uploaded_at)}</p>
+				<p class="text-gray truncate text-sm opacity-50">{parseDate(document.uploaded_at)}</p>
 			{/if}
 		</div>
 		<div class="flex items-center">
@@ -48,7 +43,7 @@
 			<p><span class="font-medium">Caricato da:</span> {document.owner_email}</p>
 			<p>
 				<span class="font-medium">Data caricamento:</span>
-				{formatDate(document.uploaded_at)}
+				{parseDate(document.uploaded_at)}
 			</p>
 			<div class="mt-4 border-t border-gray-500 border-opacity-50">
 				<button

@@ -3,13 +3,22 @@
 	import BottomNavBar from '$lib/components/BottomNavBar.svelte';
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 	import { goto } from '$app/navigation';
+	import { logger } from '$lib/utils/logger';
 
-	let { data } = $props();
+	let { data }:{
+		data: {
+			theme: string;
+			title: string;
+			subtitle: string;
+		}
+	} = $props();
+
 	let stats = $state([]);
 	let startDate = $state('');
 	let endDate = $state('');
 
 	async function getStats() {
+		logger.log('Richiesta statistiche...');
 		const res = await fetch('/api/get_stats', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -18,13 +27,15 @@
 				endDate: endDate
 			})
 		});
+		logger.log('Risposta ricevuta:', res);
 
 		const data_json = await res.json();
 		if (!data_json.error) {
+			logger.log('Statistiche ricevute:', data_json.stats);
 			stats = data_json.stats;
-			console.log('Statistiche:', data_json.stats);
+			logger.log('Statistiche:', data_json.stats);
 		} else {
-			console.error('Errore nella richiesta delle statistiche:', data_json.error);
+			logger.error('Errore nella richiesta delle statistiche:', data_json.error);
 		}
 	}
 

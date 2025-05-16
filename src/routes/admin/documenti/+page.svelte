@@ -5,11 +5,18 @@
 	import Doc from '$lib/components/NewDocumentModal.svelte';
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
 	import DeleteDocument from '$lib/components/DeleteDocumentModal.svelte';
-	import { type Document } from '$lib/types';
+	import { type Document, type User } from '$lib/types';
 	import { invalidateAll } from '$app/navigation';
+	import { logger } from '$lib/utils/logger';
 	import { error } from '@sveltejs/kit';
 
-	let { data } = $props();
+	let { data }:{
+		data: {
+			documents: Document[],
+			user: User,
+			theme: string,
+		};
+	} = $props();
 
 	let showNewDocument = $state(false);
 
@@ -21,7 +28,7 @@
 
 	function toggleDocument(doc: Document) {
 		selectedDocument = selectedDocument?._id === doc._id ? null : doc;
-		console.log('selectedDocument', selectedDocument);
+		logger.log('selectedDocument', selectedDocument);
 	}
 
 	const filteredDocument = $derived(
@@ -32,23 +39,20 @@
 		)
 	);
 
-	async function onSubmitDocument() {
-		showNewDocument = false;
-		await invalidateAll();
-	}
 
 	function deleteDocumentRequest() {
 		const docToDeleteId = selectedDocument;
-		console.log('ID documento da eliminare:', docToDeleteId);
+		logger.log('ID documento da eliminare:', docToDeleteId);
 		if (docToDeleteId !== null) {
 			eliminateDocument = true;
 			deleteErrorMessage = null;
 		} else {
-			console.warn("Nessun documento selezionato per l'eliminazione");
+			logger.warn("Nessun documento selezionato per l'eliminazione");
 		}
-	}
+	}	
 
 	async function confirmDeleteDocument(form: FormData) {
+		logger.log('DELETE form', form);
 
 		const ris = await fetch('/api/documents', {
 			method: 'DELETE',
@@ -63,14 +67,16 @@
 		});
 
 		if (ris.status === 200) {
-			console.log('Documento eliminato con successo');
+			logger.log('Documento eliminato con successo');
 			await invalidateAll();
 			eliminateDocument = false;
 			selectedDocument = null;
 			deleteErrorMessage = null;
 		} else {
+
+
 			const errorData = await ris.json();
-			console.error('Errore durante l\'eliminazione del documento:', errorData);
+			logger.error('Errore durante l\'eliminazione del documento', errorData);
 			if (errorData.error === 'Unauthorized') {
 				deleteErrorMessage = 'Password errata. Riprova.';
 			} else if (errorData.error === 'Document not found') {
@@ -97,8 +103,9 @@
 	<HeaderPages {data} title="Gestione documenti" />
 
 	{#if showNewDocument}
-		<Doc {onSubmitDocument} onCancel={() => (showNewDocument = false)} />
+		<Doc onSubmitDocument={async()=> {await invalidateAll()}} onCancel={() => (showNewDocument = false)} />
 	{/if}
+	
 	{#if eliminateDocument && selectedDocument !== null}
 		<DeleteDocument
 			document={selectedDocument}

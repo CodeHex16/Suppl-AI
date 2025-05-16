@@ -1,9 +1,8 @@
 <script lang="ts">
 	import HeaderPages from '$lib/components/HeaderPages.svelte';
-	import { enhance } from '$app/forms';
 	import { page } from '$app/state';
 
-	let { data } = $props();
+	let { data } : {data:any} = $props();
 </script>
 
 <div class="mx-auto max-w-xl">
@@ -11,7 +10,7 @@
 	<main class="mx-4">
 		<div class="mx-auto  max-w-md rounded-xl bg-white p-8">
 			<h1 class="py-4 text-center text-2xl font-extrabold">Cambio password</h1>
-			<form method="POST" use:enhance>
+			<form method="POST">
 				{#if page.form?.success}
 					<p class="text-gray text-center mb-4">La password è stata cambiata con successo.</p>
 					<a href="/">

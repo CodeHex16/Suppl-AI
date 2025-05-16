@@ -1,18 +1,25 @@
-<script>
-	import { ArrowLeft, EllipsisVertical, Trash2 } from 'lucide-svelte';
+<script lang="ts">
+	import { ArrowLeft, EllipsisVertical, Trash2, Pen } from 'lucide-svelte';
 	import { fly } from 'svelte/transition';
+	import type { Chat } from '$lib/types';
+	import { logger } from '$lib/utils/logger';
 
-	let { data, deleteChat } = $props();
+	let {
+		data,
+		deleteChat
+	}: {
+		data: {
+			chat: Chat;
+		};
+		deleteChat: () => void;
+	} = $props();
 
 	let isMenuOpen = $state(false);
-	function toggleMenu() {
-		isMenuOpen = !isMenuOpen;
-	}
-
-	function handleDelete() {
+	const toggleMenu = () => isMenuOpen = !isMenuOpen;
+	const handleDelete = () => {
 		deleteChat();
 		isMenuOpen = false;
-	}
+	};
 </script>
 
 <nav class="grid-chat-nav mx-4 mb-4 grid">
@@ -40,22 +47,14 @@
 
 		{#if isMenuOpen}
 			<div
-				class="absolute right-0 top-full z-10 mt-2 w-auto origin-top-right"
+				class="absolute right-0 top-full z-10 mt-2 w-auto origin-top-right justify-items-end"
 				role="menu"
 				aria-orientation="vertical"
 				transition:fly={{ duration: 200 }}
 			>
 				<button
 					type="button"
-					class="
-                        flex items-center
-                        justify-center rounded-full
-                        bg-red-500 px-4 py-3
-						text-white
-                        shadow-md
-                        transition-all duration-300 ease-in-out
-						hover:bg-red-600
-                    "
+					class="flex items-center justify-center rounded-full bg-red-500 px-4 py-3 text-white shadow-md transition-all duration-300 ease-in-out hover:bg-red-600"
 					role="menuitem"
 					onclick={handleDelete}
 					aria-label="Elimina chat"

@@ -1,15 +1,8 @@
-import { fail, redirect } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private'
-
-const API_URL = env.DATABASE_API_URL;
+import { redirect } from '@sveltejs/kit';
+import { logger } from '$lib/utils/logger';
 
 export const load = async ({ cookies }) => {
+	logger.info('Loading logout page');
 	cookies.delete('token', {path : '/'});
-	redirect(303, '/');
-	return {
-		status: 200,
-		body: {
-			message: 'Logout effettuato con successo'
-		}
-	};
+	throw redirect(303, '/');
 };

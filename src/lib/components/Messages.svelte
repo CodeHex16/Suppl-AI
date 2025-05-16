@@ -1,7 +1,13 @@
 <script lang="ts">
 	import UserMessage from './UserMessage.svelte';
 	import BotMessage from './BotMessage.svelte';
-	let { data } = $props();
+	import { type Message } from '$lib/types';
+	
+	let {
+		data
+	}: {
+		data: Message[];
+	} = $props();
 </script>
 
 <main class="scroll-snap-y-container prose flex-1 overflow-y-auto px-4">

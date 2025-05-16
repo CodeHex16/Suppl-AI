@@ -1,8 +1,14 @@
 <script lang="ts">
 	import { ChevronDown, Trash2, PenIcon, Mail, Tag } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
-
-	let { user, open, onEdit, onToggle, onDelete } = $props();
+	import { type User } from '$lib/types';	
+	let { user, open, onEdit, onToggle, onDelete }:{
+		user: User;
+		open: boolean;
+		onEdit: (user: User) => void;
+		onToggle: () => void;
+		onDelete: () => void;
+	} = $props();
 </script>
 
 <div class="mx-4 mb-4 rounded-xl bg-white p-4 shadow-md transition">
