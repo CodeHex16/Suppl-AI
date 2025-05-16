@@ -25,7 +25,9 @@
 			>
 				<h1 class="text-center text-lg font-semibold">{title}</h1>
 			</div>
-			{/if}
+		{:else}
+			<div></div>
+		{/if}
 
 		<ThemeToggle {data} />
 	</nav>

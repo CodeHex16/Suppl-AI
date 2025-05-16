@@ -137,7 +137,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 			body: JSON.stringify({
 				_id: req.email,
 				name: req.name,
-				scope: [req.scope],
+				scopes: [req.role],
 				admin_password: req.admin_password
 			})
 		});

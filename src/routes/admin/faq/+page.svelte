@@ -9,7 +9,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import type { Faq as FAQ } from '$lib/types';
 	import { logger } from '$lib/utils/logger.js';
-	import { find } from 'lodash-es';
+	import { find } from 'lodash/debounce';
 
 	let { data } = $props();
 	let faqs = $state<FAQ[]>(data.faqs ?? []);

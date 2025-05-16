@@ -11,7 +11,7 @@
 	import { formatData } from '$lib/utils/date';
 	import { logger } from '$lib/utils/logger';
 	//lodash
-	import debounce from 'lodash-es/debounce';
+	import debounce from 'lodash/debounce';
 
 
 	marked.use({

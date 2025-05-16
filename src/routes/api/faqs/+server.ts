@@ -107,8 +107,8 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 				{ status: 400 }
 			);
 		}
-		const response = await fetch(`http://${DATABASE_URL}/faqs/${req.id}`, {
-			method: 'PATCH',
+		const response = await fetch(`http://${LLM_URL}/faqs?token=${token}`, {
+			method: 'PUT',
 
 			headers: {
 				'Content-Type': 'application/json',
@@ -119,7 +119,6 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 				question: req.question,
 				answer: req.answer,
 				id: req.id,
-				current_password: req.current_password
 			})
 		});
 		logger.log('response update faq', response);
