@@ -63,3 +63,76 @@ test('POST request successfully fetches a title and updates the chat name', asyn
     title: { title: 'Mock Title' }  
   });
 });
+
+test('POST request handles LLM API error gracefully', async () => {
+  const mockRequestData = {
+    chat_id: 'chat123',
+    messages: [
+      { sender: 'user', content: 'Hello' },
+      { sender: 'bot', content: 'Hi there!' }
+    ]
+  };
+
+  // Mock the LLM API response to simulate an error
+  const mockLLMErrorResponse = {
+    json: vi.fn().mockResolvedValue({ error: 'LLM error' }),
+    ok: false,
+    status: 500
+  };
+  (globalThis.fetch as any).mockResolvedValueOnce(mockLLMErrorResponse);
+
+  const request = {
+    json: vi.fn().mockResolvedValue(mockRequestData),
+  };
+
+  const cookies = {
+    get: vi.fn().mockReturnValue('mock-token')
+  };
+
+  const response = await POST({ request, cookies });
+
+  // Assert that the response contains the error status
+  expect(response).toEqual({
+    error: 500
+  });
+});
+
+test('POST request handles database API error gracefully', async () => {
+  const mockRequestData = {
+    chat_id: 'chat123',
+    messages: [
+      { sender: 'user', content: 'Hello' },
+      { sender: 'bot', content: 'Hi there!' }
+    ]
+  };
+
+  // Mock the LLM API response
+  const mockLLMResponse = {
+    json: vi.fn().mockResolvedValue({ title: 'Mock Title' }),
+    ok: true,
+  };
+  (globalThis.fetch as any).mockResolvedValueOnce(mockLLMResponse);
+
+  // Mock the database API response to simulate an error
+  const mockDatabaseErrorResponse = {
+    json: vi.fn().mockResolvedValue({ error: 'Database error' }),
+    ok: false,
+    status: 500
+  };
+  (globalThis.fetch as any).mockResolvedValueOnce(mockDatabaseErrorResponse);
+
+  const request = {
+    json: vi.fn().mockResolvedValue(mockRequestData),
+  };
+
+  const cookies = {
+    get: vi.fn().mockReturnValue('mock-token')
+  };
+
+  const response = await POST({ request, cookies });
+
+  // Assert that the response contains the error status
+  expect(response).toEqual({
+    error: 500
+  });
+});
