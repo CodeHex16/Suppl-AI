@@ -69,3 +69,41 @@ describe('load()', () => {
 		expect(result?.chat_id).toBe('chat123');
 	});
 });
+describe('actions.default()', () => {
+	it('returns fail if message is empty', async () => {
+		const request = {
+			formData: async () => new Map()
+		};
+		const params = { id: 'chat123' };
+		const cookies = { get: vi.fn() };
+
+		const result = await actions.default({ request, params, cookies });
+		expect(result).toEqual(undefined);
+	});
+
+	it('returns fail if API call fails', async () => {
+		const request = {
+			formData: async () => new Map([['message', 'Hello']])
+		};
+		const params = { id: 'chat123' };
+		const cookies = { get: vi.fn(() => 'valid_token') };
+
+		MockFetch.mockResolvedValueOnce({ ok: false, status: 500 });
+
+		const result = await actions.default({ request, params, cookies });
+		expect(result).toEqual({ status: 500, data: { error: 'Failed to send message' } });
+	});
+
+	it('returns success if message is sent successfully', async () => {
+		const request = {
+			formData: async () => new Map([['message', 'Hello']])
+		};
+		const params = { id: 'chat123' };
+		const cookies = { get: vi.fn(() => 'valid_token') };
+
+		MockFetch.mockResolvedValueOnce({ ok: true });
+
+		const result = await actions.default({ request, params, cookies });
+		expect(result).toEqual({ success: true });
+	});
+});

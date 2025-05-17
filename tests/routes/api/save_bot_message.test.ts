@@ -89,7 +89,7 @@ describe('POST Handler - Save Bot Message', () => {
       chat_id: 'chat-id',
       content: 'Hello, how can I help you?',
     });
-
+    globalThis.fetch = fetchMock; // Mock global fetch
     fetchMock.mockResolvedValueOnce({
       ok: false,
       json: vi.fn().mockResolvedValue({ error: 'Failed to save message' }),
@@ -102,4 +102,29 @@ describe('POST Handler - Save Bot Message', () => {
       details: { error: 'Failed to save message' }
     }, { status: 400 }));
   });
+
+  it('should return 403 if the response status is 403 Forbidden', async () => {
+    cookiesMock.get.mockReturnValue('valid-token');
+    requestMock.json.mockResolvedValue({
+      chat_id: 'chat-id',
+      content: 'Hello, how can I help you?',
+    });
+    
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 200,
+      json: ()=>({"error": "Forbidden"}),
+    });
+  
+    const result = await POST({ cookies: cookiesMock, request: requestMock, fetch: fetchMock });
+  
+    expect(result).toEqual(json({
+      error: 'Failed to save bot message',
+      details: { error: 'Forbidden' }
+    }, { status: 403 }));
+  });
+
+  
 });
+
+

@@ -54,4 +54,22 @@ describe('GET Handler for Creating a New Chat', () => {
 
     expect(result).toEqual(json({ success: true, chat_id: 'new-chat-id' }));
   });
+
+  
+it('should return appropriate error if response.ok is false and no error details are provided', async () => {
+  cookiesMock.get.mockReturnValue('valid-token'); // Valid token
+  globalThis.fetch = fetchMock; // Mock the global fetch
+  fetchMock.mockResolvedValueOnce({ 
+    ok: false, 
+    json: vi.fn().mockResolvedValue({}) // No error details
+  });
+
+  const result = await GET({ cookies: cookiesMock, fetch: fetchMock });
+
+  expect(result).toEqual(json(
+    { error: 'Errore durante la creazione della nuova chat', details: {} },
+    { status: 500 }
+  ));
+});
+
 });

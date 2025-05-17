@@ -102,4 +102,27 @@ describe('POST Handler - Update Rating', () => {
       details: { error: 'Failed to update rating' }
     }, { status: 400 }));
   });
+
+  
+it('should handle the case where the response is not ok and contains error details', async () => {
+  cookiesMock.get.mockReturnValue('valid-token');
+  requestMock.json.mockResolvedValue({
+    chat_id: 'chat-id',
+    message_id: 'message-id',
+    rating: 5,
+  });
+  globalThis.fetch = fetchMock;
+  fetchMock.mockResolvedValueOnce({
+    ok: false,
+    status: 422,
+    json: vi.fn().mockResolvedValue({ error: 'Invalid rating value' }),
+  });
+
+  const result = await POST({ cookies: cookiesMock, request: requestMock, fetch: fetchMock });
+
+  expect(result).toEqual(json({
+    error: 'Failed to update rating',
+    details: { error: 'Invalid rating value' }
+  }, { status: 422 }));
+});
 });
