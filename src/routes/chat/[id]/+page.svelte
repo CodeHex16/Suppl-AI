@@ -192,6 +192,7 @@
 				}
 			];
 			messageInput.value = '';
+			inputValue = '';
 			scrollToBottom();
 
 			logger.info('Salvataggio messaggio utente...');
@@ -275,6 +276,6 @@
 	</div>
 
 	<form data-testid="input_form" method="POST" onsubmit={submitMessageHandler}>
-		<SendMessage sending={waitingForResponse} onClickFaq={()=>(showModalFaq = true)} {inputValue}  />
+		<SendMessage sending={waitingForResponse} onClickFaq={()=>(showModalFaq = true)} bind:inputValue={inputValue}  />
 	</form>
 </div>
