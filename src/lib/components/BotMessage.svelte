@@ -13,7 +13,6 @@
 	//lodash
 	import debounce from 'lodash/debounce';
 
-
 	marked.use({
 		gfm: true,
 		// breaks: true,
@@ -78,7 +77,6 @@
 <div class="flex flex-col justify-start">
 	<div class="max-w-sm">
 		<div class="rounded-t-3xl rounded-br-3xl bg-white p-4 text-black shadow-md">
-			<!-- TODO: Scegliere che versione usare -->
 			<div class="font-bold item-primary px-2 rounded-full w-fit">Suppl-AI</div>
 			<!-- <div class="font-bold text-primary">Suppl-AI</div> -->
 			{#if data.content == ''}
@@ -87,8 +85,8 @@
 					<div class="mb-2 h-2 w-5/6 rounded bg-gray"></div>
 				</div>
 			{:else}
-			<!-- prose dark:prose-invert -->
-				<div class="markdown-content"> 
+				<!--  -->
+				<div class="markdown-content prose dark:prose-invert">
 					{@html formatMessage(data.content)}
 				</div>
 			{/if}
