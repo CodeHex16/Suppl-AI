@@ -2,6 +2,11 @@
 	import '../app.css';
 	import { browser } from '$app/environment';
 	import { logger } from '$lib/utils/logger';
+
+	import PwaInstallPrompt from '$lib/components/PWAInstallPrompt.svelte';
+  import { pwaInfo } from 'virtual:pwa-info';
+  let webManifestLink = pwaInfo?.webManifest?.linkTag ?? '';
+
 	let {
 		children,
 		data
@@ -40,6 +45,18 @@
 			}
 		}
 	});
+
+	
 </script>
 
+<svelte:head>
+	<title>Suppl-AI</title>
+  {@html webManifestLink}
+	<link rel="apple-touch-icon" href="img/favicon.ico">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="default">
+	<meta name="apple-mobile-web-app-title" content="SUPPL-AI">
+
+</svelte:head>
+<PwaInstallPrompt />
 {@render children?.()}
